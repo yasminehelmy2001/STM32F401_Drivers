@@ -144,15 +144,21 @@ typedef enum
 /********************************************/
 typedef enum
 {
-	RCC_InvalidClock,
-	RCC_InvalidClockStatus,
-	RCC_OK,
-	RCC_NOK
+	RCC_Error_Ok,
+	RCC_Error_Nok,
+	RCC_Error_InvalidClock,
+	RCC_Error_InvalidClockStatus,
+	RCC_Error_ClockNotOnOrReady,
+	RCC_Error_InvalidSysClk,
+	RCC_Error_InvalidPeriphralBus
 }RCC_ErrorStatus_t;
 
 /********************************************/
 /*				Function Prototypes		    */
 /********************************************/
+
+/*CONSTRAINTS*/
+
 RCC_ErrorStatus_t RCC_ControlClock (u8 ClockStatus, u8 Clock);
 RCC_ErrorStatus_t RCC_SelectSystemClock(u8 Sysclk);
 RCC_ErrorStatus_t RCC_EnablePeriphral(PeripheralBuses_t PeriphralBus, u8 Periphral);
@@ -160,4 +166,5 @@ RCC_ErrorStatus_t RCC_DisablePeriphral(PeripheralBuses_t PeriphralBus,u8 Periphr
 RCC_ErrorStatus_t RCC_SelectAHBPerscaler(u8 AHBPrescaler);
 RCC_ErrorStatus_t RCC_SelectAPB1Perscaler(u8 APB1Prescaler);
 RCC_ErrorStatus_t RCC_SelectAPB2Perscaler(u8 APB2Prescaler);
+RCC_ErrorStatus_t RCC_ConfigurePLL(PLLCfgOptions_t*PLLCfg);
 
