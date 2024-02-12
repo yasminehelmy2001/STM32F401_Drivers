@@ -1,6 +1,37 @@
 #include "../LIB/std_types.h"
 
 /**********************************************/
+/*				RCC REGISTER ADDRESSES	      */
+/**********************************************/
+#define RCC_CR                  *((volatile u32*)0x40023800)
+#define RCC_PLLCFGR             *((volatile u32*)0x40023804)
+#define RCC_CFGR                *((volatile u32*)0x40023808)
+#define RCC_CIR                 *((volatile u32*)0x4002380C)
+#define RCC_AHB1RSTR            *((volatile u32*)0x40023810)
+#define RCC_AHB2RSTR            *((volatile u32*)0x40023814)
+#define RCC_APB1RSTR            *((volatile u32*)0x40023820)
+#define RCC_APB2RSTR            *((volatile u32*)0x40023824)
+#define RCC_AHB1ENR             *((volatile u32*)0x40023830)
+#define RCC_AHB2ENR             *((volatile u32*)0x40023834)
+#define RCC_APB1ENR             *((volatile u32*)0x40023840)
+#define RCC_APB2ENR             *((volatile u32*)0x40023844)
+#define RCC_AHB1LPENR           *((volatile u32*)0x40023850)
+#define RCC_AHB2LPENR           *((volatile u32*)0x40023854)
+#define RCC_APB1LPENR           *((volatile u32*)0x40023860)
+#define RCC_APB2LPENR           *((volatile u32*)0x40023864)
+#define RCC_BDCR                *((volatile u32*)0x40023870)
+#define RCC_CSR                 *((volatile u32*)0x40023874)
+#define RCC_SSCGR               *((volatile u32*)0x40023880)
+#define RCC_PLLI2SCFGR          *((volatile u32*)0x40023884)
+#define RCC_DCKCFGR             *((volatile u32*)0x4002388C)
+
+/**********************************************/
+/*				Clock Status			      */
+/**********************************************/
+#define CLOCK_STATUS_ON				1
+#define CLOCK_STATUS_OFF			0
+
+/**********************************************/
 /*				Clock Types				      */
 /**********************************************/
 #define CLOCK_HSI					0x00000001
@@ -74,7 +105,7 @@
 #define AHB_CLOCK_DIVIDED_BY_64		0b1100
 #define AHB_CLOCK_DIVIDED_BY_128	0b1101
 #define AHB_CLOCK_DIVIDED_BY_256	0b1110
-#define AHB_CLOCK_DIVIDED_BY_256	0b1111
+#define AHB_CLOCK_DIVIDED_BY_512	0b1111
 
 /*******************************************/
 /*				APBx Prescaler			   */
@@ -94,7 +125,7 @@ typedef struct
 	u32 N;
 	u8 P;
 	u8 Q;
-}RCC_strPLLCfgOptions_t;
+}PLLCfgOptions_t;
 
 /********************************************/
 /*				Peripheral Buses		    */
@@ -106,14 +137,26 @@ typedef enum
 	AHB2,
 	APB1,
 	APB2
-}RCC_PeripheralBuses;
+}PeripheralBuses_t;
 
+/********************************************/
+/*				Error Status			    */
+/********************************************/
+typedef enum
+{
+	RCC_InvalidClock,
+	RCC_InvalidClockStatus,
+	RCC_OK,
+	RCC_NOK
+}RCC_ErrorStatus_t;
 
-void RCC_ControlClock (u8 ClockStatus, u8 ClockName);
-void RCC_ConfigurePLL(RCC_strPLLCfgOptions_t*PLLCfg);
+/********************************************/
+/*				Function Prototypes		    */
+/********************************************/
+void RCC_ControlClock (u8 ClockStatus, u8 Clock);
 void RCC_SelectSystemClock(u8 Sysclk);
-void RCC_EnablePeriphral(RCC_PeripheralBuses PeriphralBus, u8 Periphral);
-void RCC_DisablePeriphral(RCC_PeripheralBuses PeriphralBus,u8 Periphral);
+void RCC_EnablePeriphral(PeripheralBuses_t PeriphralBus, u8 Periphral);
+void RCC_DisablePeriphral(PeripheralBuses_t PeriphralBus,u8 Periphral);
 void RCC_SelectAHBPerscaler(u8 AHBPrescaler);
 void RCC_SelectAPB1Perscaler(u8 APB1Prescaler);
 void RCC_SelectAPB2Perscaler(u8 APB2Prescaler);
