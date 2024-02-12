@@ -1,8 +1,8 @@
 #include "RCC.h"
 
-/********************************************/
-/*			Masks				  	   		*/
-/********************************************/
+/**************************************************************************/
+/*						MASKS					 					 	  */
+/**************************************************************************/
 #define MASK_HSION					0x00000001
 #define MASK_HSEON					0x00010000
 #define MASK_PLLON					0x01000000
@@ -24,9 +24,7 @@
 #define MASK_GET_SYSCLK				0x0000000C
 #define MASK_SET_SYSCLK				0x00000003
 
-/********************************************/
-/*			Function Implementations 		*/
-/********************************************/
+
 RCC_ErrorStatus_t RCC_ControlClock (u8 ClockStatus, u8 Clock)
 {
 	RCC_ErrorStatus_t RET_ErrorStatus=RCC_Error_Ok;
