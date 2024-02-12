@@ -39,6 +39,12 @@
 #define CLOCK_PLL						0x01000000
 
 /**************************************************************************/
+/*						PLL Clock Options	 			 				  */
+/**************************************************************************/
+#define PLL_CLK_HSI						0X00200000
+#define PLL_CLK_HSE						0X00000000
+
+/**************************************************************************/
 /*						System Clock Types		 					 	  */
 /**************************************************************************/
 #define SYSCLK_HSI						0x00000000
@@ -97,24 +103,33 @@
 /**************************************************************************/
 /*						AHB Prescaler			 					 	  */
 /**************************************************************************/
-#define AHB_CLOCK_NOT_DIVIDED			0b0000
-#define AHB_CLOCK_DIVIDED_BY_2			0b1000
-#define AHB_CLOCK_DIVIDED_BY_4			0b1001
-#define AHB_CLOCK_DIVIDED_BY_8			0b1010
-#define AHB_CLOCK_DIVIDED_BY_16			0b1011
-#define AHB_CLOCK_DIVIDED_BY_64			0b1100
-#define AHB_CLOCK_DIVIDED_BY_128		0b1101
-#define AHB_CLOCK_DIVIDED_BY_256		0b1110
-#define AHB_CLOCK_DIVIDED_BY_512		0b1111
+#define AHB_CLOCK_NOT_DIVIDED			0x00000000
+#define AHB_CLOCK_DIVIDED_BY_2			0x00000080
+#define AHB_CLOCK_DIVIDED_BY_4			0x00000090
+#define AHB_CLOCK_DIVIDED_BY_8			0x000000A0
+#define AHB_CLOCK_DIVIDED_BY_16			0x000000B0
+#define AHB_CLOCK_DIVIDED_BY_64			0x000000C0
+#define AHB_CLOCK_DIVIDED_BY_128		0x000000D0
+#define AHB_CLOCK_DIVIDED_BY_256		0x000000E0
+#define AHB_CLOCK_DIVIDED_BY_512		0x000000F0
 
 /**************************************************************************/
-/*						APBx Prescaler			 					 	  */
+/*						APB1 Prescaler			 					 	  */
 /**************************************************************************/
-#define APBx_CLOCK_NOT_DIVIDED			0b000
-#define APBx_CLOCK_DIVIDED_BY_2			0b100
-#define APBx_CLOCK_DIVIDED_BY_4			0b101
-#define APBx_CLOCK_DIVIDED_BY_8			0b110
-#define APBx_CLOCK_DIVIDED_BY_16		0b111
+#define APB1_CLOCK_NOT_DIVIDED			0x00000000
+#define APB1_CLOCK_DIVIDED_BY_2			0x00001000
+#define APB1_CLOCK_DIVIDED_BY_4			0x00001400
+#define APB1_CLOCK_DIVIDED_BY_8			0x00001800
+#define APB1_CLOCK_DIVIDED_BY_16		0x00001C00
+
+/**************************************************************************/
+/*						APB2 Prescaler			 					 	  */
+/**************************************************************************/
+#define APB2_CLOCK_NOT_DIVIDED			0x00000000
+#define APB2_CLOCK_DIVIDED_BY_2			0x00008000
+#define APB2_CLOCK_DIVIDED_BY_4			0x0000A000
+#define APB2_CLOCK_DIVIDED_BY_8			0x0000C000
+#define APB2_CLOCK_DIVIDED_BY_16		0x0000E000
 
 /**************************************************************************/
 /*						PLL CFG Struct			 					 	  */
@@ -122,10 +137,12 @@
 typedef struct
 {
 	u8 M;
-	u32 N;
+	u16 N;
 	u8 P;
 	u8 Q;
+	u8 PLLSRC;
 }PLLCfgOptions_t;
+
 
 /**************************************************************************/
 /*						Peripheral Buses		 					 	  */
@@ -150,7 +167,17 @@ typedef enum
 	RCC_Error_InvalidClockStatus,
 	RCC_Error_ClockNotOnOrReady,
 	RCC_Error_InvalidSysClk,
-	RCC_Error_InvalidPeriphralBus
+	RCC_Error_InvalidPeriphralBus,
+	RCC_Error_InvalidAHBClock,
+	RCC_Error_InvalidAPB1Clock,
+	RCC_Error_InvalidAPB2Clock,
+	RCC_Error_PLLSelectedAsSysClk,
+	RCC_Error_Invalid_M_Configuration,
+	RCC_Error_Invalid_N_Configuration,
+	RCC_Error_Invalid_Q_Configuration,
+	RCC_Error_Invalid_P_Configuration,
+	RCC_Error_Invalid_PLL_Clock_Source
+
 }RCC_ErrorStatus_t;
 
 /**************************************************************************/
@@ -159,12 +186,12 @@ typedef enum
 
 /*CONSTRAINTS*/
 
-RCC_ErrorStatus_t RCC_ControlClock (u8 ClockStatus, u8 Clock);
-RCC_ErrorStatus_t RCC_SelectSystemClock(u8 Sysclk);
-RCC_ErrorStatus_t RCC_EnablePeriphral(PeripheralBuses_t PeriphralBus, u8 Periphral);
-RCC_ErrorStatus_t RCC_DisablePeriphral(PeripheralBuses_t PeriphralBus,u8 Periphral);
-RCC_ErrorStatus_t RCC_SelectAHBPerscaler(u8 AHBPrescaler);
-RCC_ErrorStatus_t RCC_SelectAPB1Perscaler(u8 APB1Prescaler);
-RCC_ErrorStatus_t RCC_SelectAPB2Perscaler(u8 APB2Prescaler);
+RCC_ErrorStatus_t RCC_ControlClock (u8 ClockStatus, u32 Clock);
+RCC_ErrorStatus_t RCC_SelectSystemClock(u32 Sysclk);
+RCC_ErrorStatus_t RCC_EnablePeriphral(PeripheralBuses_t PeriphralBus, u32 Periphral);
+RCC_ErrorStatus_t RCC_DisablePeriphral(PeripheralBuses_t PeriphralBus,u32 Periphral);
+RCC_ErrorStatus_t RCC_SelectAHBPerscaler(u32 AHBPrescaler);
+RCC_ErrorStatus_t RCC_SelectAPB1Perscaler(u32 APB1Prescaler);
+RCC_ErrorStatus_t RCC_SelectAPB2Perscaler(u32 APB2Prescaler);
 RCC_ErrorStatus_t RCC_ConfigurePLL(PLLCfgOptions_t*PLLCfg);
 
