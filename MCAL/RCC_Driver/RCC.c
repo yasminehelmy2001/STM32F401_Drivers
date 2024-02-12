@@ -21,8 +21,7 @@
 #define SHIFT_PLL_P					16
 #define SHIFT_PLL_Q					22
 
-#define MASK_GET_SYSCLK				0x0000000C
-#define MASK_SET_SYSCLK				0x00000003
+#define MASK_SYSCLK				0x00000003
 
 
 RCC_ErrorStatus_t RCC_ControlClock (u8 ClockStatus, u8 Clock)
@@ -64,7 +63,7 @@ RCC_ErrorStatus_t RCC_SelectSystemClock(u8 Sysclk)
 			if((RCC_CR&MASK_HSION) && (RCC_CR&MASK_HSIRDY))
 			{
 				Temp_CFGR= RCC_CFGR;
-				Temp_CFGR&=~(MASK_SET_SYSCLK);
+				Temp_CFGR&=~(MASK_SYSCLK);
 				Temp_CFGR|=SYSCLK_HSI;
 				RCC_CFGR=Temp_CFGR;
 			}
@@ -79,7 +78,7 @@ RCC_ErrorStatus_t RCC_SelectSystemClock(u8 Sysclk)
 			if((RCC_CR&MASK_HSEON) && (RCC_CR&MASK_HSERDY))
 			{
 				Temp_CFGR= RCC_CFGR;
-				Temp_CFGR&=~(MASK_SET_SYSCLK);
+				Temp_CFGR&=~(MASK_SYSCLK);
 				Temp_CFGR|=SYSCLK_HSE;
 				RCC_CFGR=Temp_CFGR;
 			}
@@ -94,7 +93,7 @@ RCC_ErrorStatus_t RCC_SelectSystemClock(u8 Sysclk)
 			if((RCC_CR&MASK_PLLON) && (RCC_CR&MASK_PLLRDY))
 			{
 				Temp_CFGR= RCC_CFGR;
-				Temp_CFGR&=~(MASK_SET_SYSCLK);
+				Temp_CFGR&=~(MASK_SYSCLK);
 				Temp_CFGR|=SYSCLK_PLL;
 				RCC_CFGR=Temp_CFGR;
 			}
@@ -117,34 +116,13 @@ RCC_ErrorStatus_t RCC_EnablePeriphral(PeripheralBuses_t PeriphralBus, u8 Periphr
 {
 	RCC_ErrorStatus_t RET_ErrorStatus= RCC_Error_Ok;
 
-	switch (PeriphralBus)
+	if(!(PeriphralBus==RCC_APB1ENR||PeriphralBus==RCC_APB2ENR||PeriphralBus==RCC_AHB1ENR||PeriphralBus==RCC_AHB2ENR))
 	{
-		case AHB1:
-		{
-			RCC_AHB1ENR|=Periphral;
-		}
-		break;
-		case AHB2:
-		{
-			RCC_AHB2ENR|=Periphral;
-		}
-		break;
-		case APB1:
-		{
-			RCC_APB1ENR|=Periphral;
-		}
-		break;
-		case APB2:
-		{
-			RCC_APB2ENR|=Periphral;
-
-		}
-		break;
-		default:
-		{
-			RET_ErrorStatus=RCC_Error_InvalidPeriphralBus;
-		}
-		break;
+		RET_ErrorStatus=RCC_Error_InvalidPeriphralBus;
+	}
+	else
+	{
+		PeriphralBus|=Periphral;
 	}
 }
 
@@ -152,34 +130,13 @@ RCC_ErrorStatus_t RCC_DisablePeriphral(PeripheralBuses_t PeriphralBus,u8 Periphr
 {
 	RCC_ErrorStatus_t RET_ErrorStatus= RCC_Error_Ok;
 
-	switch (PeriphralBus)
+	if(!(PeriphralBus==RCC_APB1ENR||PeriphralBus==RCC_APB2ENR||PeriphralBus==RCC_AHB1ENR||PeriphralBus==RCC_AHB2ENR))
 	{
-		case AHB1:
-		{
-			RCC_AHB1ENR&=~Periphral;
-		}
-		break;
-		case AHB2:
-		{
-			RCC_AHB2ENR&=~Periphral;
-		}
-		break;
-		case APB1:
-		{
-			RCC_APB1ENR&=~Periphral;
-		}
-		break;
-		case APB2:
-		{
-			RCC_APB2ENR&=~Periphral;
-
-		}
-		break;
-		default:
-		{
-			RET_ErrorStatus=RCC_Error_InvalidPeriphralBus;
-		}
-		break;
+		RET_ErrorStatus=RCC_Error_InvalidPeriphralBus;
+	}
+	else
+	{
+		PeriphralBus&=~Periphral;
 	}
 }
 
