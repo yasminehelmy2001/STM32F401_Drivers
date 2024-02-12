@@ -153,11 +153,11 @@ typedef enum
 /********************************************/
 /*				Function Prototypes		    */
 /********************************************/
-void RCC_ControlClock (u8 ClockStatus, u8 Clock);
-void RCC_SelectSystemClock(u8 Sysclk);
-void RCC_EnablePeriphral(PeripheralBuses_t PeriphralBus, u8 Periphral);
-void RCC_DisablePeriphral(PeripheralBuses_t PeriphralBus,u8 Periphral);
-void RCC_SelectAHBPerscaler(u8 AHBPrescaler);
-void RCC_SelectAPB1Perscaler(u8 APB1Prescaler);
-void RCC_SelectAPB2Perscaler(u8 APB2Prescaler);
+RCC_ErrorStatus_t RCC_ControlClock (u8 ClockStatus, u8 Clock);
+RCC_ErrorStatus_t RCC_SelectSystemClock(u8 Sysclk);
+RCC_ErrorStatus_t RCC_EnablePeriphral(PeripheralBuses_t PeriphralBus, u8 Periphral);
+RCC_ErrorStatus_t RCC_DisablePeriphral(PeripheralBuses_t PeriphralBus,u8 Periphral);
+RCC_ErrorStatus_t RCC_SelectAHBPerscaler(u8 AHBPrescaler);
+RCC_ErrorStatus_t RCC_SelectAPB1Perscaler(u8 APB1Prescaler);
+RCC_ErrorStatus_t RCC_SelectAPB2Perscaler(u8 APB2Prescaler);
 
