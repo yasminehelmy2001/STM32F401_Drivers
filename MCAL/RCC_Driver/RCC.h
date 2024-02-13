@@ -166,6 +166,7 @@ typedef enum
 	RCC_Error_InvalidClock,
 	RCC_Error_InvalidClockStatus,
 	RCC_Error_ClockNotOnOrReady,
+	RCC_Error_ClockNotReady,
 	RCC_Error_InvalidSysClk,
 	RCC_Error_InvalidPeriphralBus,
 	RCC_Error_InvalidAHBClock,

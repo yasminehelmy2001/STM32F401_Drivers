@@ -62,10 +62,18 @@ RCC_ErrorStatus_t RCC_ControlClock (u8 ClockStatus, u32 Clock)
 		switch(ClockStatus)
 		{
 		case CLOCK_STATUS_ON:
+		{
 			RCC_CR|=Clock;
+			if(!(RCC_CR&(Clock<<1)))
+			{
+				RET_ErrorStatus=RCC_Error_ClockNotReady;
+			}
+		}
 		break;
 		case CLOCK_STATUS_OFF:
+		{
 			RCC_CR&=~Clock;
+		}
 		break;
 		}
 	}
