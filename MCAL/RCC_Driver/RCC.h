@@ -177,7 +177,8 @@ typedef enum
 	RCC_Error_Invalid_N_Configuration,
 	RCC_Error_Invalid_Q_Configuration,
 	RCC_Error_Invalid_P_Configuration,
-	RCC_Error_Invalid_PLL_Clock_Source
+	RCC_Error_Invalid_PLL_Clock_Source,
+	RCC_Error_SysClk_Not_Selected
 
 }RCC_ErrorStatus_t;
 
@@ -185,14 +186,68 @@ typedef enum
 /*						Function Prototypes		 					 	  */
 /**************************************************************************/
 
-/*CONSTRAINTS*/
 
+/**
+*@brief : Function to Control HSI,HSE,PLL -> On/Off
+*@param : 1) Clock Status(CLOCK_STATUS_ON / CLOCK_STATUS_OFF)
+*		  2) Clock(CLOCK_HSI, CLOCK_HSE,CLOCK_PLL)
+*@return: Error Status: Wrong Input Parameters, or Clock Failed to be Ready
+*/
 RCC_ErrorStatus_t RCC_ControlClock (u8 ClockStatus, u32 Clock);
+
+/**
+*@brief : Function to Select a System Clock
+*@param : 1) Sysclk (SYSCLK_HSI, SYSCLK_HSE, SYSCLK_PLL)
+*@return: Error Status: Wrong Input Parameter, Clock Not On/Ready, Clock not Selected as SysClk
+*/
 RCC_ErrorStatus_t RCC_SelectSystemClock(u32 Sysclk);
+
+/**
+*@brief : Function to Enable a Peripheral
+*@param : 1) Peripheral Bus (AHB1, AHB2, APB1, APB2)
+		  2) Peripheral
+*@return: Error Status: Wrong Input Parameter
+*/
 RCC_ErrorStatus_t RCC_EnablePeriphral(PeripheralBuses_t PeriphralBus, u32 Periphral);
+
+/**
+*@brief : Function to Disable a Peripheral
+*@param : 1) Peripheral Bus (AHB1, AHB2, APB1, APB2)
+		  2) Peripheral
+*@return: Error Status: Wrong Input Parameter
+*/
 RCC_ErrorStatus_t RCC_DisablePeriphral(PeripheralBuses_t PeriphralBus,u32 Periphral);
+
+/**
+*@brief : Function to Set AHB Prescaler
+*@param : 1) AHB Prescaler (Macro starts with AHB_CLOCK_)
+*@return: Error Status: Wrong Input Parameter
+*/
 RCC_ErrorStatus_t RCC_SelectAHBPerscaler(u32 AHBPrescaler);
+
+/**
+*@brief : Function to Set APB1 Prescaler
+*@param : 1) APB1 Prescaler (Macro starts with APB1_CLOCK_)
+*@return: Error Status: Wrong Input Parameter
+*/
 RCC_ErrorStatus_t RCC_SelectAPB1Perscaler(u32 APB1Prescaler);
+
+/**
+*@brief : Function to Set APB2 Prescaler
+*@param : 1) APB2 Prescaler (Macro starts with APB2_CLOCK_)
+*@return: Error Status: Wrong Input Parameter
+*/
 RCC_ErrorStatus_t RCC_SelectAPB2Perscaler(u32 APB2Prescaler);
+
+/**
+*@brief : Function to Configure PLL
+*@param : Struct:
+*		 	1) M:  		2:63
+*		 	2) N:  		2:511
+*		 	3) P:		2,4,6,8
+*		 	4) Q: 	 	2:15
+*		 	5) PLLSRC:  (PLL_CLK_HSI, PLL_CLK_HSE)
+*@return: Error Status: Wrong Input Parameters, PLL Not On/Ready, PLL Selected as System Clock
+*/
 RCC_ErrorStatus_t RCC_ConfigurePLL(PLLCfgOptions_t*PLLCfg);
 

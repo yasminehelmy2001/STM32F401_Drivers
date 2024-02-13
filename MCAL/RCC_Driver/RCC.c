@@ -47,6 +47,7 @@ static u8 RCC_get_AHB_Bits(u32 Copy_CFGR)
 RCC_ErrorStatus_t RCC_ControlClock (u8 ClockStatus, u32 Clock)
 {
 	RCC_ErrorStatus_t RET_ErrorStatus=RCC_Error_Ok;
+	u8 Timeout=600;
 
 	if(!(Clock==CLOCK_HSI||Clock==CLOCK_HSE||Clock==CLOCK_PLL))
 	{
@@ -64,7 +65,11 @@ RCC_ErrorStatus_t RCC_ControlClock (u8 ClockStatus, u32 Clock)
 		case CLOCK_STATUS_ON:
 		{
 			RCC_CR|=Clock;
-			if(!(RCC_CR&(Clock<<1)))
+			while((!((RCC_CR)&(Clock<<1)))&&(Timeout))
+			{
+				Timeout--;
+			}
+			if(!((RCC_CR)&(Clock<<1)))
 			{
 				RET_ErrorStatus=RCC_Error_ClockNotReady;
 			}
@@ -83,51 +88,45 @@ RCC_ErrorStatus_t RCC_ControlClock (u8 ClockStatus, u32 Clock)
 RCC_ErrorStatus_t RCC_SelectSystemClock(u32 Sysclk)
 {
 	RCC_ErrorStatus_t RET_ErrorStatus=RCC_Error_Ok;
-	u8 Temp_CFGR;
+	u8 SelectSysClkFlag=0;
+	u8 Timeout=600;
 	switch(Sysclk)
 	{
 		case SYSCLK_HSI:
 		{
-			if((RCC_CR&MASK_HSION) && (RCC_CR&MASK_HSIRDY))
-			{
-				Temp_CFGR= RCC_CFGR;
-				Temp_CFGR&=~(MASK_SET_SYSCLK);
-				Temp_CFGR|=SYSCLK_HSI;
-				RCC_CFGR=Temp_CFGR;
-			}
-			else
+			if(!((RCC_CR&MASK_HSION) && (RCC_CR&MASK_HSIRDY)))
 			{
 				RET_ErrorStatus=RCC_Error_ClockNotOnOrReady;
 			}
+			else
+			{
+				SelectSysClkFlag=1;
+			}
 		}
 		break;
+
 		case SYSCLK_HSE:
 		{
-			if((RCC_CR&MASK_HSEON) && (RCC_CR&MASK_HSERDY))
+			if(!((RCC_CR&MASK_HSEON) && (RCC_CR&MASK_HSERDY)))
 			{
-				Temp_CFGR= RCC_CFGR;
-				Temp_CFGR&=~(MASK_SET_SYSCLK);
-				Temp_CFGR|=SYSCLK_HSE;
-				RCC_CFGR=Temp_CFGR;
+				RET_ErrorStatus=RCC_Error_ClockNotOnOrReady;
 			}
 			else
 			{
-				RET_ErrorStatus=RCC_Error_ClockNotOnOrReady;
+				SelectSysClkFlag=1;
 			}
 		}
 		break;
+
 		case SYSCLK_PLL:
 		{
-			if((RCC_CR&MASK_PLLON) && (RCC_CR&MASK_PLLRDY))
+			if(!((RCC_CR&MASK_PLLON) && (RCC_CR&MASK_PLLRDY)))
 			{
-				Temp_CFGR= RCC_CFGR;
-				Temp_CFGR&=~(MASK_SET_SYSCLK);
-				Temp_CFGR|=SYSCLK_PLL;
-				RCC_CFGR=Temp_CFGR;
+				RET_ErrorStatus=RCC_Error_ClockNotOnOrReady;
 			}
 			else
 			{
-				RET_ErrorStatus=RCC_Error_ClockNotOnOrReady;
+				SelectSysClkFlag=1;
 			}
 		}
 		break;
@@ -137,6 +136,31 @@ RCC_ErrorStatus_t RCC_SelectSystemClock(u32 Sysclk)
 		}
 		break;
 	}
+
+	if(SelectSysClkFlag==1)
+	{
+		u8 Temp_CFGR= RCC_CFGR;
+
+		/*Create a SWS Mask Corresponding to your current Clock*/
+		u8 MASK_SWS=(Sysclk<<2);
+
+		Temp_CFGR&=~(MASK_SET_SYSCLK);
+		Temp_CFGR|=Sysclk;
+		RCC_CFGR=Temp_CFGR;
+
+		/*Decrease Timeout if System Clock is not Selected*/
+		while(!((RCC_CFGR&MASK_GET_SYSCLK)==(MASK_SWS)))
+		{
+			Timeout--;
+		}
+
+		/*Return Error if System Clock is not Selected*/
+		if(!(RCC_CFGR&MASK_GET_SYSCLK))
+		{
+			RET_ErrorStatus=RCC_Error_SysClk_Not_Selected;
+		}
+	}
+
 	return RET_ErrorStatus;
 }
 
@@ -211,6 +235,7 @@ RCC_ErrorStatus_t RCC_SelectAHBPerscaler(u32 AHBPrescaler)
 {
 	RCC_ErrorStatus_t RET_ErrorStatus=RCC_Error_Ok;
 
+	/*Get AHB Bits in CFGR Register & Check on its Range*/
 	u8 AHB_Bits=RCC_get_AHB_Bits(AHBPrescaler);
 
 	if (!(AHB_Bits>= 0x08 && AHB_Bits <=0x0F))
