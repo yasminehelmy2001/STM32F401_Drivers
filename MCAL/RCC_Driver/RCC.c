@@ -228,13 +228,13 @@ RCC_ErrorStatus_t RCC_SelectSystemClock(u32 Sysclk)
 		RCC->CFGR=Temp_CFGR;
 
 		/*Decrease Timeout if System Clock is not Selected*/
-		while(((RCC->CFGR&MASK_GET_SYSCLK) != MASK_SWS)&&Timeout)
+		while(((RCC->CFGR&MASK_GET_SYSCLK) != MASK_SWS )&& Timeout)
 		{
 			Timeout--;
 		}
 
 		/*Return Error if System Clock is not Selected*/
-		if(((RCC->CFGR&MASK_GET_SYSCLK)!= (MASK_SWS)))
+		if((RCC->CFGR&MASK_GET_SYSCLK)!= MASK_SWS)
 		{
 			RET_ErrorStatus=RCC_TimeoutError;
 		}
