@@ -201,6 +201,7 @@ RCC_ErrorStatus_t RCC_SelectSystemClock(u32 Sysclk)
 			}
 		}
 		break;
+
 		default:
 		{
 				RET_ErrorStatus=RCC_InvalidParameter;
@@ -367,7 +368,7 @@ RCC_ErrorStatus_t RCC_SelectAPB1Perscaler(u32 APB1Prescaler)
 	}
 	else
 	{
-		u8 Temp_CFGR=RCC->CFGR;
+		u32 Temp_CFGR=RCC->CFGR;
 		Temp_CFGR&=~MASK_APB1_PRESCALER;
 		Temp_CFGR|=APB1Prescaler;
 		RCC->CFGR=Temp_CFGR;
@@ -394,8 +395,8 @@ RCC_ErrorStatus_t RCC_SelectAPB2Perscaler(u32 APB2Prescaler)
 	}
 	else
 	{
-		u8 Temp_CFGR=RCC->CFGR;
-		Temp_CFGR&=~MASK_APB1_PRESCALER;
+		u32 Temp_CFGR=RCC->CFGR;
+		Temp_CFGR&=~MASK_APB2_PRESCALER;
 		Temp_CFGR|=APB2Prescaler;
 		RCC->CFGR=Temp_CFGR;
 	}
