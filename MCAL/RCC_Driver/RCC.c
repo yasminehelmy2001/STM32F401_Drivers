@@ -97,49 +97,49 @@ RCC_ErrorStatus_t RCC_ControlClock (u8 ClockStatus, u32 Clock)
 			{
 					switch(Clock)
 					{
-					case CLOCK_HSI:
-					{
-						if((RCC->CFGR&MASK_GET_SYSCLK)==HSI_SELECTED_AS_SYSCLK)
+						case CLOCK_HSI:
 						{
-							RET_ErrorStatus=RCC_InvalidParameter;
-						}
+							if((RCC->CFGR&MASK_GET_SYSCLK)==HSI_SELECTED_AS_SYSCLK)
+							{
+								RET_ErrorStatus=RCC_InvalidParameter;
+							}
 
-						else
+							else
+							{
+								RCC->CR&=~Clock;
+
+							}
+						}
+						break;
+
+						case CLOCK_HSE:
 						{
-							RCC->CR&=~Clock;
+							if((RCC->CFGR&MASK_GET_SYSCLK)==HSE_SELECTED_AS_SYSCLK)
+							{
+								RET_ErrorStatus=RCC_InvalidParameter;
+							}
+							else
+							{
+								RCC->CR&=~Clock;
 
+							}
 						}
-					}
-					break;
+						break;
 
-					case CLOCK_HSE:
-					{
-						if((RCC->CFGR&MASK_GET_SYSCLK)==HSE_SELECTED_AS_SYSCLK)
+						case CLOCK_PLL:
 						{
-							RET_ErrorStatus=RCC_InvalidParameter;
-						}
-						else
-						{
-							RCC->CR&=~Clock;
+							if((RCC->CFGR&MASK_GET_SYSCLK)==PLL_SELECTED_AS_SYSCLK)
+							{
+								RET_ErrorStatus=RCC_InvalidParameter;
+							}
 
-						}
-					}
-					break;
+							else
+							{
+								RCC->CR&=~Clock;
 
-					case CLOCK_PLL:
-					{
-						if((RCC->CFGR&MASK_GET_SYSCLK)==PLL_SELECTED_AS_SYSCLK)
-						{
-							RET_ErrorStatus=RCC_InvalidParameter;
+							}
 						}
-
-						else
-						{
-							RCC->CR&=~Clock;
-
-						}
-					}
-					break;
+						break;
 
 					}
 				}
