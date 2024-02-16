@@ -3,27 +3,7 @@
 /**************************************************************************/
 /*						RCC REGISTER ADDRESSES	 					 	  */
 /**************************************************************************/
-#define RCC_CR                 		 	*((volatile u32*)0x40023800)
-#define RCC_PLLCFGR            		 	*((volatile u32*)0x40023804)
-#define RCC_CFGR                		*((volatile u32*)0x40023808)
-#define RCC_CIR                 		*((volatile u32*)0x4002380C)
-#define RCC_AHB1RSTR            		*((volatile u32*)0x40023810)
-#define RCC_AHB2RSTR            		*((volatile u32*)0x40023814)
-#define RCC_APB1RSTR            		*((volatile u32*)0x40023820)
-#define RCC_APB2RSTR           	 		*((volatile u32*)0x40023824)
-#define RCC_AHB1ENR             		*((volatile u32*)0x40023830)
-#define RCC_AHB2ENR             		*((volatile u32*)0x40023834)
-#define RCC_APB1ENR             		*((volatile u32*)0x40023840)
-#define RCC_APB2ENR             		*((volatile u32*)0x40023844)
-#define RCC_AHB1LPENR           		*((volatile u32*)0x40023850)
-#define RCC_AHB2LPENR           		*((volatile u32*)0x40023854)
-#define RCC_APB1LPENR           		*((volatile u32*)0x40023860)
-#define RCC_APB2LPENR           		*((volatile u32*)0x40023864)
-#define RCC_BDCR              			*((volatile u32*)0x40023870)
-#define RCC_CSR                		  	*((volatile u32*)0x40023874)
-#define RCC_SSCGR               	 	*((volatile u32*)0x40023880)
-#define RCC_PLLI2SCFGR        		  	*((volatile u32*)0x40023884)
-#define RCC_DCKCFGR           		  	*((volatile u32*)0x4002388C)
+#define RCC_BA							0x40023800
 
 /**************************************************************************/
 /*						Clock Status			 					 	  */
@@ -136,13 +116,48 @@
 /**************************************************************************/
 typedef struct
 {
-	u8 M;
-	u16 N;
-	u8 P;
-	u8 Q;
-	u8 PLLSRC;
+	u32 M;
+	u32 N;
+	u32 P;
+	u32 Q;
+	u32 PLLSRC;
 }PLLCfgOptions_t;
 
+/**************************************************************************/
+/*						RCC Registers Struct			 			 	  */
+/**************************************************************************/
+
+typedef struct
+{
+	volatile u32 CR;
+	volatile u32 PLLCFGR;
+	volatile u32 CFGR;
+	volatile u32 CIR;
+	volatile u32 AHB1RSTR;
+	volatile u32 AHB2RSTR;
+	volatile u32 Reserved[2];
+	volatile u32 APB1RSTR;
+	volatile u32 APB2RSTR;
+	volatile u32 Reserved2[2];
+	volatile u32 AHB1ENR;
+	volatile u32 AHB2ENR;
+	volatile u32 Reserved3[2];
+	volatile u32 APB1ENR;
+	volatile u32 APB2ENR;
+	volatile u32 Reserved4[2];
+	volatile u32 AHB1LPENR;
+	volatile u32 AHB2LPENR;
+	volatile u32 Reserved5[2];
+	volatile u32 APB1LPENR;
+	volatile u32 APB2LPENR;
+	volatile u32 Reserved6[2];
+	volatile u32 RCC_BDCR;
+	volatile u32 RCC_CSR;
+	volatile u32 Reserved7[2];
+	volatile u32 RCC_SSCGR;
+	volatile u32 RCC_PLLI2SCFGR;
+	volatile u32 RCC_DCKCFGR;
+}RCC_Peri_t;
 
 /**************************************************************************/
 /*						Peripheral Buses		 					 	  */
@@ -161,24 +176,10 @@ typedef enum
 /**************************************************************************/
 typedef enum
 {
-	RCC_Error_Ok,
-	RCC_Error_Nok,
-	RCC_Error_InvalidClock,
-	RCC_Error_InvalidClockStatus,
-	RCC_Error_ClockNotOnOrReady,
-	RCC_Error_ClockNotReady,
-	RCC_Error_InvalidSysClk,
-	RCC_Error_InvalidPeriphralBus,
-	RCC_Error_InvalidAHBClock,
-	RCC_Error_InvalidAPB1Clock,
-	RCC_Error_InvalidAPB2Clock,
-	RCC_Error_PLLSelectedAsSysClk,
-	RCC_Error_Invalid_M_Configuration,
-	RCC_Error_Invalid_N_Configuration,
-	RCC_Error_Invalid_Q_Configuration,
-	RCC_Error_Invalid_P_Configuration,
-	RCC_Error_Invalid_PLL_Clock_Source,
-	RCC_Error_SysClk_Not_Selected
+	RCC_Ok,
+	RCC_Nok,
+	RCC_NullPointer,
+	RCC_InvalidParameter
 
 }RCC_ErrorStatus_t;
 
