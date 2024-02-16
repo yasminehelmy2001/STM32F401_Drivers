@@ -21,7 +21,6 @@
 #define SHIFT_PLL_N           		  	(6U)
 #define SHIFT_PLL_P            		  	(16U)
 #define SHIFT_PLL_Q             		(24U)
-#define SHIFT_PLL_SRC           		(22U)
 
 #define MASK_SET_SYSCLK					0x00000003
 #define MASK_GET_SYSCLK					0x0000000C
@@ -343,7 +342,7 @@ RCC_ErrorStatus_t RCC_ConfigurePLL(PLLCfgOptions_t*PLLCfg)
 	u32 Q=PLLCfg->Q;
 	u32 PLLSRC=PLLCfg->PLLSRC;
 
-	if(!((RCC->CR&MASK_PLLON) && (RCC->CR&MASK_PLLRDY)))
+	if((RCC->CR&MASK_PLLON))
 	{
 		RET_ErrorStatus=RCC_InvalidParameter;
 	}
@@ -388,7 +387,7 @@ RCC_ErrorStatus_t RCC_ConfigurePLL(PLLCfgOptions_t*PLLCfg)
 		Local_CFGR|=(Q<<SHIFT_PLL_Q);
 
 		Local_CFGR&=~MASK_SET_PLL_PLLSRC;
-		Local_CFGR|=(PLLSRC<<SHIFT_PLL_SRC);
+		Local_CFGR|=(PLLSRC);
 
 		RCC->PLLCFGR=Local_CFGR;
 	}
