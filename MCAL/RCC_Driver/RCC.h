@@ -190,115 +190,100 @@ typedef enum
 
 
 /**
-*@brief : Function to Control HSI,HSE,PLL -> On/Off
-*
-*@param : # Clock Status(CLOCK_STATUS_ON / CLOCK_STATUS_OFF)
-*		  # Clock(CLOCK_HSI, CLOCK_HSE,CLOCK_PLL)
-*
-*@return: Error Status
-*
-*       --Note--
-*       # If Input Parameters are out of range -> ***Input Parameter Error***
-*       # If clock fails to be ready after a predefined amount of time -> ***Timeout Error***
-*/
+ * @brief   Function to Control HSI, HSE, PLL -> On/Off
+ *
+ * @param   - Clock Status (CLOCK_STATUS_ON / CLOCK_STATUS_OFF)
+ *          - Clock (CLOCK_HSI, CLOCK_HSE, CLOCK_PLL)
+ *
+ * @return  Error Status
+ *          - If Input Parameters are out of range -> ***Input Parameter Error***
+ *          - If the clock fails to be ready after a predefined amount of time -> ***Timeout Error***
+ */
 RCC_ErrorStatus_t RCC_ControlClock (u8 ClockStatus, u32 Clock);
 
 /**
-*@brief : Function to Select a System Clock
-*
-*@param : # Sysclk (SYSCLK_HSI, SYSCLK_HSE, SYSCLK_PLL)
-*
-*@return: Error Status
-*
-*       --Note--
-*       # If Input Parameters are out of range -> ***Input Parameter Error***
-*       # If Clock isn't On/Ready -> ***Input Parameter Error***
-*       # If clock fails to be ready after a predefined amount of time -> ***Timeout Error***
-*
-*       --Constraint--
-*       # Make sure Clock is On&Ready before selecting it as system clock!!
-*/
+ * @brief   	  Function to Select a System Clock
+ *
+ * @param   	  - Sysclk (SYSCLK_HSI, SYSCLK_HSE, SYSCLK_PLL)
+ *
+ * @return	      Error Status
+ *          	  - If Input Parameters are out of range -> ***Input Parameter Error***
+ *          	  - If Clock isn't On/Ready -> ***Input Parameter Error***
+ *         		  - If clock fails to be ready after a predefined amount of time -> ***Timeout Error***
+ *
+ * @constraint    Make sure Clock is On&Ready before selecting it as system clock!!
+ */
 RCC_ErrorStatus_t RCC_SelectSystemClock(u32 Sysclk);
 
 /**
-*@brief : Function to Enable a Peripheral
-*
-*@param : # Peripheral Bus (AHB1, AHB2, APB1, APB2)
-*		  # Peripheral
-*
-*@return: Error Status
-*
-*       --Note--
-*       # If Input Parameters are out of range -> ***Input Parameter Error***
-*/
+ * @brief   Function to Enable a Peripheral
+ *
+ * @param   - Peripheral Bus (AHB1, AHB2, APB1, APB2)
+ *          - Peripheral
+ *
+ * @return  Error Status
+ *          - If Input Parameters are out of range -> ***Input Parameter Error***
+ */
 RCC_ErrorStatus_t RCC_EnablePeriphral(PeripheralBuses_t PeriphralBus, u32 Periphral);
 
 /**
-*@brief : Function to Disable a Peripheral
-*@param : # Peripheral Bus (AHB1, AHB2, APB1, APB2)
-*		  # Peripheral
-*
-*@return: Error Status
-*
-*       --Note--
-*       # If Input Parameters are out of range -> ***Input Parameter Error***
-*/
+ * @brief   Function to Disable a Peripheral
+ *
+ * @param   - Peripheral Bus (AHB1, AHB2, APB1, APB2)
+ *          - Peripheral
+ *
+ * @return  Error Status
+ *          - If Input Parameters are out of range -> ***Input Parameter Error***
+ */
 RCC_ErrorStatus_t RCC_DisablePeriphral(PeripheralBuses_t PeriphralBus,u32 Periphral);
 
 /**
-*@brief : Function to Set AHB Prescaler
-*
-*@param : # AHB Prescaler (Macro starts with AHB_CLOCK_)
-*
-*@return: Error Status
-*
-*       --Note--
-*       # If Input Parameters are out of range -> ***Input Parameter Error***
-*/
+ * @brief   Function to Set AHB Prescaler
+ *
+ * @param   - AHB Prescaler (Macro starts with AHB_CLOCK_)
+ *
+ * @return  Error Status
+ *          - If Input Parameters are out of range -> ***Input Parameter Error***
+ */
 RCC_ErrorStatus_t RCC_SelectAHBPerscaler(u32 AHBPrescaler);
 
 /**
-*@brief : Function to Set APB1 Prescaler
-*
-*@param : # APB1 Prescaler (Macro starts with APB1_CLOCK_)
-*
-*@return: Error Status
-*
-*       --Note--
-*       # If Input Parameters are out of range -> ***Input Parameter Error***
-*/
+ * @brief   Function to Set APB1 Prescaler
+ *
+ * @param   - APB1 Prescaler (Macro starts with APB1_CLOCK_)
+ *
+ * @return  Error Status
+ *          - If Input Parameters are out of range -> ***Input Parameter Error***
+ */
 RCC_ErrorStatus_t RCC_SelectAPB1Perscaler(u32 APB1Prescaler);
 
 /**
-*@brief : Function to Set APB2 Prescaler
-*
-*@param : # APB2 Prescaler (Macro starts with APB2_CLOCK_)
-*
-*@return: Error Status
-*
-*       --Note--
-*       # If Input Parameters are out of range -> ***Input Parameter Error***
-*/
+ * @brief   Function to Set APB2 Prescaler
+ *
+ * @param   - APB2 Prescaler (Macro starts with APB2_CLOCK_)
+ *
+ * @return  Error Status
+ *          - If Input Parameters are out of range -> ***Input Parameter Error***
+ */
 RCC_ErrorStatus_t RCC_SelectAPB2Perscaler(u32 APB2Prescaler);
 
 /**
-*@brief : Function to Configure PLL
-*
-*@param : Struct of type "PLLCfgOptions_t", Takes:
-*		 	# M:  		2:63
-*		 	# N:  		2:511
-*		 	# P:		2,4,6,8
-*		 	# Q: 	 	2:15
-*		 	# PLLSRC:  (PLL_CLK_HSI, PLL_CLK_HSE)
-*
-*@return: Error Status
-*
-*       --Constraints--
-*       1) PLL must be OFF before configuring!
-*       2) PLL must not be selected as system clock before configuring!
-*       3) M,N,P,Q,PLLSRC values must be selected from the range above!
-*       --> Failing to do so will result in an ***Invalid Parameter Error***
-*
-*/
+ * @brief   Function to Configure PLL
+ *
+ * @param   Struct of type "PLLCfgOptions_t", Takes:
+ *          - M:      2:63
+ *          - N:      2:511
+ *          - P:      2, 4, 6, 8
+ *          - Q:      2:15
+ *          - PLLSRC: (PLL_CLK_HSI, PLL_CLK_HSE)
+ *
+ * @return  Error Status
+ *          - Failing to comply with constraints will result in an ***Invalid Parameter Error***
+ *
+ * @constraints
+ *          1) PLL must be OFF before configuring!
+ *          2) PLL must not be selected as the system clock before configuring!
+ *          3) M, N, P, Q, PLLSRC values must be selected from the specified ranges!
+ */
 RCC_ErrorStatus_t RCC_ConfigurePLL(PLLCfgOptions_t*PLLCfg);
 
