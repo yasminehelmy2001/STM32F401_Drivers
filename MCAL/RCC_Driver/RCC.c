@@ -419,6 +419,11 @@ RCC_ErrorStatus_t RCC_SelectAPB2Perscaler(u32 APB2Prescaler)
  *          1) PLL must be OFF before configuring!
  *          2) PLL must not be selected as the system clock before configuring!
  *          3) M, N, P, Q, PLLSRC values must be selected from the specified ranges!
+ *
+ * @note:  - The USB OTG FS requires a 48 MHz clock to work correctly.
+ *         - The SDIO and the random number generator need a frequency lower than or equal to 48 MHz to work
+ *		   	 correctly.
+ *		   - Ensure that the VCO output frequency (FreqInput/M*N) is between 192 and 432MHz.
  */
 RCC_ErrorStatus_t RCC_ConfigurePLL(PLLCfgOptions_t*PLLCfg)
 {
