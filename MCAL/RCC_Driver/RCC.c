@@ -164,7 +164,7 @@ RCC_ErrorStatus_t RCC_ControlClock (u8 ClockStatus, u32 Clock)
 RCC_ErrorStatus_t RCC_SelectSystemClock(u32 Sysclk)
 {
 	RCC_ErrorStatus_t RET_ErrorStatus=RCC_Ok;
-	u8 SelectSysClkFlag=0;
+	u8 SelectSysClk=0;
 	u16 Timeout=600;
 	switch(Sysclk)
 	{
@@ -176,7 +176,7 @@ RCC_ErrorStatus_t RCC_SelectSystemClock(u32 Sysclk)
 			}
 			else
 			{
-				SelectSysClkFlag=1;
+				SelectSysClk=1;
 			}
 		}
 		break;
@@ -189,7 +189,7 @@ RCC_ErrorStatus_t RCC_SelectSystemClock(u32 Sysclk)
 			}
 			else
 			{
-				SelectSysClkFlag=1;
+				SelectSysClk=1;
 			}
 		}
 		break;
@@ -202,7 +202,7 @@ RCC_ErrorStatus_t RCC_SelectSystemClock(u32 Sysclk)
 			}
 			else
 			{
-				SelectSysClkFlag=1;
+				SelectSysClk=1;
 			}
 		}
 		break;
@@ -213,7 +213,7 @@ RCC_ErrorStatus_t RCC_SelectSystemClock(u32 Sysclk)
 		break;
 	}
 
-	if(SelectSysClkFlag==1)
+	if(SelectSysClk==1)
 	{
 		/*Create a SWS Mask Corresponding to your current Clock*/
 		u8 MASK_SWS=(Sysclk<<2);
