@@ -212,6 +212,8 @@ RCC_ErrorStatus_t RCC_ControlClock (u8 ClockStatus, u32 Clock);
  *         		  - If clock fails to be ready after a predefined amount of time -> ***Timeout Error***
  *
  * @constraint    Make sure Clock is On&Ready before selecting it as system clock!!
+ *
+ * @note	The software has to set these bits correctly not to exceed 84MHz on this domain.
  */
 RCC_ErrorStatus_t RCC_SelectSystemClock(u32 Sysclk);
 
@@ -244,6 +246,8 @@ RCC_ErrorStatus_t RCC_DisablePeriphral(PeripheralBuses_t PeriphralBus,u32 Periph
  *
  * @return  Error Status
  *          - If Input Parameters are out of range -> ***Input Parameter Error***
+ *
+ * @note	 The maximum frequency of the AHB domain is 84 MHz.
  */
 RCC_ErrorStatus_t RCC_SelectAHBPerscaler(u32 AHBPrescaler);
 
@@ -254,6 +258,8 @@ RCC_ErrorStatus_t RCC_SelectAHBPerscaler(u32 AHBPrescaler);
  *
  * @return  Error Status
  *          - If Input Parameters are out of range -> ***Input Parameter Error***
+ *
+ * @note	The software has to set these bits correctly not to exceed 42MHz on this domain.
  */
 RCC_ErrorStatus_t RCC_SelectAPB1Perscaler(u32 APB1Prescaler);
 
@@ -264,6 +270,8 @@ RCC_ErrorStatus_t RCC_SelectAPB1Perscaler(u32 APB1Prescaler);
  *
  * @return  Error Status
  *          - If Input Parameters are out of range -> ***Input Parameter Error***
+ *
+ * @note	The software has to set these bits correctly not to exceed 84MHz on this domain.
  */
 RCC_ErrorStatus_t RCC_SelectAPB2Perscaler(u32 APB2Prescaler);
 
@@ -284,6 +292,11 @@ RCC_ErrorStatus_t RCC_SelectAPB2Perscaler(u32 APB2Prescaler);
  *          1) PLL must be OFF before configuring!
  *          2) PLL must not be selected as the system clock before configuring!
  *          3) M, N, P, Q, PLLSRC values must be selected from the specified ranges!
+ *
+ * @note:  - The USB OTG FS requires a 48 MHz clock to work correctly.
+ *         - The SDIO and the random number generator need a frequency lower than or equal to 48 MHz to work
+ *		   	 correctly.
+ *		   - Ensure that the VCO output frequency (FreqInput/M*N) is between 192 and 432MHz.
  */
 RCC_ErrorStatus_t RCC_ConfigurePLL(PLLCfgOptions_t*PLLCfg);
 
