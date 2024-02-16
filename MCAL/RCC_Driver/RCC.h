@@ -246,8 +246,6 @@ RCC_ErrorStatus_t RCC_DisablePeriphral(PeripheralBuses_t PeriphralBus,u32 Periph
  *
  * @return  Error Status
  *          - If Input Parameters are out of range -> ***Input Parameter Error***
- *
- * @note	 The maximum frequency of the AHB domain is 84 MHz.
  */
 RCC_ErrorStatus_t RCC_SelectAHBPerscaler(u32 AHBPrescaler);
 

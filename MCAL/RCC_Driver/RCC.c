@@ -355,6 +355,8 @@ RCC_ErrorStatus_t RCC_SelectAHBPerscaler(u32 AHBPrescaler)
  *
  * @return  Error Status
  *          - If Input Parameters are out of range -> ***Input Parameter Error***
+ *
+ * @note	The software has to set these bits correctly not to exceed 42MHz on this domain.
  */
 RCC_ErrorStatus_t RCC_SelectAPB1Perscaler(u32 APB1Prescaler)
 {
@@ -380,6 +382,8 @@ RCC_ErrorStatus_t RCC_SelectAPB1Perscaler(u32 APB1Prescaler)
  *
  * @return  Error Status
  *          - If Input Parameters are out of range -> ***Input Parameter Error***
+ *
+ * @note	The software has to set these bits correctly not to exceed 84MHz on this domain.
  */
 RCC_ErrorStatus_t RCC_SelectAPB2Perscaler(u32 APB2Prescaler)
 {
