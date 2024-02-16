@@ -198,6 +198,8 @@ typedef enum
  * @return  Error Status
  *          - If Input Parameters are out of range -> ***Input Parameter Error***
  *          - If the clock fails to be ready after a predefined amount of time -> ***Timeout Error***
+ *          - Turning a clock off if it is selected as a system clock directly or indirectly -> ***Input Parameter Error***
+ *
  */
 RCC_ErrorStatus_t RCC_ControlClock (u8 ClockStatus, u32 Clock);
 
