@@ -107,7 +107,6 @@ RCC_ErrorStatus_t RCC_ControlClock (u8 ClockStatus, u32 Clock)
 							else
 							{
 								RCC->CR&=~Clock;
-
 							}
 						}
 						break;
@@ -121,7 +120,6 @@ RCC_ErrorStatus_t RCC_ControlClock (u8 ClockStatus, u32 Clock)
 							else
 							{
 								RCC->CR&=~Clock;
-
 							}
 						}
 						break;
@@ -136,7 +134,6 @@ RCC_ErrorStatus_t RCC_ControlClock (u8 ClockStatus, u32 Clock)
 							else
 							{
 								RCC->CR&=~Clock;
-
 							}
 						}
 						break;
@@ -218,11 +215,10 @@ RCC_ErrorStatus_t RCC_SelectSystemClock(u32 Sysclk)
 
 	if(SelectSysClkFlag==1)
 	{
-		u8 Temp_CFGR= RCC->CFGR;
-
 		/*Create a SWS Mask Corresponding to your current Clock*/
 		u8 MASK_SWS=(Sysclk<<2);
 
+		u8 Temp_CFGR= RCC->CFGR;
 		Temp_CFGR&=~(MASK_SET_SYSCLK);
 		Temp_CFGR|=Sysclk;
 		RCC->CFGR=Temp_CFGR;
