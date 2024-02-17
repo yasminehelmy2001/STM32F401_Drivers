@@ -45,7 +45,7 @@ static u8 RCC_get_AHB_Bits(u32 Copy_CFGR)
 /**************************************************************************/
 /*						Function Implementations 					 	  */
 /**************************************************************************/
-volatile RCC_Peri_t *RCC=(volatile RCC_Peri_t*)RCC_BA;
+volatile RCC_Peri_t *RCC=(volatile RCC_Peri_t *)RCC_BA;
 
 /**
  * @brief   Function to Control HSI, HSE, PLL -> On/Off
@@ -410,7 +410,7 @@ RCC_ErrorStatus_t RCC_SelectAPB2Perscaler(u32 APB2Prescaler)
  *
  * @param   Struct of type "PLLCfgOptions_t", Takes:
  *          - M:      2:63
- *          - N:      2:511
+ *          - N:      192:432
  *          - P:      2, 4, 6, 8
  *          - Q:      2:15
  *          - PLLSRC: (PLL_CLK_HSI, PLL_CLK_HSE)
@@ -450,7 +450,7 @@ RCC_ErrorStatus_t RCC_ConfigurePLL(PLLCfgOptions_t*PLLCfg)
 	{
 		RET_ErrorStatus=RCC_InvalidParameter;
 	}
-	else if((N==0||N==1||N==433||N==511||N>511))
+	else if((N<192)||(N>432))
 	{
 		RET_ErrorStatus=RCC_InvalidParameter;
 	}

@@ -283,7 +283,7 @@ RCC_ErrorStatus_t RCC_SelectAPB2Perscaler(u32 APB2Prescaler);
  *
  * @param   Struct of type "PLLCfgOptions_t", Takes:
  *          - M:      2:63
- *          - N:      2:511
+ *          - N:      192:432
  *          - P:      2, 4, 6, 8
  *          - Q:      2:15
  *          - PLLSRC: (PLL_CLK_HSI, PLL_CLK_HSE)
