@@ -7,10 +7,6 @@
 #define MASK_HSEON						0x00010000
 #define MASK_PLLON						0x01000000
 
-#define MASK_HSIRDY						0x00000002
-#define MASK_HSERDY						0x00020000
-#define MASK_PLLRDY						0x02000000
-
 #define MASK_SET_PLL_M					0x0000003F
 #define MASK_SET_PLL_N					0x00007FC0
 #define MASK_SET_PLL_P					0x00030000
@@ -48,100 +44,55 @@ static u8 RCC_get_AHB_Bits(u32 Copy_CFGR)
 volatile RCC_Peri_t *RCC=(volatile RCC_Peri_t *)RCC_BA;
 
 /**
- * @brief   Function to Control HSI, HSE, PLL -> On/Off
+ * @brief  		 Function to Enable HSI, HSE, PLL -> On/Off
  *
- * @param   - Clock Status (CLOCK_STATUS_ON / CLOCK_STATUS_OFF)
- *          - Clock (CLOCK_HSI, CLOCK_HSE, CLOCK_PLL)
+ * @param   	 - Clock (CLOCK_HSI, CLOCK_HSE, CLOCK_PLL)
  *
- * @return  Error Status
- *          - If Input Parameters are out of range -> ***Input Parameter Error***
- *          - If the clock fails to be ready after a predefined amount of time -> ***Timeout Error***
- *          - Turning a clock off if it is selected as a system clock directly or indirectly -> ***Input Parameter Error***
+ * @return		  Error Status
+ *         		 - If Input Parameters are out of range -> ***Input Parameter Error***
+ *
+ * @constraint	 - Make sure that clock is ready after enabling it using the
+ * 				   "RCC_CheckReadyClk()" Function
  *
  */
-RCC_ErrorStatus_t RCC_ControlClock (u8 ClockStatus, u32 Clock)
+RCC_ErrorStatus_t RCC_EnableClock (u32 Clock)
 {
 	RCC_ErrorStatus_t RET_ErrorStatus=RCC_Ok;
-	u16 Timeout=600;
-
 	if(!(Clock==CLOCK_HSI||Clock==CLOCK_HSE||Clock==CLOCK_PLL))
-	{
-		RET_ErrorStatus=RCC_InvalidParameter;
-	}
-	else if(!(ClockStatus==CLOCK_STATUS_OFF||ClockStatus==CLOCK_STATUS_ON))
 	{
 		RET_ErrorStatus=RCC_InvalidParameter;
 	}
 	else
 	{
 		RET_ErrorStatus=RCC_Ok;
-		switch(ClockStatus)
-		{
-			case CLOCK_STATUS_ON:
-			{
-				u32 Loc_Mask_Ready=(Clock<<1);
+		RCC->CR|=Clock;
+	}
+	return RET_ErrorStatus;
+}
 
-				(RCC->CR)|=Clock;
-				while(!(RCC->CR&Loc_Mask_Ready)&&(Timeout))
-				{
-					Timeout--;
-				}
-				if(!(RCC->CR&Loc_Mask_Ready))
-				{
-					RET_ErrorStatus=RCC_TimeoutError;
-				}
-			}
-			break;
-
-			case CLOCK_STATUS_OFF:
-			{
-					switch(Clock)
-					{
-						case CLOCK_HSI:
-						{
-							if((RCC->CFGR&MASK_GET_SYSCLK)==HSI_SELECTED_AS_SYSCLK)
-							{
-								RET_ErrorStatus=RCC_InvalidParameter;
-							}
-
-							else
-							{
-								RCC->CR&=~Clock;
-							}
-						}
-						break;
-
-						case CLOCK_HSE:
-						{
-							if((RCC->CFGR&MASK_GET_SYSCLK)==HSE_SELECTED_AS_SYSCLK)
-							{
-								RET_ErrorStatus=RCC_InvalidParameter;
-							}
-							else
-							{
-								RCC->CR&=~Clock;
-							}
-						}
-						break;
-
-						case CLOCK_PLL:
-						{
-							if((RCC->CFGR&MASK_GET_SYSCLK)==PLL_SELECTED_AS_SYSCLK)
-							{
-								RET_ErrorStatus=RCC_InvalidParameter;
-							}
-
-							else
-							{
-								RCC->CR&=~Clock;
-							}
-						}
-						break;
-
-					}
-				}
-			break;
-			}
+/**
+ * @brief   	 Function to Disable HSI, HSE, PLL -> On/Off
+ *
+ * @param   	 - Clock (CLOCK_HSI, CLOCK_HSE, CLOCK_PLL)
+ *
+ * @return  	 Error Status
+ *          	 - If Input Parameters are out of range -> ***Input Parameter Error***
+ *
+ * @constraint	 - You can't disable a clock if it is selected as a System Clock!
+ * 				   Use the function "" to check if the clock is selected as a System Clock.
+ *
+ */
+RCC_ErrorStatus_t RCC_DisableClock (u32 Clock)
+{
+	RCC_ErrorStatus_t RET_ErrorStatus=RCC_Ok;
+	if(!(Clock==CLOCK_HSI||Clock==CLOCK_HSE||Clock==CLOCK_PLL))
+	{
+		RET_ErrorStatus=RCC_InvalidParameter;
+	}
+	else
+	{
+		RET_ErrorStatus=RCC_Ok;
+		RCC->CR&=~Clock;
 	}
 	return RET_ErrorStatus;
 }
@@ -152,88 +103,27 @@ RCC_ErrorStatus_t RCC_ControlClock (u8 ClockStatus, u32 Clock)
  * @param   	  - Sysclk (SYSCLK_HSI, SYSCLK_HSE, SYSCLK_PLL)
  *
  * @return	      Error Status
- *          	  - If Input Parameters are out of range -> ***Input Parameter Error***
- *          	  - If Clock isn't On/Ready -> ***Input Parameter Error***
- *         		  - If clock fails to be ready after a predefined amount of time -> ***Timeout Error***
+ *          	  - If Input Parameters are out of range -> ***Input Parameter Error****
  *
- * @constraint    Make sure Clock is On&Ready before selecting it as system clock!!
+ * @constraint    - Make sure Clock is On & Ready before selecting it as system clock!! Use the
+ * 				    "RCC_CheckReadyClk()" Function
+ *
  */
 RCC_ErrorStatus_t RCC_SelectSystemClock(u32 Sysclk)
 {
 	RCC_ErrorStatus_t RET_ErrorStatus=RCC_Ok;
-	u8 SelectSysClk=0;
-	u16 Timeout=600;
-	switch(Sysclk)
+
+	if(!((Sysclk==SYSCLK_HSE)||(Sysclk==SYSCLK_HSE)||(Sysclk==SYSCLK_PLL)))
 	{
-		case SYSCLK_HSI:
-		{
-			if(!((RCC->CR&MASK_HSION) && (RCC->CR&MASK_HSIRDY)))
-			{
-				RET_ErrorStatus=RCC_InvalidParameter;
-			}
-			else
-			{
-				SelectSysClk=1;
-			}
-		}
-		break;
-
-		case SYSCLK_HSE:
-		{
-			if(!((RCC->CR&MASK_HSEON) && (RCC->CR&MASK_HSERDY)))
-			{
-				RET_ErrorStatus=RCC_InvalidParameter;
-			}
-			else
-			{
-				SelectSysClk=1;
-			}
-		}
-		break;
-
-		case SYSCLK_PLL:
-		{
-			if(!((RCC->CR&MASK_PLLON) && (RCC->CR&MASK_PLLRDY)))
-			{
-				RET_ErrorStatus=RCC_InvalidParameter;
-			}
-			else
-			{
-				SelectSysClk=1;
-			}
-		}
-		break;
-
-		default:
-		{
-				RET_ErrorStatus=RCC_InvalidParameter;
-		}
-		break;
+		RET_ErrorStatus=RCC_InvalidParameter;
 	}
-
-	if(SelectSysClk==1)
+	else
 	{
-		/*Create a SWS Mask Corresponding to your current Clock*/
-		u32 MASK_SWS=(Sysclk<<2);
-
 		u32 Temp_CFGR= RCC->CFGR;
 		Temp_CFGR&=~(MASK_SET_SYSCLK);
 		Temp_CFGR|=Sysclk;
 		RCC->CFGR=Temp_CFGR;
-
-		/*Decrease Timeout if System Clock is not Selected*/
-		while(((RCC->CFGR&MASK_GET_SYSCLK) != MASK_SWS )&& Timeout)
-		{
-			Timeout--;
-		}
-
-		/*Return Error if System Clock is not Selected*/
-		if((RCC->CFGR&MASK_GET_SYSCLK)!= (MASK_SWS))
-		{
-			RET_ErrorStatus=RCC_TimeoutError;
-		}
 	}
-
 	return RET_ErrorStatus;
 }
 
@@ -245,39 +135,19 @@ RCC_ErrorStatus_t RCC_SelectSystemClock(u32 Sysclk)
  *
  * @return  Error Status
  *          - If Input Parameters are out of range -> ***Input Parameter Error***
+ *
  */
-RCC_ErrorStatus_t RCC_EnablePeriphral(PeripheralBuses_t PeriphralBus, u32 Periphral)
+RCC_ErrorStatus_t RCC_EnablePeriphral(u32*PeriphralBus, u32 Periphral)
 {
 	RCC_ErrorStatus_t RET_ErrorStatus= RCC_Ok;
-	switch(PeriphralBus)
+	if(!((PeriphralBus==APB1)||(PeriphralBus==APB2)||(PeriphralBus==AHB1)||(PeriphralBus==AHB2)))
 	{
-		case APB1:
-		{
-			RCC->APB1ENR|=Periphral;
-		}
-		break;
-		case APB2:
-		{
-			RCC->APB2ENR|=Periphral;
-		}
-		break;
-		case AHB1:
-		{
-			RCC->AHB1ENR|=Periphral;
-		}
-		break;
-		case AHB2:
-		{
-			RCC->AHB2ENR|=Periphral;
-		}
-		break;
-		default:
-		{
-			RET_ErrorStatus=RCC_InvalidParameter;
-		}
-		break;
+		RET_ErrorStatus=RCC_InvalidParameter;
 	}
-
+	else
+	{
+		*PeriphralBus|=Periphral;
+	}
 	return RET_ErrorStatus;
 }
 
@@ -289,37 +159,18 @@ RCC_ErrorStatus_t RCC_EnablePeriphral(PeripheralBuses_t PeriphralBus, u32 Periph
  *
  * @return  Error Status
  *          - If Input Parameters are out of range -> ***Input Parameter Error***
+ *
  */
-RCC_ErrorStatus_t RCC_DisablePeriphral(PeripheralBuses_t PeriphralBus,u32 Periphral)
+RCC_ErrorStatus_t RCC_DisablePeriphral(u32*PeriphralBus,u32 Periphral)
 {
 	RCC_ErrorStatus_t RET_ErrorStatus= RCC_Ok;
-	switch(PeriphralBus)
+	if(!((PeriphralBus==APB1)||(PeriphralBus==APB2)||(PeriphralBus==AHB1)||(PeriphralBus==AHB2)))
 	{
-		case APB1:
-		{
-			RCC->APB1ENR&=~Periphral;
-		}
-		break;
-		case APB2:
-		{
-			RCC->APB2ENR&=~Periphral;
-		}
-		break;
-		case AHB1:
-		{
-			RCC->AHB1ENR&=~Periphral;
-		}
-		break;
-		case AHB2:
-		{
-			RCC->AHB2ENR&=~Periphral;
-		}
-		break;
-		default:
-		{
-			RET_ErrorStatus=RCC_InvalidParameter;
-		}
-		break;
+		RET_ErrorStatus=RCC_InvalidParameter;
+	}
+	else
+	{
+		*PeriphralBus&=~Periphral;
 	}
 	return RET_ErrorStatus;
 }
@@ -362,11 +213,13 @@ RCC_ErrorStatus_t RCC_SelectAHBPerscaler(u32 AHBPrescaler)
  *          - If Input Parameters are out of range -> ***Input Parameter Error***
  *
  * @note	The software has to set these bits correctly not to exceed 42MHz on this domain.
+ *
  */
 RCC_ErrorStatus_t RCC_SelectAPB1Perscaler(u32 APB1Prescaler)
 {
 	RCC_ErrorStatus_t RET_ErrorStatus=RCC_Ok;
-	if(!(APB1Prescaler==APB1_CLOCK_DIVIDED_BY_2||APB1Prescaler==APB1_CLOCK_DIVIDED_BY_4||APB1Prescaler==APB1_CLOCK_DIVIDED_BY_8||APB1Prescaler==APB1_CLOCK_DIVIDED_BY_16))
+	if(!(APB1Prescaler==APB1_CLOCK_DIVIDED_BY_2||APB1Prescaler==APB1_CLOCK_DIVIDED_BY_4||
+	APB1Prescaler==APB1_CLOCK_DIVIDED_BY_8||APB1Prescaler==APB1_CLOCK_DIVIDED_BY_16))
 	{
 		RET_ErrorStatus=RCC_InvalidParameter;
 	}
@@ -389,11 +242,13 @@ RCC_ErrorStatus_t RCC_SelectAPB1Perscaler(u32 APB1Prescaler)
  *          - If Input Parameters are out of range -> ***Input Parameter Error***
  *
  * @note	The software has to set these bits correctly not to exceed 84MHz on this domain.
+ *
  */
 RCC_ErrorStatus_t RCC_SelectAPB2Perscaler(u32 APB2Prescaler)
 {
 	RCC_ErrorStatus_t RET_ErrorStatus=RCC_Ok;
-	if(!(APB2Prescaler==APB2_CLOCK_DIVIDED_BY_2||APB2Prescaler==APB2_CLOCK_DIVIDED_BY_4||APB2Prescaler==APB2_CLOCK_DIVIDED_BY_8||APB2Prescaler==APB2_CLOCK_DIVIDED_BY_16))
+	if(!(APB2Prescaler==APB2_CLOCK_DIVIDED_BY_2||APB2Prescaler==APB2_CLOCK_DIVIDED_BY_4||
+	APB2Prescaler==APB2_CLOCK_DIVIDED_BY_8||APB2Prescaler==APB2_CLOCK_DIVIDED_BY_16))
 	{
 		RET_ErrorStatus=RCC_InvalidParameter;
 	}
@@ -429,6 +284,7 @@ RCC_ErrorStatus_t RCC_SelectAPB2Perscaler(u32 APB2Prescaler)
  *         - The SDIO and the random number generator need a frequency lower than or equal to 48 MHz to work
  *		   	 correctly.
  *		   - Ensure that the VCO output frequency (FreqInput/M*N) is between 192 and 432MHz.
+ *
  */
 RCC_ErrorStatus_t RCC_ConfigurePLL(PLLCfgOptions_t*PLLCfg)
 {
@@ -488,6 +344,33 @@ RCC_ErrorStatus_t RCC_ConfigurePLL(PLLCfgOptions_t*PLLCfg)
 		Local_CFGR|=(PLLSRC);
 
 		RCC->PLLCFGR=Local_CFGR;
+	}
+	return RET_ErrorStatus;
+}
+
+/**
+ * @brief   Function to Check if Clock is Ready
+ *
+ * @param   - Ready Mask for Clock (MASK_HSIRDY, MASK_HSERDY, MASK_PLLRDY)
+ *
+ * @return  Error Status
+ *          - If Input Parameters are out of range -> ***Input Parameter Error***
+ *          - If Clock is not ready -> ***Not Ready Error***
+ *
+ */
+RCC_ErrorStatus_t RCC_CheckReadyClk(u32 ReadyMask)
+{
+	RCC_ErrorStatus_t RET_ErrorStatus=RCC_Ok;
+	if(!((ReadyMask==MASK_HSIRDY)||(ReadyMask==MASK_HSERDY)||(ReadyMask==MASK_PLLRDY)))
+	{
+		RET_ErrorStatus=RCC_InvalidParameter;
+	}
+	else
+	{
+		if(!(RCC->CR&ReadyMask))
+		{
+			RET_ErrorStatus=RCC_NotReady;
+		}
 	}
 	return RET_ErrorStatus;
 }

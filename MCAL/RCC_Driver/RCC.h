@@ -22,6 +22,12 @@
 #define CLOCK_PLL						0x01000000
 
 /**************************************************************************/
+/*						Ready Clock Mask				 				  */
+/**************************************************************************/
+#define MASK_HSIRDY						0x00000002
+#define MASK_HSERDY						0x00020000
+#define MASK_PLLRDY						0x02000000
+/**************************************************************************/
 /*						PLL Clock Options	 			 				  */
 /**************************************************************************/
 #define PLL_CLK_HSI						0X00000000
@@ -115,15 +121,23 @@
 #define APB2_CLOCK_DIVIDED_BY_16		0x0000E000
 
 /**************************************************************************/
+/*						PERIPHERAL BUS ADDRESSES					 	  */
+/**************************************************************************/
+#define AHB1							((volatile u32*)0x40023830)
+#define AHB2							((volatile u32*)0x40023834)
+#define APB1							((volatile u32*)0x40023840)
+#define APB2							((volatile u32*)0x40023844)
+
+/**************************************************************************/
 /*						PLL CFG Struct			 					 	  */
 /**************************************************************************/
 typedef struct
 {
-	u32 M;
-	u32 N;
-	u32 P;
-	u32 Q;
-	u32 PLLSRC;
+	u32 M; 			// M values-> 2:63
+	u32 N; 			// N values -> 192:432
+	u32 P; 			// P values -> 2, 4, 6, 8
+	u32 Q; 			// Q values -> 2:15
+	u32 PLLSRC;	 	// PLLSRC values -> (PLL_CLK_HSI, PLL_CLK_HSE)
 }PLLCfgOptions_t;
 
 /**************************************************************************/
@@ -163,27 +177,15 @@ typedef struct
 }RCC_Peri_t;
 
 /**************************************************************************/
-/*						Peripheral Buses		 					 	  */
-/**************************************************************************/
-
-typedef enum
-{
-	AHB1,
-	AHB2,
-	APB1,
-	APB2
-}PeripheralBuses_t;
-
-/**************************************************************************/
 /*						RCC Error Status		 					 	  */
 /**************************************************************************/
 typedef enum
 {
 	RCC_Ok,
 	RCC_Nok,
+	RCC_NotReady,
 	RCC_NullPointer,
-	RCC_InvalidParameter,
-	RCC_TimeoutError
+	RCC_InvalidParameter
 
 }RCC_ErrorStatus_t;
 
@@ -191,20 +193,33 @@ typedef enum
 /*						Function Prototypes		 					 	  */
 /**************************************************************************/
 
-
 /**
- * @brief   Function to Control HSI, HSE, PLL -> On/Off
+ * @brief  		 Function to Enable HSI, HSE, PLL -> On/Off
  *
- * @param   - Clock Status (CLOCK_STATUS_ON / CLOCK_STATUS_OFF)
- *          - Clock (CLOCK_HSI, CLOCK_HSE, CLOCK_PLL)
+ * @param   	 - Clock (CLOCK_HSI, CLOCK_HSE, CLOCK_PLL)
  *
- * @return  Error Status
- *          - If Input Parameters are out of range -> ***Input Parameter Error***
- *          - If the clock fails to be ready after a predefined amount of time -> ***Timeout Error***
- *          - Turning a clock off if it is selected as a system clock directly or indirectly -> ***Input Parameter Error***
+ * @return		  Error Status
+ *         		 - If Input Parameters are out of range -> ***Input Parameter Error***
+ *
+ * @constraint	 - Make sure that clock is ready after enabling it using the
+ * 				   "RCC_CheckReadyClk()" Function
  *
  */
-RCC_ErrorStatus_t RCC_ControlClock (u8 ClockStatus, u32 Clock);
+RCC_ErrorStatus_t RCC_EnableClock  (u32 Clock);
+
+/**
+ * @brief   	 Function to Disable HSI, HSE, PLL -> On/Off
+ *
+ * @param   	 - Clock (CLOCK_HSI, CLOCK_HSE, CLOCK_PLL)
+ *
+ * @return  	 Error Status
+ *          	 - If Input Parameters are out of range -> ***Input Parameter Error***
+ *
+ * @constraint	 - You can't disable a clock if it is selected as a System Clock!
+ * 				   Use the function "" to check if the clock is selected as a System Clock.
+ *
+ */
+RCC_ErrorStatus_t RCC_DisableClock  (u32 Clock);
 
 /**
  * @brief   	  Function to Select a System Clock
@@ -212,13 +227,11 @@ RCC_ErrorStatus_t RCC_ControlClock (u8 ClockStatus, u32 Clock);
  * @param   	  - Sysclk (SYSCLK_HSI, SYSCLK_HSE, SYSCLK_PLL)
  *
  * @return	      Error Status
- *          	  - If Input Parameters are out of range -> ***Input Parameter Error***
- *          	  - If Clock isn't On/Ready -> ***Input Parameter Error***
- *         		  - If clock fails to be ready after a predefined amount of time -> ***Timeout Error***
+ *          	  - If Input Parameters are out of range -> ***Input Parameter Error****
  *
- * @constraint    Make sure Clock is On&Ready before selecting it as system clock!!
+ * @constraint    - Make sure Clock is On & Ready before selecting it as system clock!! Use the
+ * 				    "RCC_CheckReadyClk()" Function
  *
- * @note	The software has to set these bits correctly not to exceed 84MHz on this domain.
  */
 RCC_ErrorStatus_t RCC_SelectSystemClock(u32 Sysclk);
 
@@ -231,7 +244,7 @@ RCC_ErrorStatus_t RCC_SelectSystemClock(u32 Sysclk);
  * @return  Error Status
  *          - If Input Parameters are out of range -> ***Input Parameter Error***
  */
-RCC_ErrorStatus_t RCC_EnablePeriphral(PeripheralBuses_t PeriphralBus, u32 Periphral);
+RCC_ErrorStatus_t RCC_EnablePeriphral(u32*PeriphralBus, u32 Periphral);
 
 /**
  * @brief   Function to Disable a Peripheral
@@ -242,7 +255,7 @@ RCC_ErrorStatus_t RCC_EnablePeriphral(PeripheralBuses_t PeriphralBus, u32 Periph
  * @return  Error Status
  *          - If Input Parameters are out of range -> ***Input Parameter Error***
  */
-RCC_ErrorStatus_t RCC_DisablePeriphral(PeripheralBuses_t PeriphralBus,u32 Periphral);
+RCC_ErrorStatus_t RCC_DisablePeriphral(u32*PeriphralBus,u32 Periphral);
 
 /**
  * @brief   Function to Set AHB Prescaler
@@ -302,5 +315,17 @@ RCC_ErrorStatus_t RCC_SelectAPB2Perscaler(u32 APB2Prescaler);
  *		   - Ensure that the VCO output frequency (FreqInput/M*N) is between 192 and 432MHz.
  */
 RCC_ErrorStatus_t RCC_ConfigurePLL(PLLCfgOptions_t*PLLCfg);
+
+/**
+ * @brief   Function to Check if Clock is Ready
+ *
+ * @param   - Ready Mask for Clock (MASK_HSIRDY, MASK_HSERDY, MASK_PLLRDY)
+ *
+ * @return  Error Status
+ *          - If Input Parameters are out of range -> ***Input Parameter Error***
+ *          - If Clock is not ready -> ***Not Ready Error***
+ */
+RCC_ErrorStatus_t RCC_CheckReadyClk(u32 ReadyMask);
+
 
 #endif
