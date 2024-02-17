@@ -214,9 +214,9 @@ RCC_ErrorStatus_t RCC_SelectSystemClock(u32 Sysclk)
 	if(SelectSysClk==1)
 	{
 		/*Create a SWS Mask Corresponding to your current Clock*/
-		u8 MASK_SWS=(Sysclk<<2);
+		u32 MASK_SWS=(Sysclk<<2);
 
-		u8 Temp_CFGR= RCC->CFGR;
+		u32 Temp_CFGR= RCC->CFGR;
 		Temp_CFGR&=~(MASK_SET_SYSCLK);
 		Temp_CFGR|=Sysclk;
 		RCC->CFGR=Temp_CFGR;
@@ -228,7 +228,7 @@ RCC_ErrorStatus_t RCC_SelectSystemClock(u32 Sysclk)
 		}
 
 		/*Return Error if System Clock is not Selected*/
-		if((RCC->CFGR&MASK_GET_SYSCLK)!= MASK_SWS)
+		if((RCC->CFGR&MASK_GET_SYSCLK)!= (MASK_SWS))
 		{
 			RET_ErrorStatus=RCC_TimeoutError;
 		}
@@ -275,6 +275,7 @@ RCC_ErrorStatus_t RCC_EnablePeriphral(PeripheralBuses_t PeriphralBus, u32 Periph
 		{
 			RET_ErrorStatus=RCC_InvalidParameter;
 		}
+		break;
 	}
 
 	return RET_ErrorStatus;
@@ -318,6 +319,7 @@ RCC_ErrorStatus_t RCC_DisablePeriphral(PeripheralBuses_t PeriphralBus,u32 Periph
 		{
 			RET_ErrorStatus=RCC_InvalidParameter;
 		}
+		break;
 	}
 	return RET_ErrorStatus;
 }
