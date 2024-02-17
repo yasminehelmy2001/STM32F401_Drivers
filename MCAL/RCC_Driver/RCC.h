@@ -1,3 +1,6 @@
+#ifndef RCC_H_
+#define RCC_H_
+
 #include "../LIB/std_types.h"
 
 /**************************************************************************/
@@ -300,3 +303,4 @@ RCC_ErrorStatus_t RCC_SelectAPB2Perscaler(u32 APB2Prescaler);
  */
 RCC_ErrorStatus_t RCC_ConfigurePLL(PLLCfgOptions_t*PLLCfg);
 
+#endif
