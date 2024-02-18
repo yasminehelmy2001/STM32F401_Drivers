@@ -63,13 +63,13 @@
 #define MODE_OUTPUT_OD				0x11
 #define MODE_OUTPUT_OD_PU			0x15
 #define MODE_OUTPUT_OD_PD			0x19
-#define MODE_AF_PP					0x08
-#define MODE_AF_PP_PU				0x02
-#define MODE_AF_PP_PD				0x06
-#define MODE_AF_OD					0x0A
-#define MODE_AF_OD_PU				0x12
-#define MODE_AF_OD_PD				0x16
-#define MODE_INPUT_FLOATING			0x1A
+#define MODE_AF_PP					0x02
+#define MODE_AF_PP_PU				0x06
+#define MODE_AF_PP_PD				0x0A
+#define MODE_AF_OD					0x0C
+#define MODE_AF_OD_PU				0x16
+#define MODE_AF_OD_PD				0x1A
+#define MODE_INPUT_FLOATING			0x00
 #define MODE_INPUT_PU				0x04
 #define MODE_INPUT_PD				0x08
 #define MODE_ANALOG					0x03
@@ -184,7 +184,7 @@ GPIO_ErrorStatus_t GPIO_InitPin(GPIO_Pin_t*PinCfg);
  */
 GPIO_ErrorStatus_t GPIO_SetPinValue(void*Port, u8 Pin,u8 Value );
 
-/** 
+/**
  * @brief	Function that Gets a GPIO Pin Value
  *
  * @param	-Port			(GPIOA, GPIOB, GPIOC, GPIOD, GPIOE, GPIOH)
