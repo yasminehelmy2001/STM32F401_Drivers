@@ -103,11 +103,18 @@ GPIO_ErrorStatus_t GPIO_InitPin(GPIO_Pin_t*PinCfg)
 		Loc_OTYPER|=(OutputType<<Pin);
 		Port->OTYPER=Loc_OTYPER;
 
-		u32 Loc_AFRx;
-		(Pin>GPIO_PIN8)?(Loc_AFRx=Port->AFRH):(Loc_AFRx=Port->AFRL);
-		Loc_AFRx&=~(FOUR_BIT_MASK<<Pin*SHIFT_4);
-		Loc_AFRx|=(AF_Choice<<Pin*SHIFT_4);
-		(Pin>GPIO_PIN8)?(Port->AFRH=Loc_AFRx):(Port->AFRL=Loc_AFRx);
+		if(AF_Choice!=AF_DEACTIVATED)
+		{
+			u32 Loc_AFRx;
+			(Pin>GPIO_PIN8)?(Loc_AFRx=Port->AFRH):(Loc_AFRx=Port->AFRL);
+			Loc_AFRx&=~(FOUR_BIT_MASK<<Pin*SHIFT_4);
+			Loc_AFRx|=(AF_Choice<<Pin*SHIFT_4);
+			(Pin>GPIO_PIN8)?(Port->AFRH=Loc_AFRx):(Port->AFRL=Loc_AFRx);
+		}
+		else
+		{
+			//Do Nothing
+		}
 
 	}
 
