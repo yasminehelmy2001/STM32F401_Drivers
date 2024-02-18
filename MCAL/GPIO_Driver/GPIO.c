@@ -105,8 +105,8 @@ GPIO_ErrorStatus_t GPIO_InitPin(GPIO_Pin_t*PinCfg)
 			Loc_OTYPER|=(OutputType<<Pin);
 			Port->OTYPER=Loc_OTYPER;
 		}
-		else if(((Mode==MODE_AF_OD)||(Mode==MODE_AF_OD_PD)||(Mode==MODE_AF_OD_PU)||
-			(Mode==MODE_AF_PP)||(Mode==MODE_AF_PP_PD)||(Mode==MODE_AF_PP_PU))&&(AF_Choice!=AF_DEACTIVATED))
+		else if(((Mode==MODE_AF_OD)||(Mode==MODE_AF_OD_PD)||(Mode==MODE_AF_OD_PU)
+		 || (Mode==MODE_AF_PP)||(Mode==MODE_AF_PP_PD)||(Mode==MODE_AF_PP_PU))&&(AF_Choice!=AF_DEACTIVATED))
 		{
 			if(Pin<PIN8)
 			{
