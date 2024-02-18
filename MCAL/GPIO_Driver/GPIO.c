@@ -86,7 +86,7 @@ GPIO_ErrorStatus_t GPIO_InitPin(GPIO_Pin_t*PinCfg)
 		Loc_PUPDR|=(PUPD<<Pin*SHIFT_2);
 		Port->PUPDR=Loc_PUPDR;
 
-		if(!(OutputType==OUTPUT_TYPE_DEACTIVATED))
+		if(OutputType!=OUTPUT_TYPE_DEACTIVATED)
 		{
 			u32 Loc_OTYPER=Port->OTYPER;
 			Loc_OTYPER&=~(ONE_BIT_MASK<<Pin);
@@ -98,7 +98,7 @@ GPIO_ErrorStatus_t GPIO_InitPin(GPIO_Pin_t*PinCfg)
 			//Do Nothing
 		}
 
-		if(!(AF_Choice==AF_DEACTIVATED))
+		if(AF_Choice!=AF_DEACTIVATED)
 		{
 			if(Pin<PIN8)
 			{
