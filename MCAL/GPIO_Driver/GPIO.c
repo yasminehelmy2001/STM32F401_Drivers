@@ -137,6 +137,10 @@ GPIO_ErrorStatus_t GPIO_SetPinValue(void*Port, u8 Pin,u32 Value)
     {
     	RET_ErrorStatus=GPIO_NullPointer;
     }
+    else if(Value!=GPIO_SET_PIN||Value!=GPIO_RESET_PIN)
+    {
+    	RET_ErrorStatus=GPIO_InvalidParameter;
+    }
     else
     {
         Loc_Port->BSRR = (Value<<Pin);
