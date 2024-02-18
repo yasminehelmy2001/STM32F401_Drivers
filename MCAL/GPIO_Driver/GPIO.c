@@ -44,6 +44,11 @@
  * 			- AF_CHOICE		# Selects Alternating Function from 16 choices
  * 							# (Macro begins with AF)
  * 							# Choices: AF0->AF_15 or AF_DEACTIVATED
+ * 							# You should enable your selected peripheral from RCC!
+ *
+ * @error	Error Status    GPIO_InvalidParameter/ GPIO_Ok / GPIO_NullPointer
+ *
+ * @note: You should enable the GPIO Peripheral using RCC before Initialization!
  */
 GPIO_ErrorStatus_t GPIO_InitPin(GPIO_Pin_t*PinCfg)
 {
@@ -58,19 +63,25 @@ GPIO_ErrorStatus_t GPIO_InitPin(GPIO_Pin_t*PinCfg)
 	u32 PUPD= (PinCfg->Mode&PUPD_MASK)>>SHIFT_2;
 	u32 AF_Choice= PinCfg->AF_Choice;
 
-	if(!(((Mode>=INPUT_MODE)&&(Mode<=ANALOG_MODE))&&
-	  ((OutputType>=OUTPUT_TYPE_PP)&&(OutputType<=OUTPUT_TYPE_DEACTIVATED)) &&
+	if(!((Mode<=ANALOG_MODE)&&(OutputType<=OUTPUT_TYPE_DEACTIVATED) &&
 	  ((PUPD==PUPD_PULL_UP)||(PUPD==PUPD_PULL_DOWN)||(PUPD==PUPD_DEACTIVATED)) &&
 	  ((Port==GPIOA)||(Port==GPIOB)||(Port==GPIOC)||(Port==GPIOD)||(Port==GPIOE)||(Port==GPIOH)) &&
-	  (Pin>=PIN0&&Pin<=PIN15)))
-
-	  {
+	  (Pin<=PIN15)))
+	{
 		RET_ErrorStatus=GPIO_InvalidParameter;
-	  }
+	}
+	else if(((Mode==MODE_AF_OD)||(Mode==MODE_AF_OD_PD)||(Mode==MODE_AF_OD_PU)||
+					(Mode==MODE_AF_PP)||(Mode==MODE_AF_PP_PD)||(Mode==MODE_AF_PP_PU))&&(AF_Choice==AF_DEACTIVATED))
+	{
+		RET_ErrorStatus=GPIO_InvalidParameter;
+	}
+	else if(Port==NULL)
+	{
+		RET_ErrorStatus=GPIO_NullPointer;
+	}
 
 	else
 	{
-
 		u32 Loc_OSPEEDR= Port->OSPEEDR;
 		Loc_OSPEEDR&=~(TWO_BIT_MASK<<Pin*SHIFT_2);
 		Loc_OSPEEDR|=(Speed<<Pin*SHIFT_2);
@@ -86,19 +97,16 @@ GPIO_ErrorStatus_t GPIO_InitPin(GPIO_Pin_t*PinCfg)
 		Loc_PUPDR|=(PUPD<<Pin*SHIFT_2);
 		Port->PUPDR=Loc_PUPDR;
 
-		if(OutputType!=OUTPUT_TYPE_DEACTIVATED)
+		if((Mode==MODE_OUTPUT_OD)||(Mode==MODE_OUTPUT_OD_PD)||(Mode==MODE_AF_OD_PU)
+		 || (Mode==MODE_OUTPUT_PP)||(Mode==MODE_OUTPUT_PP_PD)||(Mode==MODE_OUTPUT_PP_PU))
 		{
 			u32 Loc_OTYPER=Port->OTYPER;
 			Loc_OTYPER&=~(ONE_BIT_MASK<<Pin);
 			Loc_OTYPER|=(OutputType<<Pin);
 			Port->OTYPER=Loc_OTYPER;
 		}
-		else
-		{
-			//Do Nothing
-		}
-
-		if(AF_Choice!=AF_DEACTIVATED)
+		else if(((Mode==MODE_AF_OD)||(Mode==MODE_AF_OD_PD)||(Mode==MODE_AF_OD_PU)||
+			(Mode==MODE_AF_PP)||(Mode==MODE_AF_PP_PD)||(Mode==MODE_AF_PP_PU))&&(AF_Choice!=AF_DEACTIVATED))
 		{
 			if(Pin<PIN8)
 			{
@@ -131,7 +139,7 @@ GPIO_ErrorStatus_t GPIO_InitPin(GPIO_Pin_t*PinCfg)
  * 			-Pin			(PIN0->PIN15)
  * 			-Value			(GPIO_LOW/GPIO_HIGH)
  *
- * @error	Error Status    GPIO_InvalidParameter/ GPIO_Ok
+ * @error	Error Status    GPIO_InvalidParameter/ GPIO_Ok / GPIO_NullPointer
  */
 GPIO_ErrorStatus_t GPIO_SetPinValue(void*Port, u8 Pin,u8 Value)
 {
@@ -143,14 +151,22 @@ GPIO_ErrorStatus_t GPIO_SetPinValue(void*Port, u8 Pin,u8 Value)
 	{
 		RET_ErrorStatus=GPIO_InvalidParameter;
 	}
-    else if(Value==GPIO_LOW)
+    else if(Port==NULL)
     {
-    	Loc_Port->BSRR = 1<<(Pin+16);
+    	RET_ErrorStatus=GPIO_NullPointer;
     }
     else
     {
-    	Loc_Port->BSRR = 1<<Pin;
+    	if((Value==GPIO_LOW))
+    	{
+        	Loc_Port->BSRR = 1<<(Pin+16);
+    	}
+    	 else
+		{
+			Loc_Port->BSRR = 1<<Pin;
+		}
     }
+
 	return RET_ErrorStatus;
 }
 
@@ -161,13 +177,18 @@ GPIO_ErrorStatus_t GPIO_SetPinValue(void*Port, u8 Pin,u8 Value)
  * 			-Pin			(PIN0->PIN15)
  * 			-*Value			(GPIO_LOW/GPIO_HIGH)
  *
- * @error	Error Status    GPIO_InvalidParameter/ GPIO_Ok
+ * @error	Error Status    GPIO_InvalidParameter/ GPIO_Ok / GPIO_NullPointer
  */
 GPIO_ErrorStatus_t GPIO_GetPinValue(void*Port, u8 Pin,u8*Value)
 {
 	GPIO_ErrorStatus_t RET_ErrorStatus=GPIO_Ok;
     GPIO_Registers_t* Loc_Port = (GPIO_Registers_t*)Port;
-    if(Loc_Port->ODR&(1<<Pin))
+
+	if((Port==NULL)||(Value==NULL))
+	{
+		RET_ErrorStatus=GPIO_NullPointer;
+	}
+    else if(Loc_Port->IDR&(1<<Pin))
 	{
 		*Value=GPIO_HIGH;
 	}

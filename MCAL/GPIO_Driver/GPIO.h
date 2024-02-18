@@ -137,7 +137,8 @@ typedef enum
 {
 	GPIO_Ok,
 	GPIO_Nok,
-	GPIO_InvalidParameter
+	GPIO_InvalidParameter,
+	GPIO_NullPointer
 }GPIO_ErrorStatus_t;
 
 /**************************************************************************/
@@ -166,20 +167,20 @@ typedef enum
  * 							# Choices: AF0->AF_15 or AF_DEACTIVATED
  * 							# You should enable your selected peripheral from RCC!
  *
- * @error	Error Status    GPIO_InvalidParameter/ GPIO_Ok
+ * @error	Error Status    GPIO_InvalidParameter/ GPIO_Ok / GPIO_NullPointer
  *
  * @note: You should enable the GPIO Peripheral using RCC before Initialization!
  */
 GPIO_ErrorStatus_t GPIO_InitPin(GPIO_Pin_t*PinCfg);
 
 /**
- * @brief	Function that Sets a GPIO Pin to either HIGH/LOW
+ * @brief	Function that Sets a GPIO Pin to either HIGH/LOW (OUTPUT MODE)
  *
  * @param	-Port			(GPIOA, GPIOB, GPIOC, GPIOD, GPIOE, GPIOH)
  * 			-Pin			(PIN0->PIN15)
  * 			-Value			(GPIO_LOW/GPIO_HIGH)
  *
- * @error	Error Status    GPIO_InvalidParameter/ GPIO_Ok
+ * @error	Error Status    GPIO_InvalidParameter/ GPIO_Ok / GPIO_NullPointer
  */
 GPIO_ErrorStatus_t GPIO_SetPinValue(void*Port, u8 Pin,u8 Value );
 
@@ -190,7 +191,7 @@ GPIO_ErrorStatus_t GPIO_SetPinValue(void*Port, u8 Pin,u8 Value );
  * 			-Pin			(PIN0->PIN15)
  * 			-*Value			(GPIO_LOW/GPIO_HIGH)
  *
- * @error	Error Status    GPIO_InvalidParameter/ GPIO_Ok
+ * @error	Error Status    GPIO_InvalidParameter/ GPIO_Ok / GPIO_NullPointer
  */
 GPIO_ErrorStatus_t GPIO_GetPinValue(void*Port, u8 Pin, u8*Value);
 #endif
