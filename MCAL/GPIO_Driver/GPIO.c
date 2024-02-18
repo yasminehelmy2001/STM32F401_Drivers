@@ -1,3 +1,11 @@
+/*
+* File:    GPIO.c
+* Author:  Yasmin Amr
+* Created: 17/2/2024
+* Brief:   GPIO Driver
+* Target:  STM32F401cc
+*/
+
 #include "GPIO.h"
 
 #define ONE_BIT_MASK					0x00000001

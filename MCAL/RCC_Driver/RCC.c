@@ -1,3 +1,11 @@
+/*
+* File:    RCC.c
+* Author:  Yasmin Amr
+* Created: 10/2/2024
+* Brief:   RCC Driver
+* Target:  STM32F401cc
+*/
+
 #include "RCC.h"
 
 /**************************************************************************/
