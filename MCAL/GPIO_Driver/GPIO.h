@@ -184,7 +184,7 @@ GPIO_ErrorStatus_t GPIO_InitPin(GPIO_Pin_t*PinCfg);
  */
 GPIO_ErrorStatus_t GPIO_SetPinValue(void*Port, u8 Pin,u8 Value );
 
-/**
+/** 
  * @brief	Function that Gets a GPIO Pin Value
  *
  * @param	-Port			(GPIOA, GPIOB, GPIOC, GPIOD, GPIOE, GPIOH)
