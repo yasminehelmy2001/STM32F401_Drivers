@@ -71,7 +71,8 @@ GPIO_ErrorStatus_t GPIO_InitPin(GPIO_Pin_t*PinCfg)
 		RET_ErrorStatus=GPIO_InvalidParameter;
 	}
 	else if(((Mode==MODE_AF_OD)||(Mode==MODE_AF_OD_PD)||(Mode==MODE_AF_OD_PU)||
-					(Mode==MODE_AF_PP)||(Mode==MODE_AF_PP_PD)||(Mode==MODE_AF_PP_PU))&&(AF_Choice==AF_DEACTIVATED))
+		   (Mode==MODE_AF_PP)||(Mode==MODE_AF_PP_PD)||(Mode==MODE_AF_PP_PU))&&
+		   (AF_Choice==AF_DEACTIVATED))
 	{
 		RET_ErrorStatus=GPIO_InvalidParameter;
 	}
