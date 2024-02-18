@@ -134,7 +134,7 @@ GPIO_ErrorStatus_t GPIO_SetPinValue(void*Port, u8 Pin,u32 Value)
 {
 	GPIO_ErrorStatus_t RET_ErrorStatus=GPIO_Ok;
     GPIO_Registers_t* Loc_Port = (GPIO_Registers_t*)Port;
-    if(!(((Value==GPIO_HIGH)||(Value==GPIO_LOW))&&
+    if(!(((Value==GPIO_SET_PIN)||(Value==GPIO_RESET_PIN))&&
       ((Port==GPIO_PORTA)||(Port==GPIO_PORTB)||(Port==GPIO_PORTC)
       ||(Port==GPIO_PORTD)||(Port==GPIO_PORTE)||(Port==GPIO_PORTH))))
 	{
@@ -143,10 +143,6 @@ GPIO_ErrorStatus_t GPIO_SetPinValue(void*Port, u8 Pin,u32 Value)
     else if(Port==NULL)
     {
     	RET_ErrorStatus=GPIO_NullPointer;
-    }
-    else if(Value!=GPIO_SET_PIN||Value!=GPIO_RESET_PIN)
-    {
-    	RET_ErrorStatus=GPIO_InvalidParameter;
     }
     else
     {
