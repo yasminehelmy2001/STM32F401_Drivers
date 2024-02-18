@@ -29,9 +29,9 @@
  *
  * @param	Pointer to GPIO_Pin_t Struct, contains:
  *
- * 			- Port 			(GPIOA, GPIOB, GPIOC, GPIOD, GPIOE, GPIOH)
+ * 			- Port 			(GPIO_PORTA, GPIO_PORTB, GPIO_PORTC, GPIO_PORTD, GPIO_PORTE, GPIO_PORTH)
  *
- * 			- Pin  			(PIN0->PIN15)
+ * 			- Pin  			(GPIO_PIN0->GPIO_PIN15)
  *
  * 			- Speed			(Macro begins with SPEED_)
  *
@@ -65,8 +65,8 @@ GPIO_ErrorStatus_t GPIO_InitPin(GPIO_Pin_t*PinCfg)
 
 	if(!((Mode<=ANALOG_MODE)&&(OutputType<=OUTPUT_TYPE_DEACTIVATED) &&
 	  ((PUPD==PUPD_PULL_UP)||(PUPD==PUPD_PULL_DOWN)||(PUPD==PUPD_DEACTIVATED)) &&
-	  ((Port==GPIOA)||(Port==GPIOB)||(Port==GPIOC)||(Port==GPIOD)||(Port==GPIOE)||(Port==GPIOH)) &&
-	  (Pin<=PIN15)))
+	  ((Port==GPIO_PORTA)||(Port==GPIO_PORTB)||(Port==GPIO_PORTC)|| (Port==GPIO_PORTD)||
+	  (Port==GPIO_PORTE)||(Port==GPIO_PORTH)) && (Pin<=GPIO_PIN15)))
 	{
 		RET_ErrorStatus=GPIO_InvalidParameter;
 	}
@@ -98,36 +98,17 @@ GPIO_ErrorStatus_t GPIO_InitPin(GPIO_Pin_t*PinCfg)
 		Loc_PUPDR|=(PUPD<<Pin*SHIFT_2);
 		Port->PUPDR=Loc_PUPDR;
 
-		if((Mode==MODE_OUTPUT_OD)||(Mode==MODE_OUTPUT_OD_PD)||(Mode==MODE_AF_OD_PU)
-		 || (Mode==MODE_OUTPUT_PP)||(Mode==MODE_OUTPUT_PP_PD)||(Mode==MODE_OUTPUT_PP_PU))
-		{
-			u32 Loc_OTYPER=Port->OTYPER;
-			Loc_OTYPER&=~(ONE_BIT_MASK<<Pin);
-			Loc_OTYPER|=(OutputType<<Pin);
-			Port->OTYPER=Loc_OTYPER;
-		}
-		else if(((Mode==MODE_AF_OD)||(Mode==MODE_AF_OD_PD)||(Mode==MODE_AF_OD_PU)
-		 || (Mode==MODE_AF_PP)||(Mode==MODE_AF_PP_PD)||(Mode==MODE_AF_PP_PU))&&(AF_Choice!=AF_DEACTIVATED))
-		{
-			if(Pin<PIN8)
-			{
-				u32 Loc_AFRL= Port->AFRL;
-				Loc_AFRL&=~(FOUR_BIT_MASK<<Pin*SHIFT_4);
-				Loc_AFRL|=(AF_Choice<<Pin*SHIFT_4);
-				Port->AFRL=Loc_AFRL;
-			}
-			else
-			{
-				u32 Loc_AFRH= Port->AFRH;
-				Loc_AFRH&=~(FOUR_BIT_MASK<<Pin*SHIFT_4);
-				Loc_AFRH|=(AF_Choice<<Pin*SHIFT_4);
-				Port->AFRL=Loc_AFRH;
-			}
-		}
-		else
-		{
-			//Do Nothing
-		}
+		u32 Loc_OTYPER=Port->OTYPER;
+		Loc_OTYPER&=~(ONE_BIT_MASK<<Pin);
+		Loc_OTYPER|=(OutputType<<Pin);
+		Port->OTYPER=Loc_OTYPER;
+
+		u32 Loc_AFRx;
+		(Pin>GPIO_PIN8)?(Loc_AFRx=Port->AFRH):(Loc_AFRx=Port->AFRL);
+		Loc_AFRx&=~(FOUR_BIT_MASK<<Pin*SHIFT_4);
+		Loc_AFRx|=(AF_Choice<<Pin*SHIFT_4);
+		(Pin>GPIO_PIN8)?(Port->AFRH=Loc_AFRx):(Port->AFRL=Loc_AFRx);
+
 	}
 
 	return RET_ErrorStatus;
@@ -136,19 +117,19 @@ GPIO_ErrorStatus_t GPIO_InitPin(GPIO_Pin_t*PinCfg)
 /**
  * @brief	Function that Sets a GPIO Pin to either HIGH/LOW
  *
- * @param	-Port			(GPIOA, GPIOB, GPIOC, GPIOD, GPIOE, GPIOH)
- * 			-Pin			(PIN0->PIN15)
- * 			-Value			(GPIO_LOW/GPIO_HIGH)
+ * @param	-Port			(GPIO_PORTA, GPIO_PORTB, GPIO_PORTC, GPIO_PORTD, GPIO_PORTE, GPIO_PORTH)
+ * 			-Pin			(GPIO_PIN0->GPIO_PIN15)
+ * 			-Value			(GPIO_SET_PIN/GPIO_RESET_PIN)
  *
  * @error	Error Status    GPIO_InvalidParameter/ GPIO_Ok / GPIO_NullPointer
  */
-GPIO_ErrorStatus_t GPIO_SetPinValue(void*Port, u8 Pin,u8 Value)
+GPIO_ErrorStatus_t GPIO_SetPinValue(void*Port, u8 Pin,u32 Value)
 {
 	GPIO_ErrorStatus_t RET_ErrorStatus=GPIO_Ok;
     GPIO_Registers_t* Loc_Port = (GPIO_Registers_t*)Port;
     if(!(((Value==GPIO_HIGH)||(Value==GPIO_LOW))&&
-      ((Port==GPIOA)||(Port==GPIOB)||(Port==GPIOC)
-      ||(Port==GPIOD)||(Port==GPIOE)||(Port==GPIOH))))
+      ((Port==GPIO_PORTA)||(Port==GPIO_PORTB)||(Port==GPIO_PORTC)
+      ||(Port==GPIO_PORTD)||(Port==GPIO_PORTE)||(Port==GPIO_PORTH))))
 	{
 		RET_ErrorStatus=GPIO_InvalidParameter;
 	}
@@ -158,14 +139,7 @@ GPIO_ErrorStatus_t GPIO_SetPinValue(void*Port, u8 Pin,u8 Value)
     }
     else
     {
-    	if((Value==GPIO_LOW))
-    	{
-        	Loc_Port->BSRR = 1<<(Pin+16);
-    	}
-    	 else
-		{
-			Loc_Port->BSRR = 1<<Pin;
-		}
+        Loc_Port->BSRR = (Value<<Pin);
     }
 
 	return RET_ErrorStatus;
@@ -174,13 +148,13 @@ GPIO_ErrorStatus_t GPIO_SetPinValue(void*Port, u8 Pin,u8 Value)
 /**
  * @brief	Function that Gets a GPIO Pin Value
  *
- * @param	-Port			(GPIOA, GPIOB, GPIOC, GPIOD, GPIOE, GPIOH)
- * 			-Pin			(PIN0->PIN15)
+ * @param	-Port			(GPIO_PORTA, GPIO_PORTB, GPIO_PORTC, GPIO_PORTD, GPIO_PORTE, GPIO_PORTH)
+ * 			-Pin			(GPIO_PIN0->GPIO_PIN15)
  * 			-*Value			(GPIO_LOW/GPIO_HIGH)
  *
  * @error	Error Status    GPIO_InvalidParameter/ GPIO_Ok / GPIO_NullPointer
  */
-GPIO_ErrorStatus_t GPIO_GetPinValue(void*Port, u8 Pin,u8*Value)
+GPIO_ErrorStatus_t GPIO_GetPinValue(void*Port, u8 Pin,u32*Value)
 {
 	GPIO_ErrorStatus_t RET_ErrorStatus=GPIO_Ok;
     GPIO_Registers_t* Loc_Port = (GPIO_Registers_t*)Port;
@@ -189,13 +163,10 @@ GPIO_ErrorStatus_t GPIO_GetPinValue(void*Port, u8 Pin,u8*Value)
 	{
 		RET_ErrorStatus=GPIO_NullPointer;
 	}
-    else if(Loc_Port->IDR&(1<<Pin))
-	{
-		*Value=GPIO_HIGH;
-	}
+
 	else
 	{
-		*Value=GPIO_LOW;
+		*Value=Loc_Port->IDR&(1<<Pin);
 	}
 	return RET_ErrorStatus;
 }

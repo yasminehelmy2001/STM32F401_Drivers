@@ -6,32 +6,32 @@
 /**************************************************************************/
 /*						PORT MACROS				 					 	  */
 /**************************************************************************/
-#define GPIOA						(void*)(0x40020000)
-#define GPIOB						(void*)(0x40020400)
-#define GPIOC						(void*)(0x40020800)
-#define GPIOD						(void*)(0x40020C00)
-#define GPIOE						(void*)(0x40021000)
-#define GPIOH						(void*)(0x40021C00)
+#define GPIO_PORTA						(void*)(0x40020000)
+#define GPIO_PORTB						(void*)(0x40020400)
+#define GPIO_PORTC						(void*)(0x40020800)
+#define GPIO_PORTD						(void*)(0x40020C00)
+#define GPIO_PORTE						(void*)(0x40021000)
+#define GPIO_PORTH						(void*)(0x40021C00)
 
 /**************************************************************************/
 /*						PIN MACROS				 					 	  */
 /**************************************************************************/
-#define PIN0						0
-#define PIN1						1
-#define PIN2						2
-#define PIN3						3
-#define PIN4						4
-#define PIN5						5
-#define PIN6						6
-#define PIN7						7
-#define PIN8						8
-#define PIN9						9
-#define PIN10						10
-#define PIN11						11
-#define PIN12						12
-#define PIN13						13
-#define PIN14						14
-#define PIN15						15
+#define GPIO_PIN0						0
+#define GPIO_PIN1						1
+#define GPIO_PIN2						2
+#define GPIO_PIN3						3
+#define GPIO_PIN4						4
+#define GPIO_PIN5						5
+#define GPIO_PIN6						6
+#define GPIO_PIN7						7
+#define GPIO_PIN8						8
+#define GPIO_PIN9						9
+#define GPIO_PIN10						10
+#define GPIO_PIN11						11
+#define GPIO_PIN12						12
+#define GPIO_PIN13						13
+#define GPIO_PIN14						14
+#define GPIO_PIN15						15
 
 /**************************************************************************/
 /*						ALTERNATING FUNCTION OPTION  MACROS	 		 	  */
@@ -83,6 +83,12 @@
 #define SPEED_VERY_HIGH				(3U)
 
 /**************************************************************************/
+/*						GPIO BIT SET/RESET MACRO					 	  */
+/**************************************************************************/
+#define GPIO_RESET_BIT				0x00010000
+#define GPIO_SET_BIT				0x00000001
+
+/**************************************************************************/
 /*						GPIO LOW/HIGH MACRO		 					 	  */
 /**************************************************************************/
 #define GPIO_LOW					(0U)
@@ -111,8 +117,8 @@ typedef struct
 /**************************************************************************/
 typedef struct
 {
-	void* Port; 		 /* GPIOA, GPIOB, GPIOC, GPIOD, GPIOE, GPIOH */
-	u8 Pin;  			 /* PIN0 -> PIN15 */
+	void* Port; 		 /* GPIO_PORTA, GPIO_PORTB, GPIO_PORTC, GPIO_PORTD, GPIO_PORTE, GPIO_PORTH */
+	u8 Pin;  			 /* GPIO_PIN0 -> GPIO_PIN15 */
 
 	u8 Speed;			 /* SPEED_LOW, SPEED_MEDIUM, SPEED_HIGH, SPEED_VERY_HIGH */
 
@@ -150,9 +156,9 @@ typedef enum
  *
  * @param	Pointer to GPIO_Pin_t Struct, contains:
  *
- * 			- Port 			(GPIOA, GPIOB, GPIOC, GPIOD, GPIOE, GPIOH)
+ * 			- Port 			(GPIO_PORTA, GPIO_PORTB, GPIO_PORTC, GPIO_PORTD, GPIO_PORTE, GPIO_PORTH)
  *
- * 			- Pin  			(PIN0->PIN15)
+ * 			- Pin  			(GPIO_PIN0->GPIO_PIN15)
  *
  * 			- Speed			(Macro begins with SPEED_)
  *
@@ -176,22 +182,22 @@ GPIO_ErrorStatus_t GPIO_InitPin(GPIO_Pin_t*PinCfg);
 /**
  * @brief	Function that Sets a GPIO Pin to either HIGH/LOW (OUTPUT MODE)
  *
- * @param	-Port			(GPIOA, GPIOB, GPIOC, GPIOD, GPIOE, GPIOH)
- * 			-Pin			(PIN0->PIN15)
- * 			-Value			(GPIO_LOW/GPIO_HIGH)
+ * @param	-Port			(GPIO_PORTA, GPIO_PORTB, GPIO_PORTC, GPIO_PORTD, GPIO_PORTE, GPIO_PORTH)
+ * 			-Pin			(GPIO_PIN0->GPIO_PIN15)
+ * 			-Value			(GPIO_SET_PIN/GPIO_RESET_PIN)
  *
  * @error	Error Status    GPIO_InvalidParameter/ GPIO_Ok / GPIO_NullPointer
  */
-GPIO_ErrorStatus_t GPIO_SetPinValue(void*Port, u8 Pin,u8 Value );
+GPIO_ErrorStatus_t GPIO_SetPinValue(void*Port, u8 Pin,u32 Value );
 
 /**
  * @brief	Function that Gets a GPIO Pin Value
  *
- * @param	-Port			(GPIOA, GPIOB, GPIOC, GPIOD, GPIOE, GPIOH)
- * 			-Pin			(PIN0->PIN15)
+ * @param	-Port			(GPIO_PORTA, GPIO_PORTB, GPIO_PORTC, GPIO_PORTD, GPIO_PORTE, GPIO_PORTH)
+ * 			-Pin			(GPIO_PIN0->GPIO_PIN15)
  * 			-*Value			(GPIO_LOW/GPIO_HIGH)
  *
  * @error	Error Status    GPIO_InvalidParameter/ GPIO_Ok / GPIO_NullPointer
  */
-GPIO_ErrorStatus_t GPIO_GetPinValue(void*Port, u8 Pin, u8*Value);
+GPIO_ErrorStatus_t GPIO_GetPinValue(void*Port, u8 Pin, u32*Value);
 #endif
