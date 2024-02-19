@@ -54,7 +54,8 @@ volatile RCC_Peri_t *RCC=(volatile RCC_Peri_t *)RCC_BA;
 /**
  * @brief  		 Function to Enable HSI, HSE, PLL -> On/Off
  *
- * @param   	 - Clock (CLOCK_HSI, CLOCK_HSE, CLOCK_PLL)
+ * @param   	 - ClockRegisterAddress (RCC_CR,RCC_BDCR,RCC_CSR)
+ * 				 - Clock (CLOCK_HSI, CLOCK_HSE, CLOCK_PLL)
  *
  * @return		  Error Status
  *         		 - If Input Parameters are out of range -> ***Input Parameter Error***
@@ -63,17 +64,18 @@ volatile RCC_Peri_t *RCC=(volatile RCC_Peri_t *)RCC_BA;
  * 				   "RCC_CheckReadyClk()" Function
  *
  */
-RCC_ErrorStatus_t RCC_EnableClock (u32 Clock)
+RCC_ErrorStatus_t RCC_EnableClock  (u32*ClockRegisterAddress,u32 Clock)
 {
 	RCC_ErrorStatus_t RET_ErrorStatus=RCC_Ok;
-	if(!(Clock==CLOCK_HSI||Clock==CLOCK_HSE||Clock==CLOCK_PLL))
+	if(!(Clock==CLOCK_HSI||Clock==CLOCK_HSE||Clock==CLOCK_PLL||Clock==CLOCK_LSI
+	  || Clock==CLOCK_LSE||Clock==CLOCK_PLLI2S))
 	{
 		RET_ErrorStatus=RCC_InvalidParameter;
 	}
 	else
 	{
 		RET_ErrorStatus=RCC_Ok;
-		RCC->CR|=Clock;
+		*(ClockRegisterAddress)|=Clock;
 	}
 	return RET_ErrorStatus;
 }
@@ -81,7 +83,8 @@ RCC_ErrorStatus_t RCC_EnableClock (u32 Clock)
 /**
  * @brief   	 Function to Disable HSI, HSE, PLL -> On/Off
  *
- * @param   	 - Clock (CLOCK_HSI, CLOCK_HSE, CLOCK_PLL)
+ * @param   	 - ClockRegisterAddress (RCC_CR,RCC_BDCR,RCC_CSR)
+ * 				 - Clock (CLOCK_HSI, CLOCK_HSE, CLOCK_PLL)
  *
  * @return  	 Error Status
  *          	 - If Input Parameters are out of range -> ***Input Parameter Error***
@@ -90,17 +93,18 @@ RCC_ErrorStatus_t RCC_EnableClock (u32 Clock)
  * 				   Use the function "" to check if the clock is selected as a System Clock.
  *
  */
-RCC_ErrorStatus_t RCC_DisableClock (u32 Clock)
+RCC_ErrorStatus_t RCC_DisableClock (u32*ClockRegisterAddress,u32 Clock)
 {
 	RCC_ErrorStatus_t RET_ErrorStatus=RCC_Ok;
-	if(!(Clock==CLOCK_HSI||Clock==CLOCK_HSE||Clock==CLOCK_PLL))
+	if(!(Clock==CLOCK_HSI||Clock==CLOCK_HSE||Clock==CLOCK_PLL||Clock==CLOCK_LSI
+	  || Clock==CLOCK_LSE||Clock==CLOCK_PLLI2S))
 	{
 		RET_ErrorStatus=RCC_InvalidParameter;
 	}
 	else
 	{
 		RET_ErrorStatus=RCC_Ok;
-		RCC->CR&=~Clock;
+		*(ClockRegisterAddress)&=~Clock;
 	}
 	return RET_ErrorStatus;
 }
@@ -359,23 +363,24 @@ RCC_ErrorStatus_t RCC_ConfigurePLL(PLLCfgOptions_t*PLLCfg)
 /**
  * @brief   Function to Check if Clock is Ready
  *
- * @param   - Ready Mask for Clock (MASK_HSIRDY, MASK_HSERDY, MASK_PLLRDY)
+ * @param   - ClockRegisterAddress (RCC_CR,RCC_BDCR,RCC_CSR)
+ * 			- Ready Mask for Clock (MASK_HSIRDY, MASK_HSERDY, MASK_PLLRDY, MASK_LSIRDY, MASKLSERDY,MASKPLLI2SRDY)
  *
  * @return  Error Status
  *          - If Input Parameters are out of range -> ***Input Parameter Error***
  *          - If Clock is not ready -> ***Not Ready Error***
- *
  */
-RCC_ErrorStatus_t RCC_CheckReadyClk(u32 ReadyMask)
+RCC_ErrorStatus_t RCC_CheckReadyClk(u32*ClockRegisterAddress,u32 ReadyMask)
 {
 	RCC_ErrorStatus_t RET_ErrorStatus=RCC_Ok;
-	if(!((ReadyMask==MASK_HSIRDY)||(ReadyMask==MASK_HSERDY)||(ReadyMask==MASK_PLLRDY)))
+	if(!((ReadyMask==MASK_HSIRDY)||(ReadyMask==MASK_HSERDY)||(ReadyMask==MASK_PLLRDY)||
+		(ReadyMask==MASK_HSIRDY)||(ReadyMask==MASK_HSIRDY)||(ReadyMask==MASK_HSIRDY)))
 	{
 		RET_ErrorStatus=RCC_InvalidParameter;
 	}
 	else
 	{
-		if(!(RCC->CR&ReadyMask))
+		if(!(*(ClockRegisterAddress)&ReadyMask))
 		{
 			RET_ErrorStatus=RCC_NotReady;
 		}

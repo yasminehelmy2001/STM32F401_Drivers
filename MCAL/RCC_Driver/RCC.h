@@ -28,6 +28,9 @@
 #define CLOCK_HSI						0x00000001
 #define CLOCK_HSE						0x00010000
 #define CLOCK_PLL						0x01000000
+#define CLOCK_LSI						0x00000001
+#define CLOCK_LSE						0x00000001
+#define CLOCK_PLLI2S					0x04000000
 
 /**************************************************************************/
 /*						Ready Clock Mask				 				  */
@@ -35,6 +38,9 @@
 #define MASK_HSIRDY						0x00000002
 #define MASK_HSERDY						0x00020000
 #define MASK_PLLRDY						0x02000000
+#define MASK_PLLI2SRDY					0x08000000
+#define MASK_LSIRDY						0x00000002
+#define MASK_LSERDY						0x00000002
 /**************************************************************************/
 /*						PLL Clock Options	 			 				  */
 /**************************************************************************/
@@ -137,6 +143,13 @@
 #define APB2							((volatile u32*)0x40023844)
 
 /**************************************************************************/
+/*						CLOCK ENABLE BUS ADDRESSES					 	  */
+/**************************************************************************/
+#define RCC_CR             		     	((volatile u32*)0x40023800)
+#define RCC_BDCR              		  	((volatile u32*)0x40023870)
+#define RCC_CSR                 		((volatile u32*)0x40023874)
+
+/**************************************************************************/
 /*						PLL CFG Struct			 					 	  */
 /**************************************************************************/
 typedef struct
@@ -176,12 +189,12 @@ typedef struct
 	volatile u32 APB1LPENR;
 	volatile u32 APB2LPENR;
 	volatile u32 Reserved6[2];
-	volatile u32 RCC_BDCR;
-	volatile u32 RCC_CSR;
+	volatile u32 BDCR;
+	volatile u32 CSR;
 	volatile u32 Reserved7[2];
-	volatile u32 RCC_SSCGR;
-	volatile u32 RCC_PLLI2SCFGR;
-	volatile u32 RCC_DCKCFGR;
+	volatile u32 SSCGR;
+	volatile u32 PLLI2SCFGR;
+	volatile u32 DCKCFGR;
 }RCC_Peri_t;
 
 /**************************************************************************/
@@ -204,7 +217,8 @@ typedef enum
 /**
  * @brief  		 Function to Enable HSI, HSE, PLL -> On/Off
  *
- * @param   	 - Clock (CLOCK_HSI, CLOCK_HSE, CLOCK_PLL)
+ * @param   	 - ClockRegisterAddress (RCC_CR,RCC_BDCR,RCC_CSR)
+ * 				 - Clock (CLOCK_HSI, CLOCK_HSE, CLOCK_PLL)
  *
  * @return		  Error Status
  *         		 - If Input Parameters are out of range -> ***Input Parameter Error***
@@ -213,12 +227,13 @@ typedef enum
  * 				   "RCC_CheckReadyClk()" Function
  *
  */
-RCC_ErrorStatus_t RCC_EnableClock  (u32 Clock);
+RCC_ErrorStatus_t RCC_EnableClock  (u32*ClockRegisterAddress,u32 Clock);
 
 /**
  * @brief   	 Function to Disable HSI, HSE, PLL -> On/Off
  *
- * @param   	 - Clock (CLOCK_HSI, CLOCK_HSE, CLOCK_PLL)
+ * @param   	 - ClockRegisterAddress (RCC_CR,RCC_BDCR,RCC_CSR)
+ * 				 - Clock (CLOCK_HSI, CLOCK_HSE, CLOCK_PLL)
  *
  * @return  	 Error Status
  *          	 - If Input Parameters are out of range -> ***Input Parameter Error***
@@ -227,7 +242,7 @@ RCC_ErrorStatus_t RCC_EnableClock  (u32 Clock);
  * 				   Use the function "" to check if the clock is selected as a System Clock.
  *
  */
-RCC_ErrorStatus_t RCC_DisableClock  (u32 Clock);
+RCC_ErrorStatus_t RCC_DisableClock  (u32*ClockRegisterAddress,u32 Clock);
 
 /**
  * @brief   	  Function to Select a System Clock
@@ -327,13 +342,14 @@ RCC_ErrorStatus_t RCC_ConfigurePLL(PLLCfgOptions_t*PLLCfg);
 /**
  * @brief   Function to Check if Clock is Ready
  *
- * @param   - Ready Mask for Clock (MASK_HSIRDY, MASK_HSERDY, MASK_PLLRDY)
+ * @param   - ClockRegisterAddress (RCC_CR,RCC_BDCR,RCC_CSR)
+ * 			- Ready Mask for Clock (MASK_HSIRDY, MASK_HSERDY, MASK_PLLRDY, MASK_LSIRDY, MASKLSERDY,MASKPLLI2SRDY)
  *
  * @return  Error Status
  *          - If Input Parameters are out of range -> ***Input Parameter Error***
  *          - If Clock is not ready -> ***Not Ready Error***
  */
-RCC_ErrorStatus_t RCC_CheckReadyClk(u32 ReadyMask);
+RCC_ErrorStatus_t RCC_CheckReadyClk(u32*ClockRegisterAddress,u32 ReadyMask);
 
 
 #endif
