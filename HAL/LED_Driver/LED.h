@@ -23,7 +23,8 @@ typedef struct
 
 	u8 Pin;				/*(GPIO_PIN0 -> GPIO_PIN15)*/
 
-	u8 Connection; 		/* -LED_CONN_FOR: LED Connected to GND
+	u8 Connection; 		/**
+	 	 	 	 	 	 * -LED_CONN_FOR: LED Connected to GND
 						 * -LED_CONN_REV: LED Connected to VCC
 	 	 	 	 	 	 */
 
