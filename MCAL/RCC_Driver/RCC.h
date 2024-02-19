@@ -342,7 +342,7 @@ RCC_ErrorStatus_t RCC_ConfigurePLL(PLLCfgOptions_t*PLLCfg);
 /**
  * @brief   Function to Check if Clock is Ready
  *
- * @param   - ClockRegisterAddress (RCC_CR,RCC_BDCR,RCC_CSR)
+ * @param   - ClockRegisterAddress (RCC_HSI_HSE_PLL_PLLI2S_REG,RCC_LSE_REG,RCC_LSI_REG)
  * 			- Ready Mask for Clock (MASK_HSIRDY, MASK_HSERDY, MASK_PLLRDY, MASK_LSIRDY, MASKLSERDY,MASKPLLI2SRDY)
  *
  * @return  Error Status
