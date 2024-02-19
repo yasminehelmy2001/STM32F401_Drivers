@@ -13,10 +13,14 @@ extern const LedCfg_t Leds[_Led_Num];
 
 /**
  * @brief	Initializes all LEDS Pre-configured in LED_cfg.c
+ * @param	None
+ * @error	Error Status (LED_Ok / LED_Nok)
  */
-void LED_Init (void)
+LED_ErrorStatus_t LED_Init (void)
 {
 	GPIO_Pin_t LedPinCfg;
+	GPIO_ErrorStatus_t GPIO_ErrorStatus=GPIO_Ok;
+	LED_ErrorStatus_t RET_ErrorStatus= LED_Ok;
 	for(int i=0;i<_Led_Num;i++)
 	{
 		LedPinCfg.Port=Leds[i].Port;
@@ -24,7 +28,17 @@ void LED_Init (void)
 		LedPinCfg.Mode=MODE_OUTPUT_PP;
 		LedPinCfg.Speed=SPEED_HIGH;
 		LedPinCfg.AF_Choice=AF_DEACTIVATED;
-		GPIO_InitPin(&LedPinCfg);
+
+		GPIO_ErrorStatus=GPIO_InitPin(&LedPinCfg);
+
+		if(GPIO_ErrorStatus!=GPIO_Ok)
+		{
+			RET_ErrorStatus=LED_Nok;
+		}
+		else
+		{
+			//Do Nothing
+		}
 
 		if(Leds[i].InitialState==LED_ON)
 		{
@@ -36,6 +50,7 @@ void LED_Init (void)
 		}
 
 	}
+	return RET_ErrorStatus;
 }
 
 /**
@@ -46,7 +61,16 @@ void LED_Init (void)
  *
  * @error	Error Status (LED_Ok / LED_InvalidParameter)
  */
-void LED_SetStatus(u32 Led, u8 State)
+LED_ErrorStatus_t LED_SetStatus(u32 Led, u8 State)
 {
-	GPIO_SetPinValue(Leds[Led].Port, Leds[Led].Pin, Leds[Led].Connection^State);
+	LED_ErrorStatus_t RET_ErrorStatus= LED_Ok;
+	if(Led>=_Led_Num)
+	{
+		RET_ErrorStatus=LED_InvalidParameter;
+	}
+	else
+	{
+		GPIO_SetPinValue(Leds[Led].Port, Leds[Led].Pin, Leds[Led].Connection^State);
+	}
+	return RET_ErrorStatus;
 }

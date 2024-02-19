@@ -41,8 +41,10 @@ typedef enum
 
 /**
  * @brief	Initializes all LEDS Pre-configured in LED_cfg.c
+ * @param	None
+ * @error	Error Status (LED_Ok / LED_Nok)
  */
-void LED_Init(void);
+LED_ErrorStatus_t LED_Init(void);
 
 /**
  * @brief	Sets a LED State to either HIGH or LOW
@@ -52,6 +54,6 @@ void LED_Init(void);
  *
  * @error	Error Status (LED_Ok / LED_InvalidParameter)
  */
-void LED_SetStatus(u32 Led, u8 State);
+LED_ErrorStatus_t LED_SetStatus(u32 Led, u8 State);
 
 #endif
