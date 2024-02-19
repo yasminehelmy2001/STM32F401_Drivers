@@ -29,6 +29,7 @@ typedef struct
 	 	 	 	 	 	 */
 
 	u32 InitialState;	/*(LED_ON/LED_OFF)*/
+
 }LedCfg_t;
 
 typedef enum
