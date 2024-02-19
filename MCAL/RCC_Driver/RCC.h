@@ -145,9 +145,9 @@
 /**************************************************************************/
 /*						CLOCK ENABLE BUS ADDRESSES					 	  */
 /**************************************************************************/
-#define RCC_CR             		     	((volatile u32*)0x40023800)
-#define RCC_BDCR              		  	((volatile u32*)0x40023870)
-#define RCC_CSR                 		((volatile u32*)0x40023874)
+#define RCC_HSI_HSE_PLL_PLLI2S_REG          ((volatile u32*)0x40023800)
+#define RCC_LSE_REG              		  	((volatile u32*)0x40023870)
+#define RCC_LSI_REG                 		((volatile u32*)0x40023874)
 
 /**************************************************************************/
 /*						PLL CFG Struct			 					 	  */
@@ -217,8 +217,8 @@ typedef enum
 /**
  * @brief  		 Function to Enable HSI, HSE, PLL -> On/Off
  *
- * @param   	 - ClockRegisterAddress (RCC_CR,RCC_BDCR,RCC_CSR)
- * 				 - Clock (CLOCK_HSI, CLOCK_HSE, CLOCK_PLL)
+ * @param   	 - ClockRegisterAddress (RCC_HSI_HSE_PLL_PLLI2S_REG,RCC_LSE_REG,RCC_LSI_REG)
+ * 				 - Clock (CLOCK_HSI, CLOCK_HSE, CLOCK_PLL, CLOCK_PLLI2S, CLOCK_LSI, CLOCK_LSE)
  *
  * @return		  Error Status
  *         		 - If Input Parameters are out of range -> ***Input Parameter Error***
@@ -232,8 +232,8 @@ RCC_ErrorStatus_t RCC_EnableClock  (u32*ClockRegisterAddress,u32 Clock);
 /**
  * @brief   	 Function to Disable HSI, HSE, PLL -> On/Off
  *
- * @param   	 - ClockRegisterAddress (RCC_CR,RCC_BDCR,RCC_CSR)
- * 				 - Clock (CLOCK_HSI, CLOCK_HSE, CLOCK_PLL)
+ * @param   	 - ClockRegisterAddress (RCC_HSI_HSE_PLL_PLLI2S_REG,RCC_LSE_REG,RCC_LSI_REG)
+ * 				 - Clock (CLOCK_HSI, CLOCK_HSE, CLOCK_PLL, CLOCK_PLLI2S, CLOCK_LSI, CLOCK_LSE)
  *
  * @return  	 Error Status
  *          	 - If Input Parameters are out of range -> ***Input Parameter Error***
