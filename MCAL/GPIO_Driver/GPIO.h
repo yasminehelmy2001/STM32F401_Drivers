@@ -123,20 +123,24 @@ typedef struct
 /**************************************************************************/
 /*						GPIO Pin Configuration Struct	 			 	  */
 /**************************************************************************/
+
+/**
+ * @Note: Use 32-bit variables to avoid implicit casting
+ */
 typedef struct
 {
 	void* Port; 		 /* GPIO_PORTA, GPIO_PORTB, GPIO_PORTC, GPIO_PORTD, GPIO_PORTE, GPIO_PORTH */
-	u8 Pin;  			 /* GPIO_PIN0 -> GPIO_PIN15 */
+	u32 Pin;  			 /* GPIO_PIN0 -> GPIO_PIN15 */
 
-	u8 Speed;			 /* SPEED_LOW, SPEED_MEDIUM, SPEED_HIGH, SPEED_VERY_HIGH */
+	u32 Speed;			 /* SPEED_LOW, SPEED_MEDIUM, SPEED_HIGH, SPEED_VERY_HIGH */
 
-	u8 Mode;   		 	 /* # MACRO Starts with MODE_
+	u32 Mode;   		 	 /* # MACRO Starts with MODE_
   							# Selects mode from Input/Output/Alternating Function/Analog
  							# If Mode is Output -> Select whether Output Type is PP(Push Pull) or OD(Open Drain)
   							# Select if circuit is PU(Pull Up), PD(Pull Down), or Deactivated */
 
 
-	u8 AF_Choice; 		 /* # Macro begins with AF
+	u32 AF_Choice; 		 /* # Macro begins with AF
 							# Selects Alternating Function from 16 choices
 							# Choices: AF0->AF_15 or AF_DEACTIVATED
 							# You should enable your selected peripheral from RCC! */

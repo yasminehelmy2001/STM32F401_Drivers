@@ -66,21 +66,19 @@ GPIO_ErrorStatus_t GPIO_InitPin(GPIO_Pin_t*PinCfg)
 
 	u32 Pin= PinCfg->Pin;
 	u32 Speed= PinCfg->Speed;
-	u32 Mode= (PinCfg->Mode&MODE_MASK);
-	u32 OutputType=(PinCfg->Mode&OUTPUT_TYPE_MASK)>>SHIFT_4;
-	u32 PUPD= (PinCfg->Mode&PUPD_MASK)>>SHIFT_2;
+	u32 Direction_Mode= (PinCfg->Mode & MODE_MASK);
+	u32 OutputType=(PinCfg->Mode & OUTPUT_TYPE_MASK)>>SHIFT_4;
+	u32 PUPD= (PinCfg->Mode & PUPD_MASK)>>SHIFT_2;
 	u32 AF_Choice= PinCfg->AF_Choice;
 
-	if(!((Mode<=ANALOG_MODE)&&(OutputType<=OUTPUT_TYPE_DEACTIVATED) &&
+	if(!((Direction_Mode<=ANALOG_MODE)&&(OutputType<=OUTPUT_TYPE_DEACTIVATED) &&
 	  ((PUPD==PUPD_PULL_UP)||(PUPD==PUPD_PULL_DOWN)||(PUPD==PUPD_DEACTIVATED)) &&
 	  ((Port==GPIO_PORTA)||(Port==GPIO_PORTB)||(Port==GPIO_PORTC)|| (Port==GPIO_PORTD)||
 	  (Port==GPIO_PORTE)||(Port==GPIO_PORTH)) && (Pin<=GPIO_PIN15)))
 	{
 		RET_ErrorStatus=GPIO_InvalidParameter;
 	}
-	else if(((Mode==MODE_AF_OD)||(Mode==MODE_AF_OD_PD)||(Mode==MODE_AF_OD_PU)||
-		   (Mode==MODE_AF_PP)||(Mode==MODE_AF_PP_PD)||(Mode==MODE_AF_PP_PU))&&
-		   (AF_Choice==AF_DEACTIVATED))
+	else if((Direction_Mode==AF_MODE)&&(AF_Choice==AF_DEACTIVATED))
 	{
 		RET_ErrorStatus=GPIO_InvalidParameter;
 	}
@@ -98,7 +96,7 @@ GPIO_ErrorStatus_t GPIO_InitPin(GPIO_Pin_t*PinCfg)
 
 		u32 Loc_MODER= Port->MODER;
 		Loc_MODER&=~(TWO_BIT_MASK<<Pin*SHIFT_2);
-		Loc_MODER|=(Mode<<Pin*SHIFT_2);
+		Loc_MODER|=(Direction_Mode<<Pin*SHIFT_2);
 		Port->MODER= Loc_MODER;
 
 		u32 Loc_PUPDR= Port->PUPDR;
