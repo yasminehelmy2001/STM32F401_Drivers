@@ -94,33 +94,32 @@ GPIO_ErrorStatus_t GPIO_InitPin(GPIO_Pin_t*PinCfg)
 		}
 		else
 		{
-			u32 Loc_OSPEEDR= Port->OSPEEDR;
-			Loc_OSPEEDR&=~(TWO_BIT_MASK<<Pin*SHIFT_2);
-			Loc_OSPEEDR|=(Speed<<Pin*SHIFT_2);
-			Port->OSPEEDR= Loc_OSPEEDR;
+			u32 Loc_Register= Port->OSPEEDR;
+			Loc_Register&=~(TWO_BIT_MASK<<Pin*SHIFT_2);
+			Loc_Register|=(Speed<<Pin*SHIFT_2);
+			Port->OSPEEDR= Loc_Register;
 
-			u32 Loc_MODER= Port->MODER;
-			Loc_MODER&=~(TWO_BIT_MASK<<Pin*SHIFT_2);
-			Loc_MODER|=(Direction_Mode<<Pin*SHIFT_2);
-			Port->MODER= Loc_MODER;
+			Loc_Register= Port->MODER;
+			Loc_Register&=~(TWO_BIT_MASK<<Pin*SHIFT_2);
+			Loc_Register|=(Direction_Mode<<Pin*SHIFT_2);
+			Port->MODER= Loc_Register;
 
-			u32 Loc_PUPDR= Port->PUPDR;
-			Loc_PUPDR&=~(TWO_BIT_MASK<<Pin*SHIFT_2);
-			Loc_PUPDR|=(PUPD<<Pin*SHIFT_2);
-			Port->PUPDR=Loc_PUPDR;
+			Loc_Register= Port->PUPDR;
+			Loc_Register&=~(TWO_BIT_MASK<<Pin*SHIFT_2);
+			Loc_Register|=(PUPD<<Pin*SHIFT_2);
+			Port->PUPDR=Loc_Register;
 
-			u32 Loc_OTYPER=Port->OTYPER;
-			Loc_OTYPER&=~(ONE_BIT_MASK<<Pin);
-			Loc_OTYPER|=(OutputType<<Pin);
-			Port->OTYPER=Loc_OTYPER;
+			Loc_Register=Port->OTYPER;
+			Loc_Register&=~(ONE_BIT_MASK<<Pin);
+			Loc_Register|=(OutputType<<Pin);
+			Port->OTYPER=Loc_Register;
 
 			if(AF_Choice!=AF_DEACTIVATED)
 			{
-				u32 Loc_AFRx;
-				(Pin>GPIO_PIN8)?(Loc_AFRx=Port->AFRH):(Loc_AFRx=Port->AFRL);
-				Loc_AFRx&=~(FOUR_BIT_MASK<<Pin*SHIFT_4);
-				Loc_AFRx|=(AF_Choice<<Pin*SHIFT_4);
-				(Pin>GPIO_PIN8)?(Port->AFRH=Loc_AFRx):(Port->AFRL=Loc_AFRx);
+				(Pin>GPIO_PIN8)?(Loc_Register=Port->AFRH):(Loc_Register=Port->AFRL);
+				Loc_Register&=~(FOUR_BIT_MASK<<Pin*SHIFT_4);
+				Loc_Register|=(AF_Choice<<Pin*SHIFT_4);
+				(Pin>GPIO_PIN8)?(Port->AFRH=Loc_Register):(Port->AFRL=Loc_Register);
 			}
 			else
 			{
