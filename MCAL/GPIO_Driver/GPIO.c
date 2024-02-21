@@ -231,25 +231,31 @@ GPIO_ErrorStatus_t GPIO_InitPin(GPIO_Pin_t*PinCfg)
  *
  * @error	Error Status    GPIO_InvalidParameter/ GPIO_Ok / GPIO_NullPointer
  */
-GPIO_ErrorStatus_t GPIO_SetPinValue(void*Port, u8 Pin,u32 Value)
+GPIO_ErrorStatus_t GPIO_SetPinValue(void*Port, u32 Pin,u32 Value)
 {
 	GPIO_ErrorStatus_t RET_ErrorStatus=GPIO_Ok;
-    GPIO_Registers_t* Loc_Port = (GPIO_Registers_t*)Port;
-    if(!(((Value==GPIO_SET_PIN)||(Value==GPIO_RESET_PIN))&&
-      ((Port==GPIO_PORTA)||(Port==GPIO_PORTB)||(Port==GPIO_PORTC)
-      ||(Port==GPIO_PORTD)||(Port==GPIO_PORTE)||(Port==GPIO_PORTH))))
+
+	if(Port==NULL)
+	{
+    	RET_ErrorStatus=GPIO_NullPointer;
+	}
+	else if(!(IS_GPIO_PORT(Port)))
 	{
 		RET_ErrorStatus=GPIO_InvalidParameter;
 	}
-    else if(Port==NULL)
-    {
-    	RET_ErrorStatus=GPIO_NullPointer;
-    }
+	else if(!(IS_GPIO_PORT(Pin)))
+	{
+		RET_ErrorStatus=GPIO_InvalidParameter;
+	}
+    else if(!((Value==GPIO_SET_PIN)||(Value==GPIO_RESET_PIN)))
+	{
+		RET_ErrorStatus=GPIO_InvalidParameter;
+	}
     else
     {
+        GPIO_Registers_t* Loc_Port = (GPIO_Registers_t*)Port;
         Loc_Port->BSRR = (Value<<Pin);
     }
-
 	return RET_ErrorStatus;
 }
 
@@ -262,7 +268,7 @@ GPIO_ErrorStatus_t GPIO_SetPinValue(void*Port, u8 Pin,u32 Value)
  *
  * @error	Error Status    GPIO_InvalidParameter/ GPIO_Ok / GPIO_NullPointer
  */
-GPIO_ErrorStatus_t GPIO_GetPinValue(void*Port, u8 Pin,u32*Value)
+GPIO_ErrorStatus_t GPIO_GetPinValue(void*Port, u32 Pin,u32*Value)
 {
 	GPIO_ErrorStatus_t RET_ErrorStatus=GPIO_Ok;
     GPIO_Registers_t* Loc_Port = (GPIO_Registers_t*)Port;
@@ -271,7 +277,14 @@ GPIO_ErrorStatus_t GPIO_GetPinValue(void*Port, u8 Pin,u32*Value)
 	{
 		RET_ErrorStatus=GPIO_NullPointer;
 	}
-
+	else if(!(IS_GPIO_PORT(Port)))
+	{
+		RET_ErrorStatus=GPIO_InvalidParameter;
+	}
+	else if(!(IS_GPIO_PORT(Pin)))
+	{
+		RET_ErrorStatus=GPIO_InvalidParameter;
+	}
 	else
 	{
 		*Value=Loc_Port->IDR&(1<<Pin);

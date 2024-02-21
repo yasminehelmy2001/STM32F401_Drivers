@@ -24,83 +24,83 @@
 /**************************************************************************/
 /*						PIN MACROS				 					 	  */
 /**************************************************************************/
-#define GPIO_PIN0						0
-#define GPIO_PIN1						1
-#define GPIO_PIN2						2
-#define GPIO_PIN3						3
-#define GPIO_PIN4						4
-#define GPIO_PIN5						5
-#define GPIO_PIN6						6
-#define GPIO_PIN7						7
-#define GPIO_PIN8						8
-#define GPIO_PIN9						9
-#define GPIO_PIN10						10
-#define GPIO_PIN11						11
-#define GPIO_PIN12						12
-#define GPIO_PIN13						13
-#define GPIO_PIN14						14
-#define GPIO_PIN15						15
+#define GPIO_PIN0						(0UL)
+#define GPIO_PIN1						(1UL)
+#define GPIO_PIN2						(2UL)
+#define GPIO_PIN3						(3UL)
+#define GPIO_PIN4						(4UL)
+#define GPIO_PIN5						(5UL)
+#define GPIO_PIN6						(6UL)
+#define GPIO_PIN7						(7UL)
+#define GPIO_PIN8						(8UL)
+#define GPIO_PIN9						(9UL)
+#define GPIO_PIN10						(10UL)
+#define GPIO_PIN11						(11UL)
+#define GPIO_PIN12						(12UL)
+#define GPIO_PIN13						(13UL)
+#define GPIO_PIN14						(14UL)
+#define GPIO_PIN15						(15UL)
 
 /**************************************************************************/
 /*						ALTERNATING FUNCTION OPTION  MACROS	 		 	  */
 /**************************************************************************/
-#define AF0							(0U)
-#define AF1							(1U)
-#define AF2							(2U)
-#define AF3							(3U)
-#define AF4							(4U)
-#define AF5							(5U)
-#define AF6							(6U)
-#define AF7							(7U)
-#define AF8							(8U)
-#define AF9							(9U)
-#define AF10						(10U)
-#define AF11						(11U)
-#define AF12						(12U)
-#define AF13						(13U)
-#define AF14						(14U)
-#define AF15						(15U)
-#define AF_DEACTIVATED				(16U)
+#define AF0								(0UL)
+#define AF1								(1UL)
+#define AF2								(2UL)
+#define AF3								(3UL)
+#define AF4								(4UL)
+#define AF5								(5UL)
+#define AF6								(6UL)
+#define AF7								(7UL)
+#define AF8								(8UL)
+#define AF9								(9UL)
+#define AF10							(10UL)
+#define AF11							(11UL)
+#define AF12							(12UL)
+#define AF13							(13UL)
+#define AF14							(14UL)
+#define AF15							(15UL)
+#define AF_DEACTIVATED					(16UL)
 
 /**************************************************************************/
 /*						MODES MACROS								 	  */
 /**************************************************************************/
-#define MODE_OUTPUT_PP				0x01
-#define MODE_OUTPUT_PP_PU			0x05
-#define MODE_OUTPUT_PP_PD			0x09
-#define MODE_OUTPUT_OD				0x11
-#define MODE_OUTPUT_OD_PU			0x15
-#define MODE_OUTPUT_OD_PD			0x19
-#define MODE_AF_PP					0x02
-#define MODE_AF_PP_PU				0x06
-#define MODE_AF_PP_PD				0x0A
-#define MODE_AF_OD					0x0C
-#define MODE_AF_OD_PU				0x16
-#define MODE_AF_OD_PD				0x1A
-#define MODE_INPUT_FLOATING			0x00
-#define MODE_INPUT_PU				0x04
-#define MODE_INPUT_PD				0x08
-#define MODE_ANALOG					0x03
+#define MODE_OUTPUT_PP					0x01
+#define MODE_OUTPUT_PP_PU				0x05
+#define MODE_OUTPUT_PP_PD				0x09
+#define MODE_OUTPUT_OD					0x11
+#define MODE_OUTPUT_OD_PU				0x15
+#define MODE_OUTPUT_OD_PD				0x19
+#define MODE_AF_PP						0x02
+#define MODE_AF_PP_PU					0x06
+#define MODE_AF_PP_PD					0x0A
+#define MODE_AF_OD						0x0C
+#define MODE_AF_OD_PU					0x16
+#define MODE_AF_OD_PD					0x1A
+#define MODE_INPUT_FLOATING				0x00
+#define MODE_INPUT_PU					0x04
+#define MODE_INPUT_PD					0x08
+#define MODE_ANALOG						0x03
 
 /**************************************************************************/
 /*						SPEED MACROS			 					 	  */
 /**************************************************************************/
-#define SPEED_LOW					(0U)
-#define SPEED_MEDIUM				(1U)
-#define SPEED_HIGH					(2U)
-#define SPEED_VERY_HIGH				(3U)
+#define SPEED_LOW						(0UL)
+#define SPEED_MEDIUM					(1UL)
+#define SPEED_HIGH						(2UL)
+#define SPEED_VERY_HIGH					(3UL)
 
 /**************************************************************************/
 /*						GPIO BIT SET/RESET MACRO					 	  */
 /**************************************************************************/
-#define GPIO_RESET_PIN				0x00010000
-#define GPIO_SET_PIN				0x00000001
+#define GPIO_RESET_PIN					0x00010000
+#define GPIO_SET_PIN					0x00000001
 
 /**************************************************************************/
 /*						GPIO LOW/HIGH MACRO		 					 	  */
 /**************************************************************************/
-#define GPIO_LOW					(0U)
-#define GPIO_HIGH					(1U)
+#define GPIO_LOW						(0U)
+#define GPIO_HIGH						(1U)
 
 /**************************************************************************/
 /*						GPIO Registers Struct			 			 	  */
@@ -200,7 +200,7 @@ GPIO_ErrorStatus_t GPIO_InitPin(GPIO_Pin_t*PinCfg);
  *
  * @error	Error Status    GPIO_InvalidParameter/ GPIO_Ok / GPIO_NullPointer
  */
-GPIO_ErrorStatus_t GPIO_SetPinValue(void*Port, u8 Pin,u32 Value );
+GPIO_ErrorStatus_t GPIO_SetPinValue(void*Port, u32 Pin,u32 Value );
 
 /**
  * @brief	Function that Gets a GPIO Pin Value
@@ -211,5 +211,5 @@ GPIO_ErrorStatus_t GPIO_SetPinValue(void*Port, u8 Pin,u32 Value );
  *
  * @error	Error Status    GPIO_InvalidParameter/ GPIO_Ok / GPIO_NullPointer
  */
-GPIO_ErrorStatus_t GPIO_GetPinValue(void*Port, u8 Pin, u32*Value);
+GPIO_ErrorStatus_t GPIO_GetPinValue(void*Port, u32 Pin, u32*Value);
 #endif
