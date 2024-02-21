@@ -8,29 +8,111 @@
 
 #include "GPIO.h"
 
-#define ONE_BIT_MASK					0x00000001
-#define TWO_BIT_MASK					0x00000003
-#define FOUR_BIT_MASK					0x0000000F
+#define ONE_BIT_MASK						0x00000001
+#define TWO_BIT_MASK						0x00000003
+#define FOUR_BIT_MASK						0x0000000F
 
-#define MODE_MASK						0x03
-#define OUTPUT_TYPE_MASK				0x10
-#define PUPD_MASK						0x0C
+#define MODE_MASK							0x03
+#define OUTPUT_TYPE_MASK					0x10
+#define PUPD_MASK							0x0C
 
-#define SHIFT_2							(2U)
-#define SHIFT_4							(4U)
+#define SHIFT_2								(2U)
+#define SHIFT_4								(4U)
 
-#define INPUT_MODE						(0U)
-#define OUTPUT_MODE						(1U)
-#define AF_MODE							(2U)
-#define ANALOG_MODE						(3U)
+#define INPUT_MODE							(0U)
+#define OUTPUT_MODE							(1U)
+#define AF_MODE								(2U)
+#define ANALOG_MODE							(3U)
 
-#define PUPD_DEACTIVATED				(0U)
-#define PUPD_PULL_UP					(1U)
-#define PUPD_PULL_DOWN					(2U)
+#define PUPD_DEACTIVATED					(0U)
+#define PUPD_PULL_UP						(1U)
+#define PUPD_PULL_DOWN						(2U)
 
-#define OUTPUT_TYPE_PP					(0U)
-#define OUTPUT_TYPE_OD					(1U)
-#define OUTPUT_TYPE_DEACTIVATED			(2U)
+#define OUTPUT_TYPE_PP						(0U)
+#define OUTPUT_TYPE_OD						(1U)
+#define OUTPUT_TYPE_DEACTIVATED				(2U)
+
+#define IS_GPIO_MODE(MODE)					(((MODE) == MODE_OUTPUT_PP)          ||\
+											((MODE) == MODE_OUTPUT_PP_PU)        ||\
+											((MODE) == MODE_OUTPUT_PP_PD)        ||\
+											((MODE) == MODE_OUTPUT_OD)           ||\
+											((MODE) == MODE_OUTPUT_OD_PU)        ||\
+											((MODE) == MODE_OUTPUT_OD_PD)        ||\
+											((MODE) == MODE_AF_PP)               ||\
+											((MODE) == MODE_AF_PP_PU)            ||\
+											((MODE) == MODE_AF_PP_PD)            ||\
+											((MODE) == MODE_AF_OD)               ||\
+											((MODE) == MODE_AF_OD_PU)            ||\
+											((MODE) == MODE_AF_OD_PD)            ||\
+											((MODE) == MODE_INPUT_FLOATING)      ||\
+											((MODE) == MODE_INPUT_PU)            ||\
+											((MODE) == MODE_INPUT_PD)            ||\
+											((MODE) == MODE_ANALOG))
+
+#define	IS_GPIO_SPEED(SPEED)				(((SPEED) == SPEED_LOW)         	||\
+                              	  			((SPEED) == SPEED_MEDIUM)      		||\
+											((SPEED) == SPEED_HIGH)        		||\
+											((SPEED) == SPEED_VERY_HIGH))
+
+#define IS_GPIO_PORT(PORT)					(((PORT) == GPIO_PORTA)				||\
+											((PORT) == GPIO_PORTB)				||\
+											((PORT) == GPIO_PORTC)				||\
+											((PORT) == GPIO_PORTD)				||\
+											((PORT) == GPIO_PORTE)				||\
+											((PORT) == GPIO_PORTH))
+
+#define IS_GPIO_PIN(PIN) 		  			(((PIN) == GPIO_PIN0) 				||\
+								  			((PIN) == GPIO_PIN1)  				||\
+											((PIN) == GPIO_PIN2)  				||\
+											((PIN) == GPIO_PIN3)  				||\
+											((PIN) == GPIO_PIN4)  				||\
+											((PIN) == GPIO_PIN5)  				||\
+											((PIN) == GPIO_PIN6)  				||\
+											((PIN) == GPIO_PIN7)  				||\
+											((PIN) == GPIO_PIN8)  				||\
+											((PIN) == GPIO_PIN9)  				||\
+											((PIN) == GPIO_PIN10) 				||\
+											((PIN) == GPIO_PIN11) 				||\
+											((PIN) == GPIO_PIN12) 				||\
+											((PIN) == GPIO_PIN13) 				||\
+											((PIN) == GPIO_PIN14) 				||\
+											((PIN) == GPIO_PIN15))
+
+#define IS_GPIO_AF(AF) 						(((AF) == AF0)           			||\
+											((AF) == AF1)           			||\
+											((AF) == AF2)           			||\
+											((AF) == AF3)           			||\
+											((AF) == AF4)           			||\
+											((AF) == AF5)           			||\
+											((AF) == AF6)           			||\
+											((AF) == AF7)           			||\
+											((AF) == AF8)           			||\
+											((AF) == AF9)           			||\
+											((AF) == AF10)          			||\
+											((AF) == AF11)          			||\
+											((AF) == AF12)          			||\
+											((AF) == AF13)          			||\
+											((AF) == AF14)          			||\
+											((AF) == AF15)          			||\
+											((AF) == AF_DEACTIVATED))
+
+#define IS_GPIO_CORRECT_AF_CFG(MODE,AF)		((((MODE) == MODE_AF_PP)              ||\
+											((MODE) == MODE_AF_PP_PU)            ||\
+											((MODE) == MODE_AF_PP_PD)            ||\
+											((MODE) == MODE_AF_OD)               ||\
+											((MODE) == MODE_AF_OD_PU)            ||\
+											((MODE) == MODE_AF_OD_PD))			 &&\
+											((AF)==AF_DEACTIVATED))				   \
+																				 ||\
+																				   \
+											((!(((MODE) == MODE_AF_PP)            ||\
+											((MODE) == MODE_AF_PP_PU)            ||\
+											((MODE) == MODE_AF_PP_PD)            ||\
+											((MODE) == MODE_AF_OD)               ||\
+											((MODE) == MODE_AF_OD_PU)            ||\
+											((MODE) == MODE_AF_OD_PD)))			 &&\
+											(!((AF)==AF_DEACTIVATED)))
+
 
 /**
  * @brief	Function that Initializes a GPIO PIN
@@ -70,10 +152,33 @@ GPIO_ErrorStatus_t GPIO_InitPin(GPIO_Pin_t*PinCfg)
 	{
 		RET_ErrorStatus=GPIO_NullPointer;
 	}
+	else if(!(IS_GPIO_PORT(PinCfg->Port)))
+	{
+		RET_ErrorStatus=GPIO_InvalidParameter;
+	}
+	else if(!(IS_GPIO_PIN(PinCfg->Pin)))
+	{
+		RET_ErrorStatus=GPIO_InvalidParameter;
+	}
+	else if(!(IS_GPIO_MODE(PinCfg->Mode)))
+	{
+		RET_ErrorStatus=GPIO_InvalidParameter;
+	}
+	else if(!(IS_GPIO_SPEED(PinCfg->Speed)))
+	{
+		RET_ErrorStatus=GPIO_InvalidParameter;
+	}
+	else if(!(IS_GPIO_AF(PinCfg->AF_Choice)))
+	{
+		RET_ErrorStatus=GPIO_InvalidParameter;
+	}
+	else if(!(IS_GPIO_CORRECT_AF_CFG(PinCfg->Mode,PinCfg->AF_Choice)))
+	{
+		RET_ErrorStatus=GPIO_InvalidParameter;
+	}
 	else
 	{
 		GPIO_Registers_t volatile *Port= (GPIO_Registers_t volatile *) (PinCfg->Port);
-
 		u32 Pin= PinCfg->Pin;
 		u32 Speed= PinCfg->Speed;
 		u32 Direction_Mode= (PinCfg->Mode & MODE_MASK);
@@ -81,52 +186,38 @@ GPIO_ErrorStatus_t GPIO_InitPin(GPIO_Pin_t*PinCfg)
 		u32 PUPD= (PinCfg->Mode & PUPD_MASK)>>SHIFT_2;
 		u32 AF_Choice= PinCfg->AF_Choice;
 
-		if(!((Direction_Mode<=ANALOG_MODE)&&(OutputType<=OUTPUT_TYPE_DEACTIVATED) &&
-		  ((PUPD==PUPD_PULL_UP)||(PUPD==PUPD_PULL_DOWN)||(PUPD==PUPD_DEACTIVATED)) &&
-		  ((Port==GPIO_PORTA)||(Port==GPIO_PORTB)||(Port==GPIO_PORTC)|| (Port==GPIO_PORTD)||
-		  (Port==GPIO_PORTE)||(Port==GPIO_PORTH)) && (Pin<=GPIO_PIN15)))
+		u32 Loc_Register= Port->OSPEEDR;
+		Loc_Register&=~(TWO_BIT_MASK<<Pin*SHIFT_2);
+		Loc_Register|=(Speed<<Pin*SHIFT_2);
+		Port->OSPEEDR= Loc_Register;
+
+		Loc_Register= Port->MODER;
+		Loc_Register&=~(TWO_BIT_MASK<<Pin*SHIFT_2);
+		Loc_Register|=(Direction_Mode<<Pin*SHIFT_2);
+		Port->MODER= Loc_Register;
+
+		Loc_Register= Port->PUPDR;
+		Loc_Register&=~(TWO_BIT_MASK<<Pin*SHIFT_2);
+		Loc_Register|=(PUPD<<Pin*SHIFT_2);
+		Port->PUPDR=Loc_Register;
+
+		Loc_Register=Port->OTYPER;
+		Loc_Register&=~(ONE_BIT_MASK<<Pin);
+		Loc_Register|=(OutputType<<Pin);
+		Port->OTYPER=Loc_Register;
+
+		if(AF_Choice!=AF_DEACTIVATED)
 		{
-			RET_ErrorStatus=GPIO_InvalidParameter;
-		}
-		else if((Direction_Mode==AF_MODE)&&(AF_Choice==AF_DEACTIVATED))
-		{
-			RET_ErrorStatus=GPIO_InvalidParameter;
+			(Pin>GPIO_PIN8)?(Loc_Register=Port->AFRH):(Loc_Register=Port->AFRL);
+			Loc_Register&=~(FOUR_BIT_MASK<<Pin*SHIFT_4);
+			Loc_Register|=(AF_Choice<<Pin*SHIFT_4);
+			(Pin>GPIO_PIN8)?(Port->AFRH=Loc_Register):(Port->AFRL=Loc_Register);
 		}
 		else
 		{
-			u32 Loc_Register= Port->OSPEEDR;
-			Loc_Register&=~(TWO_BIT_MASK<<Pin*SHIFT_2);
-			Loc_Register|=(Speed<<Pin*SHIFT_2);
-			Port->OSPEEDR= Loc_Register;
-
-			Loc_Register= Port->MODER;
-			Loc_Register&=~(TWO_BIT_MASK<<Pin*SHIFT_2);
-			Loc_Register|=(Direction_Mode<<Pin*SHIFT_2);
-			Port->MODER= Loc_Register;
-
-			Loc_Register= Port->PUPDR;
-			Loc_Register&=~(TWO_BIT_MASK<<Pin*SHIFT_2);
-			Loc_Register|=(PUPD<<Pin*SHIFT_2);
-			Port->PUPDR=Loc_Register;
-
-			Loc_Register=Port->OTYPER;
-			Loc_Register&=~(ONE_BIT_MASK<<Pin);
-			Loc_Register|=(OutputType<<Pin);
-			Port->OTYPER=Loc_Register;
-
-			if(AF_Choice!=AF_DEACTIVATED)
-			{
-				(Pin>GPIO_PIN8)?(Loc_Register=Port->AFRH):(Loc_Register=Port->AFRL);
-				Loc_Register&=~(FOUR_BIT_MASK<<Pin*SHIFT_4);
-				Loc_Register|=(AF_Choice<<Pin*SHIFT_4);
-				(Pin>GPIO_PIN8)?(Port->AFRH=Loc_Register):(Port->AFRL=Loc_Register);
-			}
-			else
-			{
-				//Do Nothing
-			}
-
+			//Do Nothing
 		}
+
 	}
 	return RET_ErrorStatus;
 }
