@@ -12,25 +12,12 @@
 #define TWO_BIT_MASK						0x00000003
 #define FOUR_BIT_MASK						0x0000000F
 
-#define MODE_MASK							0x03
-#define OUTPUT_TYPE_MASK					0x10
-#define PUPD_MASK							0x0C
+#define MODE_MASK							0x00000003
+#define OUTPUT_TYPE_MASK					0x00000010
+#define PUPD_MASK							0x0000000C
 
 #define SHIFT_2								(2U)
 #define SHIFT_4								(4U)
-
-#define INPUT_MODE							(0U)
-#define OUTPUT_MODE							(1U)
-#define AF_MODE								(2U)
-#define ANALOG_MODE							(3U)
-
-#define PUPD_DEACTIVATED					(0U)
-#define PUPD_PULL_UP						(1U)
-#define PUPD_PULL_DOWN						(2U)
-
-#define OUTPUT_TYPE_PP						(0U)
-#define OUTPUT_TYPE_OD						(1U)
-#define OUTPUT_TYPE_DEACTIVATED				(2U)
 
 #define IS_GPIO_MODE(MODE)					(((MODE) == MODE_OUTPUT_PP)          ||\
 											((MODE) == MODE_OUTPUT_PP_PU)        ||\
@@ -231,7 +218,7 @@ GPIO_ErrorStatus_t GPIO_InitPin(GPIO_Pin_t*PinCfg)
  *
  * @error	Error Status    GPIO_InvalidParameter/ GPIO_Ok / GPIO_NullPointer
  */
-GPIO_ErrorStatus_t GPIO_SetPinValue(void*Port, u32 Pin,u32 Value)
+GPIO_ErrorStatus_t GPIO_SetPinValue(void*Port, u32 Pin,u8 Value)
 {
 	GPIO_ErrorStatus_t RET_ErrorStatus=GPIO_Ok;
 
@@ -243,7 +230,7 @@ GPIO_ErrorStatus_t GPIO_SetPinValue(void*Port, u32 Pin,u32 Value)
 	{
 		RET_ErrorStatus=GPIO_InvalidParameter;
 	}
-	else if(!(IS_GPIO_PORT(Pin)))
+	else if(!(IS_GPIO_PIN(Pin)))
 	{
 		RET_ErrorStatus=GPIO_InvalidParameter;
 	}
@@ -268,7 +255,7 @@ GPIO_ErrorStatus_t GPIO_SetPinValue(void*Port, u32 Pin,u32 Value)
  *
  * @error	Error Status    GPIO_InvalidParameter/ GPIO_Ok / GPIO_NullPointer
  */
-GPIO_ErrorStatus_t GPIO_GetPinValue(void*Port, u32 Pin,u32*Value)
+GPIO_ErrorStatus_t GPIO_GetPinValue(void*Port, u32 Pin,u8*Value)
 {
 	GPIO_ErrorStatus_t RET_ErrorStatus=GPIO_Ok;
     GPIO_Registers_t* Loc_Port = (GPIO_Registers_t*)Port;
@@ -281,7 +268,7 @@ GPIO_ErrorStatus_t GPIO_GetPinValue(void*Port, u32 Pin,u32*Value)
 	{
 		RET_ErrorStatus=GPIO_InvalidParameter;
 	}
-	else if(!(IS_GPIO_PORT(Pin)))
+	else if(!(IS_GPIO_PIN(Pin)))
 	{
 		RET_ErrorStatus=GPIO_InvalidParameter;
 	}

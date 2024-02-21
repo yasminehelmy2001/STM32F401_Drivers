@@ -65,22 +65,22 @@
 /**************************************************************************/
 /*						MODES MACROS								 	  */
 /**************************************************************************/
-#define MODE_OUTPUT_PP					0x01
-#define MODE_OUTPUT_PP_PU				0x05
-#define MODE_OUTPUT_PP_PD				0x09
-#define MODE_OUTPUT_OD					0x11
-#define MODE_OUTPUT_OD_PU				0x15
-#define MODE_OUTPUT_OD_PD				0x19
-#define MODE_AF_PP						0x02
-#define MODE_AF_PP_PU					0x06
-#define MODE_AF_PP_PD					0x0A
-#define MODE_AF_OD						0x0C
-#define MODE_AF_OD_PU					0x16
-#define MODE_AF_OD_PD					0x1A
-#define MODE_INPUT_FLOATING				0x00
-#define MODE_INPUT_PU					0x04
-#define MODE_INPUT_PD					0x08
-#define MODE_ANALOG						0x03
+#define MODE_OUTPUT_PP					0x00000001
+#define MODE_OUTPUT_PP_PU				0x00000005
+#define MODE_OUTPUT_PP_PD				0x00000009
+#define MODE_OUTPUT_OD					0x00000011
+#define MODE_OUTPUT_OD_PU				0x00000015
+#define MODE_OUTPUT_OD_PD				0x00000019
+#define MODE_AF_PP						0x00000002
+#define MODE_AF_PP_PU					0x00000006
+#define MODE_AF_PP_PD					0x0000000A
+#define MODE_AF_OD						0x0000000C
+#define MODE_AF_OD_PU					0x00000016
+#define MODE_AF_OD_PD					0x0000001A
+#define MODE_INPUT_FLOATING				0x00000000
+#define MODE_INPUT_PU					0x00000004
+#define MODE_INPUT_PD					0x00000008
+#define MODE_ANALOG						0x00000003
 
 /**************************************************************************/
 /*						SPEED MACROS			 					 	  */
@@ -200,7 +200,7 @@ GPIO_ErrorStatus_t GPIO_InitPin(GPIO_Pin_t*PinCfg);
  *
  * @error	Error Status    GPIO_InvalidParameter/ GPIO_Ok / GPIO_NullPointer
  */
-GPIO_ErrorStatus_t GPIO_SetPinValue(void*Port, u32 Pin,u32 Value );
+GPIO_ErrorStatus_t GPIO_SetPinValue(void*Port, u32 Pin,u8 Value );
 
 /**
  * @brief	Function that Gets a GPIO Pin Value
@@ -211,5 +211,5 @@ GPIO_ErrorStatus_t GPIO_SetPinValue(void*Port, u32 Pin,u32 Value );
  *
  * @error	Error Status    GPIO_InvalidParameter/ GPIO_Ok / GPIO_NullPointer
  */
-GPIO_ErrorStatus_t GPIO_GetPinValue(void*Port, u32 Pin, u32*Value);
+GPIO_ErrorStatus_t GPIO_GetPinValue(void*Port, u32 Pin, u8*Value);
 #endif
