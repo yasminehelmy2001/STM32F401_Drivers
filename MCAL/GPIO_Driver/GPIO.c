@@ -96,7 +96,7 @@
 											((AF) == AF15)          			||\
 											((AF) == AF_DEACTIVATED))
 
-#define IS_GPIO_CORRECT_AF_CFG(MODE,AF)		((((MODE) == MODE_AF_PP)              ||\
+#define IS_GPIO_CORRECT_AF_CFG(MODE,AF)		((((MODE) == MODE_AF_PP)             ||\
 											((MODE) == MODE_AF_PP_PU)            ||\
 											((MODE) == MODE_AF_PP_PD)            ||\
 											((MODE) == MODE_AF_OD)               ||\
@@ -105,7 +105,7 @@
 											((AF)==AF_DEACTIVATED))				   \
 																				 ||\
 																				   \
-											((!(((MODE) == MODE_AF_PP)            ||\
+											((!(((MODE) == MODE_AF_PP)           ||\
 											((MODE) == MODE_AF_PP_PU)            ||\
 											((MODE) == MODE_AF_PP_PD)            ||\
 											((MODE) == MODE_AF_OD)               ||\
