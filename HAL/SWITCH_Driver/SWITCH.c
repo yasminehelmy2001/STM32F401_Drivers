@@ -51,9 +51,9 @@ SWITCH_ErrorStatus_t SWITCH_Init (void)
  *
  * @error	Error Status (SWITCH_Ok / SWITCH_InvalidParameter)
  */
-SWITCH_ErrorStatus_t LED_SetStatus(u32 Switch, u8*State)
+SWITCH_ErrorStatus_t SWITCH_ReadStatus(u32 Switch, u8*State)
 {
-	u32 SwitchState;
+	u8 SwitchState;
 
 	SWITCH_ErrorStatus_t RET_ErrorStatus=GPIO_Ok;
 
