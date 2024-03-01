@@ -37,16 +37,14 @@ LED_ErrorStatus_t LED_Init (void)
 		}
 		else
 		{
-			//Do Nothing
-		}
-
-		if(Leds[i].InitialState==LED_ON)
-		{
-			GPIO_SetPinValue(Leds[i].Port,Leds[i].Pin,Leds[i].Connection^Leds[i].InitialState);
-		}
-		else
-		{
-			GPIO_SetPinValue(Leds[i].Port,Leds[i].Pin,Leds[i].Connection^Leds[i].InitialState);
+			if(Leds[i].InitialState==LED_ON)
+			{
+				GPIO_SetPinValue(Leds[i].Port,Leds[i].Pin,Leds[i].Connection^Leds[i].InitialState);
+			}
+			else
+			{
+				GPIO_SetPinValue(Leds[i].Port,Leds[i].Pin,Leds[i].Connection^Leds[i].InitialState);
+			}
 		}
 
 	}
