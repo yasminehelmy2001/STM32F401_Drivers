@@ -200,7 +200,7 @@ GPIO_ErrorStatus_t GPIO_InitPin(GPIO_Pin_t*PinCfg);
  *
  * @error	Error Status    GPIO_InvalidParameter/ GPIO_Ok / GPIO_NullPointer
  */
-GPIO_ErrorStatus_t GPIO_SetPinValue(void*Port, u32 Pin,u8 Value );
+GPIO_ErrorStatus_t GPIO_SetPinValue(void*Port, u32 Pin,u32 Value );
 
 /**
  * @brief	Function that Gets a GPIO Pin Value

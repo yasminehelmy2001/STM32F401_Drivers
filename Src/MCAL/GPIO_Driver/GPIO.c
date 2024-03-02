@@ -83,13 +83,13 @@
 											((AF) == AF15)          			||\
 											((AF) == AF_DEACTIVATED))
 
-#define IS_GPIO_CORRECT_AF_CFG(MODE,AF)		((((MODE) == MODE_AF_PP)             ||\
+#define IS_GPIO_CORRECT_AF_CFG(MODE,AF)		(((((MODE) == MODE_AF_PP)             ||\
 											((MODE) == MODE_AF_PP_PU)            ||\
 											((MODE) == MODE_AF_PP_PD)            ||\
 											((MODE) == MODE_AF_OD)               ||\
 											((MODE) == MODE_AF_OD_PU)            ||\
 											((MODE) == MODE_AF_OD_PD))			 &&\
-											((AF)==AF_DEACTIVATED))				   \
+											((AF)!=AF_DEACTIVATED))				   \
 																				 ||\
 																				   \
 											((!(((MODE) == MODE_AF_PP)           ||\
@@ -98,7 +98,7 @@
 											((MODE) == MODE_AF_OD)               ||\
 											((MODE) == MODE_AF_OD_PU)            ||\
 											((MODE) == MODE_AF_OD_PD)))			 &&\
-											(!((AF)==AF_DEACTIVATED)))
+											((AF)==AF_DEACTIVATED)))
 
 
 /**
@@ -218,7 +218,7 @@ GPIO_ErrorStatus_t GPIO_InitPin(GPIO_Pin_t*PinCfg)
  *
  * @error	Error Status    GPIO_InvalidParameter/ GPIO_Ok / GPIO_NullPointer
  */
-GPIO_ErrorStatus_t GPIO_SetPinValue(void*Port, u32 Pin,u8 Value)
+GPIO_ErrorStatus_t GPIO_SetPinValue(void*Port, u32 Pin,u32 Value)
 {
 	GPIO_ErrorStatus_t RET_ErrorStatus=GPIO_Ok;
 
