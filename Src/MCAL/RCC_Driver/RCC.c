@@ -64,7 +64,7 @@ volatile RCC_Peri_t *RCC=(volatile RCC_Peri_t *)RCC_BA;
  * 				   "RCC_CheckReadyClk()" Function
  *
  */
-RCC_ErrorStatus_t RCC_EnableClock  (u32*ClockRegisterAddress,u32 Clock)
+RCC_ErrorStatus_t RCC_EnableClock  (volatile u32*ClockRegisterAddress,u32 Clock)
 {
 	RCC_ErrorStatus_t RET_ErrorStatus=RCC_Ok;
 	if(!(Clock==CLOCK_HSI||Clock==CLOCK_HSE||Clock==CLOCK_PLL||Clock==CLOCK_LSI
@@ -93,7 +93,7 @@ RCC_ErrorStatus_t RCC_EnableClock  (u32*ClockRegisterAddress,u32 Clock)
  * 				   Use the function "" to check if the clock is selected as a System Clock.
  *
  */
-RCC_ErrorStatus_t RCC_DisableClock (u32*ClockRegisterAddress,u32 Clock)
+RCC_ErrorStatus_t RCC_DisableClock (volatile u32*ClockRegisterAddress,u32 Clock)
 {
 	RCC_ErrorStatus_t RET_ErrorStatus=RCC_Ok;
 	if(!(Clock==CLOCK_HSI||Clock==CLOCK_HSE||Clock==CLOCK_PLL||Clock==CLOCK_LSI
@@ -149,7 +149,7 @@ RCC_ErrorStatus_t RCC_SelectSystemClock(u32 Sysclk)
  *          - If Input Parameters are out of range -> ***Input Parameter Error***
  *
  */
-RCC_ErrorStatus_t RCC_EnablePeriphral(u32*PeriphralBus, u32 Periphral)
+RCC_ErrorStatus_t RCC_EnablePeriphral(volatile u32*PeriphralBus, u32 Periphral)
 {
 	RCC_ErrorStatus_t RET_ErrorStatus= RCC_Ok;
 	if(!((PeriphralBus==APB1)||(PeriphralBus==APB2)||(PeriphralBus==AHB1)||(PeriphralBus==AHB2)))
@@ -173,7 +173,7 @@ RCC_ErrorStatus_t RCC_EnablePeriphral(u32*PeriphralBus, u32 Periphral)
  *          - If Input Parameters are out of range -> ***Input Parameter Error***
  *
  */
-RCC_ErrorStatus_t RCC_DisablePeriphral(u32*PeriphralBus,u32 Periphral)
+RCC_ErrorStatus_t RCC_DisablePeriphral(volatile u32*PeriphralBus,u32 Periphral)
 {
 	RCC_ErrorStatus_t RET_ErrorStatus= RCC_Ok;
 	if(!((PeriphralBus==APB1)||(PeriphralBus==APB2)||(PeriphralBus==AHB1)||(PeriphralBus==AHB2)))
@@ -370,7 +370,7 @@ RCC_ErrorStatus_t RCC_ConfigurePLL(PLLCfgOptions_t*PLLCfg)
  *          - If Input Parameters are out of range -> ***Input Parameter Error***
  *          - If Clock is not ready -> ***Not Ready Error***
  */
-RCC_ErrorStatus_t RCC_CheckReadyClk(u32*ClockRegisterAddress,u32 ReadyMask)
+RCC_ErrorStatus_t RCC_CheckReadyClk(volatile u32*ClockRegisterAddress,u32 ReadyMask)
 {
 	RCC_ErrorStatus_t RET_ErrorStatus=RCC_Ok;
 	if(!((ReadyMask==MASK_HSIRDY)||(ReadyMask==MASK_HSERDY)||(ReadyMask==MASK_PLLRDY)||

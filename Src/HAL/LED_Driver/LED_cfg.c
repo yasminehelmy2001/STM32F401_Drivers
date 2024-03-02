@@ -44,7 +44,12 @@
 
 const LedCfg_t Leds[_Led_Num]={
 
-
+ [LED_ONE]={
+        .Port=GPIO_PORTA,
+        .Pin=GPIO_PIN0,
+        .Connection=LED_CONN_FOR,
+        .InitialState=LED_ON
+    	}
 
 };
 

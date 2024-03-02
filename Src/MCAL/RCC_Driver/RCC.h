@@ -227,7 +227,7 @@ typedef enum
  * 				   "RCC_CheckReadyClk()" Function
  *
  */
-RCC_ErrorStatus_t RCC_EnableClock  (u32*ClockRegisterAddress,u32 Clock);
+RCC_ErrorStatus_t RCC_EnableClock  (volatile u32*ClockRegisterAddress,u32 Clock);
 
 /**
  * @brief   	 Function to Disable HSI, HSE, PLL -> On/Off
@@ -242,7 +242,7 @@ RCC_ErrorStatus_t RCC_EnableClock  (u32*ClockRegisterAddress,u32 Clock);
  * 				   Use the function "" to check if the clock is selected as a System Clock.
  *
  */
-RCC_ErrorStatus_t RCC_DisableClock  (u32*ClockRegisterAddress,u32 Clock);
+RCC_ErrorStatus_t RCC_DisableClock  (volatile u32*ClockRegisterAddress,u32 Clock);
 
 /**
  * @brief   	  Function to Select a System Clock
@@ -267,7 +267,7 @@ RCC_ErrorStatus_t RCC_SelectSystemClock(u32 Sysclk);
  * @return  Error Status
  *          - If Input Parameters are out of range -> ***Input Parameter Error***
  */
-RCC_ErrorStatus_t RCC_EnablePeriphral(u32*PeriphralBus, u32 Periphral);
+RCC_ErrorStatus_t RCC_EnablePeriphral(volatile u32*PeriphralBus, u32 Periphral);
 
 /**
  * @brief   Function to Disable a Peripheral
@@ -278,7 +278,7 @@ RCC_ErrorStatus_t RCC_EnablePeriphral(u32*PeriphralBus, u32 Periphral);
  * @return  Error Status
  *          - If Input Parameters are out of range -> ***Input Parameter Error***
  */
-RCC_ErrorStatus_t RCC_DisablePeriphral(u32*PeriphralBus,u32 Periphral);
+RCC_ErrorStatus_t RCC_DisablePeriphral(volatile u32*PeriphralBus,u32 Periphral);
 
 /**
  * @brief   Function to Set AHB Prescaler
@@ -349,7 +349,7 @@ RCC_ErrorStatus_t RCC_ConfigurePLL(PLLCfgOptions_t*PLLCfg);
  *          - If Input Parameters are out of range -> ***Input Parameter Error***
  *          - If Clock is not ready -> ***Not Ready Error***
  */
-RCC_ErrorStatus_t RCC_CheckReadyClk(u32*ClockRegisterAddress,u32 ReadyMask);
+RCC_ErrorStatus_t RCC_CheckReadyClk(volatile u32*ClockRegisterAddress,u32 ReadyMask);
 
 
 #endif

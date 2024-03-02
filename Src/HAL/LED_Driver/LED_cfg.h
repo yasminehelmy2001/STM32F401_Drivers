@@ -25,7 +25,7 @@ typedef enum
 {
 
 
-
+	LED_ONE,
 
 	_Led_Num
 }Leds_t;

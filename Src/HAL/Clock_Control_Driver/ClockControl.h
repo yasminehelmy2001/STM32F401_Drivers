@@ -1,0 +1,1 @@
+void Enable_HAL_ClockControl(void);
