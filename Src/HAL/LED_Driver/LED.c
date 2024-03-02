@@ -86,7 +86,7 @@ LED_ErrorStatus_t LED_SetStatus(u32 Led, u8 State)
 	else
 	{
 		u32 GPIO_State;
-		if(Leds[Led].Connection^Leds[Led].InitialState==0)
+		if(((Leds[Led].Connection)^(State))==0)
 		{
 			GPIO_State=GPIO_RESET_PIN;
 		}
