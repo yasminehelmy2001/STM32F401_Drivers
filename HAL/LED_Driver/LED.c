@@ -37,13 +37,15 @@ LED_ErrorStatus_t LED_Init (void)
 		}
 		else
 		{
-			if(Leds[i].InitialState==LED_ON)
+			GPIO_ErrorStatus=GPIO_SetPinValue(Leds[i].Port,Leds[i].Pin,Leds[i].Connection^Leds[i].InitialState);
+			if(GPIO_ErrorStatus!=GPIO_Ok)
 			{
-				GPIO_SetPinValue(Leds[i].Port,Leds[i].Pin,Leds[i].Connection^Leds[i].InitialState);
+				RET_ErrorStatus=LED_Nok;
+
 			}
 			else
 			{
-				GPIO_SetPinValue(Leds[i].Port,Leds[i].Pin,Leds[i].Connection^Leds[i].InitialState);
+				//Empty
 			}
 		}
 
@@ -62,13 +64,23 @@ LED_ErrorStatus_t LED_Init (void)
 LED_ErrorStatus_t LED_SetStatus(u32 Led, u8 State)
 {
 	LED_ErrorStatus_t RET_ErrorStatus= LED_Ok;
+	GPIO_ErrorStatus_t GPIO_ErrorStatus=GPIO_Ok;
+
 	if(Led>=_Led_Num)
+	{
+		RET_ErrorStatus=LED_InvalidParameter;
+	}
+	else if(State>LED_ON)
 	{
 		RET_ErrorStatus=LED_InvalidParameter;
 	}
 	else
 	{
-		GPIO_SetPinValue(Leds[Led].Port, Leds[Led].Pin, Leds[Led].Connection^State);
+		GPIO_ErrorStatus=GPIO_SetPinValue(Leds[Led].Port, Leds[Led].Pin, Leds[Led].Connection^State);
+		if(GPIO_ErrorStatus!=GPIO_Ok)
+		{
+			RET_ErrorStatus=LED_Nok;
+		}
 	}
 	return RET_ErrorStatus;
 }
