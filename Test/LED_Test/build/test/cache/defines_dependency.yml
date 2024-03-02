@@ -1,0 +1,13 @@
+---
+build/test/mocks/mock_RCC.c:
+- TEST
+build/test/mocks/mock_gpio.c:
+- TEST
+build/test/mocks/mock_GPIO.c:
+- TEST
+src/LED.c:
+- TEST
+build/test/mocks/mock_std_types.c:
+- TEST
+src/LED_cfg.c:
+- TEST
