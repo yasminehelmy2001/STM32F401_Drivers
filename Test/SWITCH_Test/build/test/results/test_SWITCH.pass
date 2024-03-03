@@ -1,0 +1,38 @@
+---
+:source:
+  :path: test
+  :file: test_SWITCH.c
+:successes:
+- :test: test_SWITCH_Init_ValidParameters
+  :line: 20
+  :message: ''
+  :unity_test_time: 0
+- :test: test_SWITCH_Init_InvalidParameters
+  :line: 30
+  :message: ''
+  :unity_test_time: 0
+- :test: test_SWITCH_ReadStatus_NullPointer
+  :line: 40
+  :message: ''
+  :unity_test_time: 0
+- :test: test_SWITCH_ReadStatus_InvalidSwitchName
+  :line: 50
+  :message: ''
+  :unity_test_time: 0
+- :test: test_SWITCH_ReadStatus_InvalidParameters
+  :line: 60
+  :message: ''
+  :unity_test_time: 0
+- :test: test_SWITCH_ReadStatus_ValidParameters
+  :line: 71
+  :message: ''
+  :unity_test_time: 0
+:failures: []
+:ignores: []
+:counts:
+  :total: 6
+  :passed: 6
+  :failed: 0
+  :ignored: 0
+:stdout: []
+:time: 0.12690989999100566

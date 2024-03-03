@@ -1,0 +1,7 @@
+---
+build/test/mocks/mock_GPIO.c:
+- TEST
+src/SWITCH.c:
+- TEST
+src/SWITCH_cfg.c:
+- TEST
