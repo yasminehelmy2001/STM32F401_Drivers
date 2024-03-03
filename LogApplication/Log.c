@@ -12,12 +12,12 @@
 /**
  * Choose YES/NO to print output to Console
  */
-int PRINT_TO_CONSOLE=	YES;
+#define PRINT_TO_CONSOLE	YES
 
 /**
  * Choose YES/NO to print output to File
  */
-int PRINT_TO_FILE=		YES;
+#define  PRINT_TO_FILE		YES
 
 /**
  * Choose Severity Level
@@ -25,7 +25,7 @@ int PRINT_TO_FILE=		YES;
  * 2) WARNING: Displays warnings and errors 
  * 3) ERROR: Displays errors only
  */
-int SEVERITY_LEVEL= 	ERROR;
+#define  SEVERITY_LEVEL 	WARNING
 
 void printTimeFile(FILE *logFile) {
     time_t rawtime;

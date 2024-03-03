@@ -13,3 +13,11 @@
 
 [2024-03-04 01:23:18] ERROR: Price 1 is a negative value
 
+
+[2024-03-04 01:28:23] ERROR: Price 1 is a negative value
+
+
+[2024-03-04 01:28:43] ERROR: Price 1 is a negative value
+
+[2024-03-04 01:28:43] WARNING: Price 2 exceeds maximum price
+
