@@ -55,20 +55,25 @@ SWITCH_ErrorStatus_t SWITCH_ReadStatus(u32 Switch, u8*State)
 {
 	u8 SwitchState;
 
-	SWITCH_ErrorStatus_t RET_ErrorStatus=GPIO_Ok;
+	SWITCH_ErrorStatus_t RET_ErrorStatus=SWITCH_Ok;
+	GPIO_ErrorStatus_t GPIO_ErrorStatus=GPIO_Ok;
 
-	if(Switch>=_Switch_Num)
-	{
-		RET_ErrorStatus=GPIO_InvalidParameter;
-	}
-	else if(State==NULL)
+	if(State==NULL)
 	{
 		RET_ErrorStatus=SWITCH_NullPointer;
 	}
+	else if(Switch>=_Switch_Num)
+	{
+		RET_ErrorStatus=SWITCH_InvalidParameter;
+	}
 	else
 	{
-		GPIO_GetPinValue(Switches[Switch].Port,Switches[Switch].Pin,&SwitchState);
-		if(((SwitchState==GPIO_HIGH)&&(Switches[Switch].Connection==SWITCH_PULLUP)) ||
+		GPIO_ErrorStatus=GPIO_GetPinValue(Switches[Switch].Port,Switches[Switch].Pin,&SwitchState);
+		if(GPIO_ErrorStatus!=GPIO_Ok)
+		{
+			RET_ErrorStatus=SWITCH_Nok;
+		}
+		else if(((SwitchState==GPIO_HIGH)&&(Switches[Switch].Connection==SWITCH_PULLUP)) ||
 			((SwitchState==GPIO_LOW)&&(Switches[Switch].Connection==SWITCH_PULLDOWN)))
 		{
 			*State=SWITCH_NOTPRESSED;
