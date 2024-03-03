@@ -23,7 +23,7 @@
  * Choose Severity Level
  * 1) INFO: Displays info, warnings and errors
  * 2) WARNING: Displays warnings and errors 
- * 3) ERROR: Displays errors only
+ * 3) ERROR: Displays errors only 
  */
 #define  SEVERITY_LEVEL 	WARNING
 
