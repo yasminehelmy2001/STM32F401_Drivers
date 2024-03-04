@@ -22,27 +22,27 @@ void Enable_HAL_ClockControl(void)
     {
             if(Leds[i].Port==GPIO_PORTA)
             {
-                RCC_EnablePeriphral(AHB1,GPIOA_RCC);
+                RCC_EnablePeriphral(AHB1,RCC_GPIOA);
             }
             else if(Leds[i].Port==GPIO_PORTB)
             {
-                RCC_EnablePeriphral(AHB1,GPIOB_RCC);
+                RCC_EnablePeriphral(AHB1,RCC_GPIOB);
             }
             else if(Leds[i].Port==GPIO_PORTC)
             {
-                RCC_EnablePeriphral(AHB1,GPIOC_RCC);
+                RCC_EnablePeriphral(AHB1,RCC_GPIOC);
             }
             else if(Leds[i].Port==GPIO_PORTD)
             {
-                RCC_EnablePeriphral(AHB1,GPIOD_RCC);
+                RCC_EnablePeriphral(AHB1,RCC_GPIOD);
             }
             else if(Leds[i].Port==GPIO_PORTE)
             {
-                RCC_EnablePeriphral(AHB1,GPIOE_RCC);
+                RCC_EnablePeriphral(AHB1,RCC_GPIOE);
             }
             else if(Leds[i].Port==GPIO_PORTH)
             {
-                RCC_EnablePeriphral(AHB1,GPIOH_RCC);
+                RCC_EnablePeriphral(AHB1,RCC_GPIOH);
             }
             else
             {
