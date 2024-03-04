@@ -143,7 +143,7 @@ RCC_ErrorStatus_t RCC_SelectSystemClock(u32 Sysclk)
  * @brief   Function to Enable a Peripheral
  *
  * @param   - Peripheral Bus (AHB1, AHB2, APB1, APB2)
- *          - Peripheral
+ *          - Peripheral (Macro begins with RCC_)
  *
  * @return  Error Status
  *          - If Input Parameters are out of range -> ***Input Parameter Error***
@@ -167,7 +167,7 @@ RCC_ErrorStatus_t RCC_EnablePeriphral(volatile u32*PeriphralBus, u32 Periphral)
  * @brief   Function to Disable a Peripheral
  *
  * @param   - Peripheral Bus (AHB1, AHB2, APB1, APB2)
- *          - Peripheral
+ *          - Peripheral (Macro begins with RCC_)
  *
  * @return  Error Status
  *          - If Input Parameters are out of range -> ***Input Parameter Error***

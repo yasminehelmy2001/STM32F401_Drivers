@@ -57,51 +57,51 @@
 /**************************************************************************/
 /*						APB2 Peripherals		 					 	  */
 /**************************************************************************/
-#define TIM1_RCC						0x00000001
-#define USART1_RCC						0x00000010
-#define USART6_RCC						0x00000020
-#define ADC1_RCC						0x00000100
-#define	SDIO_RCC						0x00000800
-#define SPI1_RCC						0x00001000
-#define SPI4_RCC						0x00002000
-#define	SYSCFGEN_RCC					0x00004000
-#define TIM9_RCC						0x00010000
-#define TIM10_RCC						0x00020000
-#define TIM11_RCC						0x00040000
+#define RCC_TIM1						0x00000001
+#define RCC_USART1						0x00000010
+#define RCC_USART6						0x00000020
+#define RCC_ADC1						0x00000100
+#define	RCC_SDIO						0x00000800
+#define RCC_SPI1						0x00001000
+#define RCC_SPI4						0x00002000
+#define	RCC_SYSCFGEN					0x00004000
+#define RCC_TIM9						0x00010000
+#define RCC_TIM10						0x00020000
+#define RCC_TIM11						0x00040000
 
 /**************************************************************************/
 /*						APB1 Peripherals		 					 	  */
 /**************************************************************************/
-#define TIM2_RCC						0x00000001
-#define TIM3_RCC						0x00000002
-#define TIM4_RCC						0x00000004
-#define TIM5_RCC						0x00000008
-#define WWDG_RCC						0x00000400
-#define SPI2_RCC						0x00004000
-#define SPI3_RCC						0x00008000
-#define USART2_RCC						0x00020000
-#define I2C1_RCC						0x00200000
-#define	I2C2_RCC						0x00400000
-#define	I2C3_RCC						0x00800000
-#define PWR_RCC							0x10000000
+#define RCC_TIM2						0x00000001
+#define RCC_TIM3						0x00000002
+#define RCC_TIM4						0x00000004
+#define RCC_TIM5						0x00000008
+#define RCC_WWDG						0x00000400
+#define RCC_SPI2						0x00004000
+#define RCC_SPI3						0x00008000
+#define RCC_USART2						0x00020000
+#define RCC_I2C1						0x00200000
+#define	RCC_I2C2						0x00400000
+#define	RCC_I2C3						0x00800000
+#define RCC_PWR							0x10000000
 
 /**************************************************************************/
 /*						AHB2 Peripherals		 					 	  */
 /**************************************************************************/
-#define	OTGFS							0x00000080
+#define	RCC_OTGFS						0x00000080
 
 /**************************************************************************/
 /*						AHB1 Peripherals		 					 	  */
 /**************************************************************************/
-#define GPIOA_RCC						0x00000001
-#define GPIOB_RCC						0x00000002
-#define GPIOC_RCC						0x00000004
-#define GPIOD_RCC						0x00000008
-#define GPIOE_RCC						0x00000010
-#define GPIOH_RCC						0x00000080
-#define CRC_RCC							0x00000800
-#define DMA1_RCC						0x00200000
-#define DMA2_RCC						0x00400000
+#define RCC_GPIOA						0x00000001
+#define RCC_GPIOB						0x00000002
+#define RCC_GPIOC						0x00000004
+#define RCC_GPIOD						0x00000008
+#define RCC_GPIOE						0x00000010
+#define RCC_GPIOH						0x00000080
+#define RCC_CRC							0x00000800
+#define RCC_DMA1						0x00200000
+#define RCC_DMA2						0x00400000
 
 /**************************************************************************/
 /*						AHB Prescaler			 					 	  */
@@ -262,7 +262,7 @@ RCC_ErrorStatus_t RCC_SelectSystemClock(u32 Sysclk);
  * @brief   Function to Enable a Peripheral
  *
  * @param   - Peripheral Bus (AHB1, AHB2, APB1, APB2)
- *          - Peripheral
+ *          - Peripheral (Macro begins with RCC_)
  *
  * @return  Error Status
  *          - If Input Parameters are out of range -> ***Input Parameter Error***
@@ -273,7 +273,7 @@ RCC_ErrorStatus_t RCC_EnablePeriphral(volatile u32*PeriphralBus, u32 Periphral);
  * @brief   Function to Disable a Peripheral
  *
  * @param   - Peripheral Bus (AHB1, AHB2, APB1, APB2)
- *          - Peripheral
+ *          - Peripheral (Macro begins with RCC_)
  *
  * @return  Error Status
  *          - If Input Parameters are out of range -> ***Input Parameter Error***
