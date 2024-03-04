@@ -195,10 +195,11 @@ GPIO_ErrorStatus_t GPIO_InitPin(GPIO_Pin_t*PinCfg)
 
 		if(AF_Choice!=AF_DEACTIVATED)
 		{
-			(Pin>GPIO_PIN8)?(Loc_Register=Port->AFRH):(Loc_Register=Port->AFRL);
-			Loc_Register&=~(FOUR_BIT_MASK<<Pin*SHIFT_4);
-			Loc_Register|=(AF_Choice<<Pin*SHIFT_4);
-			(Pin>GPIO_PIN8)?(Port->AFRH=Loc_Register):(Port->AFRL=Loc_Register);
+			u8 RegisterPinState=Pin%8;
+			(Pin>GPIO_PIN7)?(Loc_Register=Port->AFRH):(Loc_Register=Port->AFRL);
+			Loc_Register&=~(FOUR_BIT_MASK<<RegisterPinState*SHIFT_4);
+			Loc_Register|=(AF_Choice<<RegisterPinState*SHIFT_4);
+			(Pin>GPIO_PIN7)?(Port->AFRH=Loc_Register):(Port->AFRL=Loc_Register);
 		}
 		else
 		{
