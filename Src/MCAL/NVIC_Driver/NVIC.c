@@ -313,7 +313,7 @@ NVIC_ErrorStatus_t NVIC_SetPriority(u8 IRQn, u8 PreemptLevel, u8 SubGroupLevel, 
 
         u32 Local_IPR=NVIC->IPR[Priority_Reg_Num];
         Local_IPR&=~(EIGHT_BIT_MASK<<Priority_Byte_Offset);
-        Local_IPR|=(((PreemptLevel<<PreemptionBitsNum)|(SubGroupLevel))<<FOUR_BIT_SHIFT);
+        Local_IPR|=(((PreemptLevel<<SubGroupBitsNum)|(SubGroupLevel))<<FOUR_BIT_SHIFT);
         NVIC->IPR[Priority_Reg_Num]|=Local_IPR;
 
     }
