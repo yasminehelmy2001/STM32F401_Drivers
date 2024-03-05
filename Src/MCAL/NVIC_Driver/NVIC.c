@@ -85,7 +85,7 @@ NVIC_ErrorStatus_t NVIC_DisableInterrupt(u8 IRQn)
     {
         Reg_Num=IRQn/32;
         Bit_Num=IRQn%32;
-        NVIC->ICER[Reg_Num]|=(1<<Bit_Num);
+        NVIC->ICER[Reg_Num]=(1<<Bit_Num);
     }
     return RET_ErrorStatus;  
 }
@@ -141,7 +141,7 @@ NVIC_ErrorStatus_t NVIC_ClearPending(u8 IRQn)
     {
         Reg_Num=IRQn/32;
         Bit_Num=IRQn%32;
-        NVIC->ICPR[Reg_Num]|=(1<<Bit_Num);
+        NVIC->ICPR[Reg_Num]=(1<<Bit_Num);
     }
     return RET_ErrorStatus;
 }
@@ -203,17 +203,6 @@ NVIC_ErrorStatus_t NVIC_GenerateSoftwareInterrupt(u8 ID)
     return RET_ErrorStatus;
 }
 
-/**
- * @brief  		 Function to Clear Pending Bit for Any Interrupt in the System
- *
- * @param   	 IRQn(Interrupt Number)
- *               - MACRO Begins with NVIC_
- *               - Options listed in STM32F401xx.h
- *
- * @return		  Error Status
- *         		 - Returns Error if Interrupt Number is out of range 
- */
-NVIC_ErrorStatus_t NVIC_ClearPending(u8 IRQn);
 
 /**
  * @brief  		 Function to Check if Any Interrupt in the System is Active/Not Active
