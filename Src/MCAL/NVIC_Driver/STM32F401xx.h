@@ -1,7 +1,11 @@
 #include "std_types.h"
 
+/*Priority Bits in STM32F401cc*/
 #define PRIORITY_BITS                   4
 
+/**************************************************************************/
+/*						IRQ Table - STM32F401cc						 	  */
+/**************************************************************************/
 #define NVIC_WINDOW_WATCHDOG_TIMER		0
 #define	NIVC_EXTERNAL_LINE16			1
 #define	NIVC_EXTERNAL_LINE21			2
