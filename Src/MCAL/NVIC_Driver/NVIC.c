@@ -1,14 +1,27 @@
 #include "NVIC.h"
 
+/**************************************************************************/
+/*						NVIC-SCB Implementation Masks 				 	  */
+/**************************************************************************/
 #define SCB_PRIGROUP_MASK       0x00000700
 #define EIGHT_BIT_MASK          0x000000FF
 #define SCB_VECTKEY_MASK        0xFFFF0000
 #define SCR_AIRCR_WRITE         0x05FA0000
 #define FOUR_BIT_SHIFT          0x00000004
 
+/**************************************************************************/
+/*						NVIC-SCB Pointer to Registers  				 	  */
+/**************************************************************************/
 volatile NVIC_Peri_t* const NVIC=( volatile NVIC_Peri_t*)NVIC_BASE_ADDRESS;
 volatile SCB_Peri_t* const SCB=( volatile SCB_Peri_t*)SCB_BASE_ADDRESS;
 
+/**
+ * @brief  		 Function to get Two power input number
+ *
+ * @param   	 num
+ *
+ * @return		 Result: Two power num
+ */
 u8 two_power (u8 num)
 {
     u8 result=1;
@@ -19,6 +32,18 @@ u8 two_power (u8 num)
     return result;
 }
 
+/**
+ * @brief  		 Function to Enable Any Interrupt in the System
+ *
+ * @param   	 IRQn(Interrupt Number)
+ *               - MACRO Begins with NVIC_
+ *               - Options listed in STM32F401xx.h
+ *
+ * @return		 Error Status
+ *         		 - Returns Error if Interrupt Number is out of range 
+ * 
+ * @constraint   Must Disable Pending Bit before Enabling to avoid Handling Interrupts from Disabled Time!
+ */
 NVIC_ErrorStatus_t NVIC_EnableInterrupt(u8 IRQn)
 {
     NVIC_ErrorStatus_t RET_ErrorStatus= NVIC_Ok;
@@ -37,6 +62,16 @@ NVIC_ErrorStatus_t NVIC_EnableInterrupt(u8 IRQn)
     return RET_ErrorStatus;
 }
 
+/**
+ * @brief  		 Function to Disable Any Interrupt in the System
+ *
+ * @param   	 IRQn(Interrupt Number)
+ *               - MACRO Begins with NVIC_
+ *               - Options listed in STM32F401xx.h
+ *
+ * @return		  Error Status
+ *         		 - Returns Error if Interrupt Number is out of range 
+ */
 NVIC_ErrorStatus_t NVIC_DisableInterrupt(u8 IRQn)
 {
     NVIC_ErrorStatus_t RET_ErrorStatus= NVIC_Ok;
@@ -55,6 +90,16 @@ NVIC_ErrorStatus_t NVIC_DisableInterrupt(u8 IRQn)
     return RET_ErrorStatus;  
 }
 
+/**
+ * @brief  		 Function to Set Pending Bit for Any Interrupt in the System
+ *
+ * @param   	 IRQn(Interrupt Number)
+ *               - MACRO Begins with NVIC_
+ *               - Options listed in STM32F401xx.h
+ *
+ * @return		  Error Status
+ *         		 - Returns Error if Interrupt Number is out of range 
+ */
 NVIC_ErrorStatus_t NVIC_SetPending(u8 IRQn)
 {
     NVIC_ErrorStatus_t RET_ErrorStatus= NVIC_Ok;
@@ -73,6 +118,16 @@ NVIC_ErrorStatus_t NVIC_SetPending(u8 IRQn)
     return RET_ErrorStatus;
 }
 
+/**
+ * @brief  		 Function to Clear Pending Bit for Any Interrupt in the System
+ *
+ * @param   	 IRQn(Interrupt Number)
+ *               - MACRO Begins with NVIC_
+ *               - Options listed in STM32F401xx.h
+ *
+ * @return		  Error Status
+ *         		 - Returns Error if Interrupt Number is out of range 
+ */
 NVIC_ErrorStatus_t NVIC_ClearPending(u8 IRQn)
 {
     NVIC_ErrorStatus_t RET_ErrorStatus= NVIC_Ok;
@@ -91,6 +146,21 @@ NVIC_ErrorStatus_t NVIC_ClearPending(u8 IRQn)
     return RET_ErrorStatus;
 }
 
+/**
+ * @brief  		 Function to Check if Any Interrupt in the System is Active/Not Active
+ *
+ * @param   	 1) IRQn(Interrupt Number)
+ *                  - MACRO Begins with NVIC_
+ *                  - Options listed in STM32F401xx.h
+ * 
+ *               2) Pointer to ActiveStatus Variable
+ *                  - Returns (INTERRUPT_NOT_ACTIVE/INTERRUPT_ACTIVE) through pointer
+ * 
+ * @return		 Error Status
+ *         		 - Returns Error if:
+ *                  * Interrupt Number is out of range 
+ *                  * Pointer is NULL
+ */
 NVIC_ErrorStatus_t NVIC_GetActiveStatus(u8 IRQn, u8*ActiveStatus)
 {
     NVIC_ErrorStatus_t RET_ErrorStatus= NVIC_Ok;
@@ -109,6 +179,16 @@ NVIC_ErrorStatus_t NVIC_GetActiveStatus(u8 IRQn, u8*ActiveStatus)
     return RET_ErrorStatus;
 }
 
+/**
+ * @brief  		 Function to Generate Software Interrupt for Any Interrupt in the System
+ *
+ * @param   	 ID(Interrupt Number)
+ *               - MACRO Begins with NVIC_
+ *               - Options listed in STM32F401xx.h
+ *
+ * @return		  Error Status
+ *         		 - Returns Error if Interrupt Number is out of range 
+ */
 NVIC_ErrorStatus_t NVIC_GenerateSoftwareInterrupt(u8 ID)
 {
     NVIC_ErrorStatus_t RET_ErrorStatus= NVIC_Ok;
@@ -123,12 +203,86 @@ NVIC_ErrorStatus_t NVIC_GenerateSoftwareInterrupt(u8 ID)
     return RET_ErrorStatus;
 }
 
+/**
+ * @brief  		 Function to Clear Pending Bit for Any Interrupt in the System
+ *
+ * @param   	 IRQn(Interrupt Number)
+ *               - MACRO Begins with NVIC_
+ *               - Options listed in STM32F401xx.h
+ *
+ * @return		  Error Status
+ *         		 - Returns Error if Interrupt Number is out of range 
+ */
+NVIC_ErrorStatus_t NVIC_ClearPending(u8 IRQn);
+
+/**
+ * @brief  		 Function to Check if Any Interrupt in the System is Active/Not Active
+ *
+ * @param   	 1) IRQn(Interrupt Number)
+ *                  - MACRO Begins with NVIC_
+ *                  - Options listed in STM32F401xx.h
+ * 
+ *               2) Pointer to ActiveStatus Variable
+ *                  - Returns (INTERRUPT_NOT_ACTIVE/INTERRUPT_ACTIVE) through pointer
+ * 
+ * @return		 Error Status
+ *         		 - Returns Error if:
+ *                  * Interrupt Number is out of range 
+ *                  * Pointer is NULL
+ */
+NVIC_ErrorStatus_t NVIC_GetActiveStatus(u8 IRQn, u8*ActiveStatus);
+
+/**
+ * @brief  		 Function to Generate Software Interrupt for Any Interrupt in the System
+ *
+ * @param   	 ID(Interrupt Number)
+ *               - MACRO Begins with NVIC_
+ *               - Options listed in STM32F401xx.h
+ *
+ * @return		  Error Status
+ *         		 - Returns Error if Interrupt Number is out of range 
+ */
+NVIC_ErrorStatus_t NVIC_GenerateSoftwareInterrupt(u8 ID);
+
+/**
+ * @brief  		 Function to Set Priority Bit for Any Interrupt in the System
+ *
+ * @param   	 1) IRQn(Interrupt Number)
+ *                  - MACRO Begins with NVIC_
+ *                  - Options listed in STM32F401xx.h
+ *              
+ *               2) PreemptLevel
+ *                  - Takes preemtion level, number must less than 2^(preemption bits)
+ *                  - Preemtion bits is (Priority bits - Subgroup Bits)
+ * 
+ *               3) SubGroupLevel
+ *                  - Takes Subgroup level, number must less than 2^(subgroup bits)
+ * 
+ *               4) SubGroupBitsMask
+ *                  - Takes Number of Subgroup bits configuration, choose options from:
+ *                          * SUBPRIORITY_BITS_NONE
+ *                          * SUBPRIORITY_BITS_ONE
+ *                          * SUBPRIORITY_BITS_TWO
+ *                          * SUBPRIORITY_BITS_THREE
+ *                          * SUBPRIORITY_BITS_FOUR
+ *
+ * @return		  Error Status
+ *         		 - Returns Error if:
+ *                          * Interrupt Number is out of range 
+ *                          * Preemtion bits >= 2^(preemption bits)
+ *                          * SubGroupLevel >= 2^(subgroup bits)
+ *                          * Subgroup Bits + Preemption Bits > PRIORITY_BITS
+ */
 NVIC_ErrorStatus_t NVIC_SetPriority(u8 IRQn, u8 PreemptLevel, u8 SubGroupLevel, u32 SubGroupBitsMask)
 {
     NVIC_ErrorStatus_t RET_ErrorStatus= NVIC_Ok;
 
+    /*Extract Subgroup Bits from Subgroup Mask*/
     u8 SubGroupBitsNum=(u8)(((SubGroupBitsMask>>8)&0x07)-0x03);
+
+    /*Extract Preemtion Bits from Data*/
     u8 PreemptionBitsNum=PRIORITY_BITS-SubGroupBitsNum;
+
     u8 MaxPreemptLevel=(two_power(PreemptionBitsNum)-1);
     u8 MaxSubGroupLevel=(two_power(SubGroupBitsNum)-1);
 
@@ -150,12 +304,21 @@ NVIC_ErrorStatus_t NVIC_SetPriority(u8 IRQn, u8 PreemptLevel, u8 SubGroupLevel, 
     }
     else
     {
+        /**************************************************/
+        /*	    SubGroup Configuration - SCB Peripheral   */
+        /**************************************************/
         u32 Local_AIRCR=SCB->AIRCR;
+        /*Apply Write Mask to Register*/
         Local_AIRCR&=~SCB_VECTKEY_MASK;
+        /*Apply Priority Mask to Register*/
         Local_AIRCR&=~SCB_PRIGROUP_MASK;
+        /*Apply Write Value + Priority Value to Register*/
         Local_AIRCR|=(SCR_AIRCR_WRITE | SubGroupBitsMask);
         SCB->AIRCR=Local_AIRCR;
 
+        /***************************************************/
+        /*	    Priority Configuration - NVIC Peripheral   */
+        /***************************************************/
         u8 Priority_Reg_Num= IRQn/4;
         u8 Priority_Byte_Offset= IRQn%4;
 
