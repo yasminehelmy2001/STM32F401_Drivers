@@ -6,6 +6,7 @@
 * Target:  STM32F401cc
 */
 
+
 #include "SYSTICK.h"
 
 /**************************************************************************/
@@ -20,6 +21,7 @@
 #define STK_MAX_COUNT_MS                0x00FFFFFF
 #define STK_ENABLE_MASK                 0x00000001
 #define STK_TICK_MASK                   0x00000002
+#define STK_CLKSOURCE_MASK              0X00000004
 #define STK_HCLK_MAX                    84000000
 
 /*Pointer to STK  Registers*/
@@ -32,13 +34,8 @@ static stkcbf_t APP_cbf= NULL;
  */
 void STK_Start(void)
 {
-    STK_ErrorStatus_t RET_ErrorStatus= STK_Ok;
-    if(!((STK_CLOCK_CHOICE==STK_AHB_CLOCK)||(STK_CLOCK_CHOICE==STK_AHB_CLOCK_DIV_8)))
-    {
-        RET_ErrorStatus= STK_Nok;
-    }
-    else
-    {
+        /*Enable Interrupts*/
+        STK->CTRL|=STK_TICK_MASK;
         /*Set Systick Clock Source*/
         u32 temp_STK_CTRL=STK->CTRL;
         temp_STK_CTRL&=~STK_CLKSOURCE_MASK;
@@ -46,12 +43,9 @@ void STK_Start(void)
         STK->CTRL=temp_STK_CTRL;
         /*Reset Timer*/
         STK->VAL=0;
+        
         /*Enable Timer*/
         STK->CTRL|=STK_ENABLE_MASK;
-        /*Enable Interrupts*/
-        STK->CTRL|=(1<<STK_TICK_MASK);
-        return RET_ErrorStatus; 
-    }
 }
 
 /**
@@ -69,12 +63,13 @@ void STOP_STK(void)
  *
  * @return  Error Status (Checks if time exceeds time in 'STK_MAX_COUNT_MS' variable)
  */
-STK_ErrorStatus_t SetTimeMS(u32 Time_MS)
+
+STK_ErrorStatus_t STK_SetTimeMS(u32 Time_MS)
 {
     STK_ErrorStatus_t RET_ErrorStatus= STK_Ok;
     if(Time_MS>STK_MAX_COUNT_MS)
     {
-        RET_ErrorStatus=STK_Nok
+        RET_ErrorStatus=STK_Nok;
     }
     else
     {  
@@ -124,3 +119,4 @@ void SysTick_Handler(void)
         APP_cbf();
     }    
 }
+
