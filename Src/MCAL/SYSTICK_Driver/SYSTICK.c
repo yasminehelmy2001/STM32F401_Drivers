@@ -85,7 +85,7 @@ STK_ErrorStatus_t STK_SetTimeMS(u32 Time_MS)
     /*Load temp value to register*/
     return RET_ErrorStatus;
 }
-
+ 
 /**
  * @brief   Function to Set CallBack Function from Application Layer
  *

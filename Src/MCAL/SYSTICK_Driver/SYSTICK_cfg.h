@@ -7,7 +7,7 @@
 */
 
 /*Enter your AHB Frequency*/
-#define STK_AHB_FREQUENCY     16000000
+#define STK_AHB_FREQUENCY     16000000 
 
 /*Choose SysTick Frequency from
  *      - STK_AHB_CLOCK
