@@ -22,7 +22,6 @@
 #define STK_ENABLE_MASK                 0x00000001
 #define STK_TICK_MASK                   0x00000002
 #define STK_CLKSOURCE_MASK              0X00000004
-#define STK_HCLK_MAX                    84000000
 
 /*Pointer to STK  Registers*/
 volatile STK_Peri_t * const STK= (volatile STK_Peri_t*) STK_BASE_ADDRESS;
@@ -43,7 +42,6 @@ void STK_Start(void)
         STK->CTRL=temp_STK_CTRL;
         /*Reset Timer*/
         STK->VAL=0;
-        
         /*Enable Timer*/
         STK->CTRL|=STK_ENABLE_MASK;
 }
@@ -85,7 +83,7 @@ STK_ErrorStatus_t STK_SetTimeMS(u32 Time_MS)
     /*Load temp value to register*/
     return RET_ErrorStatus;
 }
- 
+
 /**
  * @brief   Function to Set CallBack Function from Application Layer
  *
