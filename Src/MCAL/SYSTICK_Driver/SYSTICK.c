@@ -31,7 +31,7 @@ static stkcbf_t APP_cbf= NULL;
 /*Static SysTick Periodicity Variable*/
 static u8 Periodicity= STK_PERIODICITY_ONE_TIME;
 /*Static Counter To Track Handler Activation in One Time Mode*/
-static u8 counter=STK_ACTIVATE_HANDLER;
+static u8 Counter=STK_ACTIVATE_HANDLER;
 
 /**
  * @brief   Function to Start SysTick Timer
@@ -45,7 +45,7 @@ static u8 counter=STK_ACTIVATE_HANDLER;
 STK_ErrorStatus_t STK_Start(u8 Copy_Periodicity)
 {
         STK_ErrorStatus_t RET_ErrorStatus=STK_Ok;
-        if(Periodicity>STK_PERIODICITY_INFINITE)
+        if(Copy_Periodicity>STK_PERIODICITY_INFINITE)
         {
             RET_ErrorStatus=STK_Nok;
         }
@@ -60,12 +60,13 @@ STK_ErrorStatus_t STK_Start(u8 Copy_Periodicity)
             STK->CTRL=temp_STK_CTRL;
             /*Reset Timer*/
             STK->VAL=0;
-            /*Enable Timer*/
-            STK->CTRL|=STK_ENABLE_MASK;
             /*Check on Peridicity*/
             Periodicity=Copy_Periodicity;      
             /*Activate Handler*/
-            counter=STK_ACTIVATE_HANDLER;   
+            Counter=STK_ACTIVATE_HANDLER;  
+            /*Enable Timer*/
+            STK->CTRL|=STK_ENABLE_MASK;
+ 
         }
         return RET_ErrorStatus;
 }
@@ -90,7 +91,8 @@ STK_ErrorStatus_t STK_SetTimeMS(u32 Time_MS)
 {
     STK_ErrorStatus_t RET_ErrorStatus= STK_Ok;
     u32 Loc_StkClock = ((STK_CLOCK_CHOICE ==STK_AHB_CLOCK) ? STK_AHB_FREQUENCY : (STK_AHB_FREQUENCY /8));
-    u32 Loc_Counts=(((Loc_StkClock*Time_MS)/(u32)1000)-1);
+    /*Cast to u64 to Prevent Overflow*/
+    u32 Loc_Counts=((((u64)Loc_StkClock*(u64)Time_MS)/(u64)1000)-1);
     if(Loc_Counts>STK_MAX_COUNT_MS)
     {
         RET_ErrorStatus=STK_Nok;
@@ -137,16 +139,14 @@ STK_ErrorStatus_t STK_SetCallBack(stkcbf_t cbf)
  */
 void SysTick_Handler(void)
 {   
-    
-    if(Periodicity==STK_PERIODICITY_ONE_TIME)
-    {
-        STK_Stop();
-        counter=STK_DONT_ACTIVATE_HANDLER;
-    } 
-    if(APP_cbf && (counter==STK_ACTIVATE_HANDLER))
+    if(APP_cbf && (Counter==STK_ACTIVATE_HANDLER))
     {
         APP_cbf();
     }   
-
+    if(Periodicity==STK_PERIODICITY_ONE_TIME)
+    {
+        STK_Stop();
+        Counter=STK_DONT_ACTIVATE_HANDLER;
+    } 
 }
 
