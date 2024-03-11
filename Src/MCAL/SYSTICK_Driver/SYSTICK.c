@@ -31,7 +31,7 @@ static stkcbf_t APP_cbf= NULL;
 /*Static SysTick Periodicity Variable*/
 static u8 Periodicity= STK_PERIODICITY_ONE_TIME;
 /*Static Counter To Track Handler Activation in One Time Mode*/
-u8 counter=STK_ACTIVATE_HANDLER;
+static u8 counter=STK_ACTIVATE_HANDLER;
 
 /**
  * @brief   Function to Start SysTick Timer
