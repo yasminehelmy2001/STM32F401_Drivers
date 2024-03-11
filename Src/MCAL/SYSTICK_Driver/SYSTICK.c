@@ -30,6 +30,8 @@ volatile STK_Peri_t * const STK= (volatile STK_Peri_t*) STK_BASE_ADDRESS;
 static stkcbf_t APP_cbf= NULL;
 /*Static SysTick Periodicity Variable*/
 static u8 Periodicity= STK_PERIODICITY_ONE_TIME;
+/*Static Counter To Track Handler Activation in One Time Mode*/
+u8 counter=STK_ACTIVATE_HANDLER;
 
 /**
  * @brief   Function to Start SysTick Timer
@@ -61,7 +63,9 @@ STK_ErrorStatus_t STK_Start(u8 Copy_Periodicity)
             /*Enable Timer*/
             STK->CTRL|=STK_ENABLE_MASK;
             /*Check on Peridicity*/
-            Periodicity=Copy_Periodicity;         
+            Periodicity=Copy_Periodicity;      
+            /*Activate Handler*/
+            counter=STK_ACTIVATE_HANDLER;   
         }
         return RET_ErrorStatus;
 }
@@ -132,15 +136,16 @@ STK_ErrorStatus_t STK_SetCallBack(stkcbf_t cbf)
  */
 void SysTick_Handler(void)
 {   
-    u8 counter=0;
+    
     if(Periodicity==STK_PERIODICITY_ONE_TIME)
     {
         STK_Stop();
-        counter++;
-    }
-    if(APP_cbf && !counter)
+        counter=STK_DONT_ACTIVATE_HANDLER;
+    } 
+    if(APP_cbf && (counter==STK_ACTIVATE_HANDLER))
     {
         APP_cbf();
-    }    
+    }   
+
 }
 
