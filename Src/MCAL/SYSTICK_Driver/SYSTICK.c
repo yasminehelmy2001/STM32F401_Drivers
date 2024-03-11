@@ -91,7 +91,7 @@ STK_ErrorStatus_t STK_SetTimeMS(u32 Time_MS)
     STK_ErrorStatus_t RET_ErrorStatus= STK_Ok;
     u32 Loc_StkClock = ((STK_CLOCK_CHOICE ==STK_AHB_CLOCK) ? STK_AHB_FREQUENCY : (STK_AHB_FREQUENCY /8));
     u32 Loc_Counts=(((Loc_StkClock*Time_MS)/(u32)1000)-1);
-    if(Loc_counts>STK_MAX_COUNT_MS)
+    if(Loc_Counts>STK_MAX_COUNT_MS)
     {
         RET_ErrorStatus=STK_Nok;
     }
