@@ -84,7 +84,7 @@ void STK_Stop(void)
  *
  * @param   - Time in MS
  *
- * @return  Error Status (Checks if time exceeds time in 'STK_MAX_COUNT_MS' variable)
+ * @return  Error Status (Checks if counts exceeds max counts in 'STK_MAX_COUNT_MS' variable)
  */
 
 STK_ErrorStatus_t STK_SetTimeMS(u32 Time_MS)
