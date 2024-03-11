@@ -5,12 +5,21 @@
 * Brief:   SYSTICK Driver
 * Target:  STM32F401cc
 */
+
+/**************************************************************************/
+/*						Includes                			 			  */
+/**************************************************************************/
 #include "std_types.h"
 #include "SYSTICK_private.h"
-#include "SYSTICK_cfg.h" 
+#include "SYSTICK_cfg.h"
 
-typedef void (*stkcbf_t) (void); 
+/**************************************************************************/
+/*						#Defines                   			 			  */
+/**************************************************************************/
 
+/* Peiodicity Options */
+#define STK_PERIODICITY_ONE_TIME    (0U)
+#define STK_PERIODICITY_INFINITE    (1U)
 
 /**************************************************************************/
 /*						SYSTICK Registers Struct			 			  */
@@ -23,7 +32,6 @@ typedef struct
     volatile u32 CALIB;
 }STK_Peri_t;
 
-
 /**************************************************************************/
 /*						SYSTICK Error Status Enum   	 			 	  */
 /**************************************************************************/
@@ -33,10 +41,19 @@ typedef enum
     STK_Nok
 }STK_ErrorStatus_t;
 
+/*SysTick Call-Back Function Type*/
+typedef void (*stkcbf_t) (void); 
+
 /**
  * @brief   Function to Start SysTick Timer
+ * 
+ * @param   Periodicity:   
+ *                 - STK_PERIODICITY_ONE_TIME
+ *                 - STK_PERIODICITY_INFINITE
+ * 
+ * @return  Error Status (If Periodicity Option is Invalid)
  */
-void STK_Start(void);
+STK_ErrorStatus_t STK_Start(u8 Copy_Periodicity);
 
 /**
  * @brief   Function to Stop SysTick Timer
@@ -67,3 +84,5 @@ STK_ErrorStatus_t STK_SetCallBack(stkcbf_t cbf);
  * @brief   SysTick Handler Function Implementation
  */
 void SysTick_Handler(void);
+
+

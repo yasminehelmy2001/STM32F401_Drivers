@@ -22,34 +22,54 @@
 #define STK_ENABLE_MASK                 0x00000001
 #define STK_TICK_MASK                   0x00000002
 #define STK_CLKSOURCE_MASK              0X00000004
+#define STK_COUNTFLAG_MASK              0x00010000
 
 /*Pointer to STK  Registers*/
 volatile STK_Peri_t * const STK= (volatile STK_Peri_t*) STK_BASE_ADDRESS;
 /*Static SysTick CallBack Function*/
 static stkcbf_t APP_cbf= NULL;
+/*Static SysTick Periodicity Variable*/
+static u8 Periodicity= STK_PERIODICITY_ONE_TIME;
 
 /**
  * @brief   Function to Start SysTick Timer
+ * 
+ * @param   Periodicity:   
+ *                 - STK_PERIODICITY_ONE_TIME
+ *                 - STK_PERIODICITY_INFINITE
+ * 
+ * @return  Error Status (If Periodicity Option is Invalid)
  */
-void STK_Start(void)
+STK_ErrorStatus_t STK_Start(u8 Copy_Periodicity)
 {
-        /*Enable Interrupts*/
-        STK->CTRL|=STK_TICK_MASK;
-        /*Set Systick Clock Source*/
-        u32 temp_STK_CTRL=STK->CTRL;
-        temp_STK_CTRL&=~STK_CLKSOURCE_MASK;
-        temp_STK_CTRL|=STK_CLOCK_CHOICE;
-        STK->CTRL=temp_STK_CTRL;
-        /*Reset Timer*/
-        STK->VAL=0;
-        /*Enable Timer*/
-        STK->CTRL|=STK_ENABLE_MASK;
+        STK_ErrorStatus_t RET_ErrorStatus=STK_Ok;
+        if(Periodicity>STK_PERIODICITY_INFINITE)
+        {
+            RET_ErrorStatus=STK_Nok;
+        }
+        else
+        {
+            /*Enable Interrupts*/
+            STK->CTRL|=STK_TICK_MASK;
+            /*Set Systick Clock Source*/
+            u32 temp_STK_CTRL=STK->CTRL;
+            temp_STK_CTRL&=~STK_CLKSOURCE_MASK;
+            temp_STK_CTRL|=STK_CLOCK_CHOICE;
+            STK->CTRL=temp_STK_CTRL;
+            /*Reset Timer*/
+            STK->VAL=0;
+            /*Enable Timer*/
+            STK->CTRL|=STK_ENABLE_MASK;
+            /*Check on Peridicity*/
+            Periodicity=Copy_Periodicity;         
+        }
+        return RET_ErrorStatus;
 }
 
 /**
  * @brief   Function to Stop SysTick Timer
  */
-void STOP_STK(void)
+void STK_Stop(void)
 {
     STK->CTRL&=~STK_ENABLE_MASK;
 }
@@ -111,8 +131,14 @@ STK_ErrorStatus_t STK_SetCallBack(stkcbf_t cbf)
  * @brief   SysTick Handler Function Implementation
  */
 void SysTick_Handler(void)
-{
-    if(APP_cbf)
+{   
+    u8 counter=0;
+    if(Periodicity==STK_PERIODICITY_ONE_TIME)
+    {
+        STK_Stop();
+        counter++;
+    }
+    if(APP_cbf && !counter)
     {
         APP_cbf();
     }    
