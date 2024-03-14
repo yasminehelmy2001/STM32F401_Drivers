@@ -67,7 +67,8 @@ static void SCHED_App(void)
     static u32 TickTimeCounter=0;
     for(u32 i=0;i<SYSTEM_RUNNABLES_COUNT;i++)
     {
-        if((TickTimeCounter%System_Runnables[i].PeriodicityMs)==0)
+        /*Check if Periodicity Time is Reached, Check if CallBack Fn is not NULL*/
+        if(((TickTimeCounter%System_Runnables[i].PeriodicityMs)==0)&&(System_Runnables[i].CallBackFn))
         {
             System_Runnables[i].CallBackFn();
         }
