@@ -6,6 +6,9 @@
 * Target:  STM32F401cc
 */
 
+#ifndef SYSTICK_H_
+#define SYSTICK_H_
+
 /**************************************************************************/
 /*						Includes                			 			  */
 /**************************************************************************/
@@ -85,4 +88,4 @@ STK_ErrorStatus_t STK_SetCallBack(stkcbf_t cbf);
  */
 void SysTick_Handler(void);
 
-
+#endif
