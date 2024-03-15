@@ -30,7 +30,7 @@ void Traffic_Lights(void)
   /*Increments by Periodicity*/
   static  u32 CounterSeconds=0;
   /*Increment 'counter' by runnables periodicity*/
-  CounterSeconds+=((System_Runnables[Traffic_Lights_Runnble].PeriodicityMs)/(u32)MS_TO_SECS);
+  CounterSeconds+=((System_Runnables[Traffic_Lights_Runnble].PeriodicityMs)/(u32)MS_TO_S);
 
   switch(state)
   {
@@ -43,7 +43,7 @@ void Traffic_Lights(void)
       {
         case yellow:
         {
-          if(CounterSeconds==6)
+          if(CounterSeconds==GREEN_COUNT_SECONDS)
           {
             CounterSeconds=0;
             state=yellow;
@@ -63,7 +63,7 @@ void Traffic_Lights(void)
       {
         case green:
         {
-          if(CounterSeconds==2)
+          if(CounterSeconds==YELLOW_COUNT_SECONDS)
           {
             CounterSeconds=0;
             state=red;
@@ -73,7 +73,7 @@ void Traffic_Lights(void)
         break;
         case red:
         {
-          if(CounterSeconds==2)
+          if(CounterSeconds==YELLOW_COUNT_SECONDS)
           {
             CounterSeconds=0;
             state=green;
@@ -93,7 +93,7 @@ void Traffic_Lights(void)
       {
         case yellow:
         {
-          if(CounterSeconds==20)
+          if(CounterSeconds==RED_COUNT_SECONDS)
           {
             CounterSeconds=0;
             state=yellow;

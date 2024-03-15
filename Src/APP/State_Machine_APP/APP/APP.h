@@ -5,7 +5,10 @@
 * Target:  STM32F401cc
 */
 
-#define MS_TO_SECS  1000
+#define MS_TO_S                 1000
+#define RED_COUNT_SECONDS       20
+#define YELLOW_COUNT_SECONDS    2
+#define GREEN_COUNT_SECONDS     6
 
 typedef enum
 {
