@@ -14,8 +14,8 @@
 #define SWITCH_NOTPRESSED					(0U)
 #define SWITCH_PRESSED						(1U)
 
-#define SWITCH_PULLUP						(0U)
-#define SWITCH_PULLDOWN						(1U)
+#define SWITCH_PULLUP						(1U)
+#define SWITCH_PULLDOWN						(0U)
 
 typedef struct
 {
@@ -41,16 +41,6 @@ typedef enum
  */
 SWITCH_ErrorStatus_t SWITCH_Init(void);
 
-// /**
-//  * @brief	Reads a Switch State (HIGH/LOW)
-//  *
-//  * @param	- Switch (Takes the SWITCH name written in the Switches_t enum type in SWITCH_cfg.h)
-//  * 			- Pointer to State (SWITCH_PRESSED/ SWITCH_NOTPRESSED)
-//  *
-//  * @error	Error Status (SWITCH_Ok / SWITCH_InvalidParameter)
-//  */
-// SWITCH_ErrorStatus_t SWITCH_ReadStatus(u32 Switch, u8*State);
-
 /**
  * @brief	Reads a Switch State (HIGH/LOW)
  *
@@ -59,7 +49,7 @@ SWITCH_ErrorStatus_t SWITCH_Init(void);
  *
  * @error	Error Status (SWITCH_Ok / SWITCH_InvalidParameter)
  */
-SWITCH_ErrorStatus_t SW_GetState(u32 Switch, u8*State);
+SWITCH_ErrorStatus_t SWITCH_GetStatus(u32 Switch, u8*State);
 
 
 #endif /* SWITCH_H_ */

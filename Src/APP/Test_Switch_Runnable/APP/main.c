@@ -5,6 +5,7 @@
 #include "SWITCH.h"
 #include "APP.h"
 
+
 int main(void)
 {
    Enable_HAL_ClockControl();

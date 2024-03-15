@@ -17,7 +17,7 @@
 void Switch_Led_Runnable (void)
 {
     u8 state;
-    SW_GetState(SWITCH_ONE,&state);
+    SWITCH_GetStatus(SWITCH_ONE,&state);
     if(state==SWITCH_PRESSED)
     {
       LED_SetStatus(LED_RED,LED_ON);
