@@ -39,9 +39,11 @@
  */
 
 const SwitchCfg_t Switches[_Switch_Num]={
-
-
-
+       [SWITCH_ONE]={
+       .Port=GPIO_PORTB,
+        .Pin=GPIO_PIN0,
+        .Connection=SWITCH_PULLUP
+    	}
 };
 
 

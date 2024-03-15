@@ -14,8 +14,8 @@
 #define SWITCH_NOTPRESSED					(0U)
 #define SWITCH_PRESSED						(1U)
 
-#define SWITCH_PULLUP						(0U)
-#define SWITCH_PULLDOWN						(1U)
+#define SWITCH_PULLUP						(1U)
+#define SWITCH_PULLDOWN						(0U)
 
 typedef struct
 {
@@ -49,7 +49,7 @@ SWITCH_ErrorStatus_t SWITCH_Init(void);
  *
  * @error	Error Status (SWITCH_Ok / SWITCH_InvalidParameter)
  */
-SWITCH_ErrorStatus_t SWITCH_ReadStatus(u32 Switch, u8*State);
+SWITCH_ErrorStatus_t SWITCH_GetStatus(u32 Switch, u8*State);
 
 
 #endif /* SWITCH_H_ */

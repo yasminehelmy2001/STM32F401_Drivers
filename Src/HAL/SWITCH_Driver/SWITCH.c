@@ -11,6 +11,8 @@
 
 extern const SwitchCfg_t Switches[_Switch_Num];
 
+static u8 Switch_State[_Switch_Num];
+
 /**
  * @brief	Initializes all Switches Pre-configured in SWITCH_cfg.c
  * @param	None
@@ -51,12 +53,11 @@ SWITCH_ErrorStatus_t SWITCH_Init (void)
  *
  * @error	Error Status (SWITCH_Ok / SWITCH_InvalidParameter)
  */
-SWITCH_ErrorStatus_t SWITCH_ReadStatus(u32 Switch, u8*State)
+SWITCH_ErrorStatus_t SWITCH_GetStatus(u32 Switch, u8*State)
 {
-	u8 SwitchState;
-
 	SWITCH_ErrorStatus_t RET_ErrorStatus=SWITCH_Ok;
-	GPIO_ErrorStatus_t GPIO_ErrorStatus=GPIO_Ok;
+	//GPIO_ErrorStatus_t GPIO_ErrorStatus=GPIO_Ok;
+	//u8 SwitchState;
 
 	if(State==NULL)
 	{
@@ -68,21 +69,45 @@ SWITCH_ErrorStatus_t SWITCH_ReadStatus(u32 Switch, u8*State)
 	}
 	else
 	{
-		GPIO_ErrorStatus=GPIO_GetPinValue(Switches[Switch].Port,Switches[Switch].Pin,&SwitchState);
-		if(GPIO_ErrorStatus!=GPIO_Ok)
-		{
-			RET_ErrorStatus=SWITCH_Nok;
-		}
-		else if(((SwitchState==GPIO_HIGH)&&(Switches[Switch].Connection==SWITCH_PULLUP)) ||
-			((SwitchState==GPIO_LOW)&&(Switches[Switch].Connection==SWITCH_PULLDOWN)))
-		{
-			*State=SWITCH_NOTPRESSED;
-		}
-		else
-		{
-			*State=SWITCH_PRESSED;
-		}
+		// GPIO_ErrorStatus=GPIO_GetPinValue(Switches[Switch].Port,Switches[Switch].Pin,&SwitchState);
+		// if(GPIO_ErrorStatus!=GPIO_Ok)
+		// {
+		// 	RET_ErrorStatus=SWITCH_Nok;
+		// }
+		// else
+		// {
+		// 	*State=((SwitchState)^(Switches[Switch].Connection));
+		// }
+		
+		*State=((Switch_State[Switch])^(Switches[Switch].Connection));
+
 	}
 	return RET_ErrorStatus;
 }
 
+
+void SW_Runnable(void)
+{
+	static u8 prev[_Switch_Num];
+	static u8 curr;
+	static u8 counts[_Switch_Num];
+	for(int i=0;i<_Switch_Num;i++)
+	{
+		GPIO_GetPinValue(Switches[i].Port,Switches[i].Pin,&curr);
+		if(curr==prev[i])
+		{
+			counts[i]++;
+		}
+		else
+		{
+			counts[i]=0;
+		}
+		if(counts[i]==5)
+		{
+			Switch_State[i]=curr;
+			counts[i]=0;
+		}
+		prev[i]=curr;
+	}
+
+}

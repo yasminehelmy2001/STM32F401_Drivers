@@ -23,9 +23,7 @@
  */
 typedef enum
 {
-
-
-
+	SWITCH_ONE,
 	_Switch_Num
 }Switches_t;
 
