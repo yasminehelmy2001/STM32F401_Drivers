@@ -8,7 +8,7 @@ void Toggle_LED(void) {
 	LED_SetStatus(LED_ONE, status);
 }
 
-int main(void)
+int main(void) 
 {
   Enable_HAL_ClockControl();
   LED_Init();
