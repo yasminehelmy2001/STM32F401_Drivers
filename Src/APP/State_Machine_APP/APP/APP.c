@@ -43,7 +43,7 @@ void Traffic_Lights(void)
       {
         case yellow:
         {
-          if(CounterSeconds==GREEN_COUNT_SECONDS)
+          if(CounterSeconds==GREEN_LED_SECONDS)
           {
             CounterSeconds=0;
             state=yellow;
@@ -63,7 +63,7 @@ void Traffic_Lights(void)
       {
         case green:
         {
-          if(CounterSeconds==YELLOW_COUNT_SECONDS)
+          if(CounterSeconds==YELLOW_LED_SECONDS)
           {
             CounterSeconds=0;
             state=red;
@@ -73,7 +73,7 @@ void Traffic_Lights(void)
         break;
         case red:
         {
-          if(CounterSeconds==YELLOW_COUNT_SECONDS)
+          if(CounterSeconds==YELLOW_LED_SECONDS)
           {
             CounterSeconds=0;
             state=green;
@@ -93,7 +93,7 @@ void Traffic_Lights(void)
       {
         case yellow:
         {
-          if(CounterSeconds==RED_COUNT_SECONDS)
+          if(CounterSeconds==RED_LED_SECONDS)
           {
             CounterSeconds=0;
             state=yellow;
