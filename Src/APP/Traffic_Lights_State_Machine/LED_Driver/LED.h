@@ -18,7 +18,7 @@
 #define LED_ON					(1U)
 
 #define LED_CONN_FOR			(0U)
-#define LED_CONN_REV			(1U)
+#define LED_CONN_REV			(1U) 
 
 typedef struct
 {
