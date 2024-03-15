@@ -30,47 +30,6 @@
 #define SUBPRIRITY_BITS_FOUR    0x00000700
 
 /**************************************************************************/
-/*						NVIC Registers Struct	 					 	  */
-/**************************************************************************/
-typedef struct 
-{
-    volatile u32 ISER[8];
-    volatile u32 Reserved[24];
-    volatile u32 ICER[8];
-    volatile u32 Reserved1[24];
-    volatile u32 ISPR[8];
-    volatile u32 Reserved2[24];
-    volatile u32 ICPR[8];
-    volatile u32 Reserved3[24];
-    volatile u32 IABR[8];
-    volatile u32 Reserved4[56];
-    volatile u32 IPR[60];
-    volatile u32 Reserved5[580];
-    volatile u32 STIR;
-}NVIC_Peri_t;
-
-/**************************************************************************/
-/*						SCB Registers Struct	 					 	  */
-/**************************************************************************/
-typedef struct
-{
-    volatile u32 CPUID;
-    volatile u32 ICSR;
-    volatile u32 VTOR;
-    volatile u32 AIRCR;
-    volatile u32 SCR;
-    volatile u32 CCR;
-    volatile u32 SHPR[3];
-    volatile u32 SHCSR;
-    volatile u32 CFSR;
-    volatile u32 HFSR;
-    volatile u32 Reserved2;
-    volatile u32 MMAR;
-    volatile u32 BFAR;
-    volatile u32 AFSR;
-}SCB_Peri_t;
-
-/**************************************************************************/
 /*						NVIC ERROR STATUS ENUM	 					 	  */
 /**************************************************************************/
 typedef enum

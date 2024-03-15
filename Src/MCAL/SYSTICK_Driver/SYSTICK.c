@@ -24,6 +24,17 @@
 #define STK_CLKSOURCE_MASK              0X00000004
 #define STK_COUNTFLAG_MASK              0x00010000
 
+/**************************************************************************/
+/*						SYSTICK Registers Struct			 			  */
+/**************************************************************************/
+typedef struct
+{
+    volatile u32 CTRL;
+    volatile u32 LOAD;
+    volatile u32 VAL;
+    volatile u32 CALIB;
+}STK_Peri_t;
+
 /*Pointer to STK  Registers*/
 volatile STK_Peri_t * const STK= (volatile STK_Peri_t*) STK_BASE_ADDRESS;
 /*Static SysTick CallBack Function*/

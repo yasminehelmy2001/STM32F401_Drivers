@@ -102,30 +102,19 @@
 #define GPIO_LOW						(0U)
 #define GPIO_HIGH						(1U)
 
-/**************************************************************************/
-/*						GPIO Registers Struct			 			 	  */
-/**************************************************************************/
-typedef struct
-{
-	volatile u32 MODER;
-	volatile u32 OTYPER;
-	volatile u32 OSPEEDR;
-	volatile u32 PUPDR;
-	volatile u32 IDR;
-	volatile u32 ODR;
-	volatile u32 BSRR;
-	volatile u32 LCKR;
-	volatile u32 AFRL;
-	volatile u32 AFRH;
-} GPIO_Registers_t;
-
 
 /**************************************************************************/
 /*						GPIO Pin Configuration Struct	 			 	  */
 /**************************************************************************/
 
 /**
- * @Note: Use 32-bit variables to avoid implicit casting
+ * @note    Use 32-bit variables to avoid implicit casting
+ * 
+ * @param   1) Port
+ * 			2) Pin
+ * 			3) Speed
+ * 			4) Mode
+ * 			5) AF_Choice
  */
 typedef struct
 {
@@ -134,10 +123,10 @@ typedef struct
 
 	u32 Speed;			 /* SPEED_LOW, SPEED_MEDIUM, SPEED_HIGH, SPEED_VERY_HIGH */
 
-	u32 Mode;   		 	 /* # MACRO Starts with MODE_
-  							# Selects mode from Input/Output/Alternating Function/Analog
- 							# If Mode is Output -> Select whether Output Type is PP(Push Pull) or OD(Open Drain)
-  							# Select if circuit is PU(Pull Up), PD(Pull Down), or Deactivated */
+	u32 Mode;   		 /* # MACRO Starts with MODE_
+						    # Selects mode from Input/Output/Alternating Function/Analog
+						    # If Mode is Output -> Select whether Output Type is PP(Push Pull) or OD(Open Drain)
+						    # Select if circuit is PU(Pull Up), PD(Pull Down), or Deactivated */
 
 
 	u32 AF_Choice; 		 /* # Macro begins with AF

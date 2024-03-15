@@ -25,17 +25,6 @@
 #define STK_PERIODICITY_INFINITE    (1U)
 
 /**************************************************************************/
-/*						SYSTICK Registers Struct			 			  */
-/**************************************************************************/
-typedef struct
-{
-    volatile u32 CTRL;
-    volatile u32 LOAD;
-    volatile u32 VAL;
-    volatile u32 CALIB;
-}STK_Peri_t;
-
-/**************************************************************************/
 /*						SYSTICK Error Status Enum   	 			 	  */
 /**************************************************************************/
 typedef enum
