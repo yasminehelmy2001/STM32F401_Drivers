@@ -6,9 +6,8 @@
 * Target:  STM32F401cc
 */
 
-#include "SYSTICK.h"
+#include "SYSTICK.h" /*Scheduler only depends on systick*/
 #include "SCHED.h"
-#include "APP.h"
 
 /**************************************************************************/
 /*						Static Function Prototypes      	 			  */

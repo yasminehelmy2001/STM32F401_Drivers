@@ -6,8 +6,10 @@
 * Target:  STM32F401cc
 */
 
-#include "APP.h"
+
 #include "SCHED.h"
+
+extern void Toggle_LED(void);
 
 /**
  * Add Your Runnables Information Here
