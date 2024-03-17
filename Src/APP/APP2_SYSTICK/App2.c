@@ -15,7 +15,7 @@ int main(void)
   LED_Init();
   STK_SetTimeMS(1000);
   STK_SetCallBack(Toggle_LED);
-  STK_Start();
+  STK_Start(STK_PERIODICITY_INFINITE);
 
   while (1){
     }
@@ -24,7 +24,7 @@ int main(void)
 void Toggle_LED(void) {
 	static u32 status = LED_ON ;
 	status ^= (LED_ON | LED_OFF);
-	LED_SetStatus(LED_ONE, status);
+	LED_SetStatus(LED_RED, status);
 }
 
 #endif
