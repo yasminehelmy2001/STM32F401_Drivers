@@ -17,14 +17,3 @@ typedef enum
     yellow,
     green
 }TrafficLightState_t;
-
-
-/**
- * Function to Toggle a LED
-*/
-void Toggle_LED(void);
-
-/**
- * Traffic Lights Runnable
-*/
-void Traffic_Lights(void);

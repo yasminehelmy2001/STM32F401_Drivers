@@ -1,3 +1,8 @@
+#include "APP.h"
+
+#ifdef APP
+#if (APP==APP5_TRAFFIC_LIGHT_SM)
+
 /*
 * File:    APP.c
 * Author:  Yasmin Amr
@@ -9,9 +14,10 @@
 #include "SCHED.h"
 #include "SYSTICK.h"
 #include "LED.h"
-#include "APP.h"
+#include "APP5.h"
 
 extern Runnables_t System_Runnables[];
+void Traffic_Lights(void);
 
 int main(void)
 {
@@ -107,3 +113,6 @@ void Traffic_Lights(void)
   }
 
 }
+
+#endif
+#endif
