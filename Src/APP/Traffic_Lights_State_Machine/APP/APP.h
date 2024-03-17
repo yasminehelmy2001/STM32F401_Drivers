@@ -28,4 +28,3 @@ void Toggle_LED(void);
  * Traffic Lights Runnable
 */
 void Traffic_Lights(void);
-
