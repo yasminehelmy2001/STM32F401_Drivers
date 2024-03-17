@@ -1,5 +1,11 @@
 #include "NVIC.h"
 
+/**
+ * Note 1: For Handler Debugging: Add a breakpoint inside the Handler & use Step Over.
+ * 
+ * Note 2: Use "SetPriority" Function to Set Priorities as all ISRs have the same SW Priority after Reset
+*/
+
 /**************************************************************************/
 /*						NVIC-SCB Implementation Masks 				 	  */
 /**************************************************************************/
