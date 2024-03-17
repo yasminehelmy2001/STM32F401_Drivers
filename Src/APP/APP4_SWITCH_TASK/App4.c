@@ -5,6 +5,10 @@
 * Target:  STM32F401cc
 */
 
+/**
+ * Note: Adjust Runnable Periodicity to 150ms to avoid high Sensitivity
+*/
+
 #include "APP.h"
 
 #ifdef APP
@@ -17,7 +21,7 @@
 #include "SWITCH.h"
 #include "APP.h"
 
-static void Switch_Led_Runnable (void);
+void Switch_Led_Runnable (void);
 
 int main(void)
 {
@@ -30,15 +34,18 @@ int main(void)
 
 void Switch_Led_Runnable (void)
 {
-    u8 state;
-    SWITCH_GetStatus(SWITCH_ONE,&state);
-    if(state==SWITCH_PRESSED)
+    u8 switch_state;
+    static u8 led_state=LED_OFF;
+    SWITCH_GetStatus(SWITCH_ONE,&switch_state);
+    if(switch_state==SWITCH_PRESSED)
     {
-      LED_SetStatus(LED_RED,LED_ON);
+      //Toggle Led State
+      led_state^=1;
+      LED_SetStatus(LED_RED,led_state);
     }  
     else
     {
-      LED_SetStatus(LED_RED,LED_OFF);
+      //Do Nothing
     }
 }
 
