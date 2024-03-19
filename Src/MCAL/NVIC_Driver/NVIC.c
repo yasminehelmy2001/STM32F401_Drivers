@@ -254,35 +254,6 @@ NVIC_ErrorStatus_t NVIC_GenerateSoftwareInterrupt(u8 ID)
 
 
 /**
- * @brief  		 Function to Check if Any Interrupt in the System is Active/Not Active
- *
- * @param   	 1) IRQn(Interrupt Number)
- *                  - MACRO Begins with NVIC_
- *                  - Options listed in STM32F401xx.h
- * 
- *               2) Pointer to ActiveStatus Variable
- *                  - Returns (INTERRUPT_NOT_ACTIVE/INTERRUPT_ACTIVE) through pointer
- * 
- * @return		 Error Status
- *         		 - Returns Error if:
- *                  * Interrupt Number is out of range 
- *                  * Pointer is NULL
- */
-NVIC_ErrorStatus_t NVIC_GetActiveStatus(u8 IRQn, u8*ActiveStatus);
-
-/**
- * @brief  		 Function to Generate Software Interrupt for Any Interrupt in the System
- *
- * @param   	 ID(Interrupt Number)
- *               - MACRO Begins with NVIC_
- *               - Options listed in STM32F401xx.h
- *
- * @return		  Error Status
- *         		 - Returns Error if Interrupt Number is out of range 
- */
-NVIC_ErrorStatus_t NVIC_GenerateSoftwareInterrupt(u8 ID);
-
-/**
  * @brief  		 Function to Set Priority Bit for Any Interrupt in the System
  *
  * @param   	 1) IRQn(Interrupt Number)
