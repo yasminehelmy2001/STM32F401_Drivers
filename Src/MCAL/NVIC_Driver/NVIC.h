@@ -6,13 +6,11 @@
 * Target:  STM32F401cc
 */
 
-#include "STM32F401xx.h"
+#ifndef NVIC_H_
+#define NVIC_H_
 
-/**************************************************************************/
-/*						NVIC-SCB BASE ADDRESSES     				 	  */
-/**************************************************************************/
-#define NVIC_BASE_ADDRESS       0xE000E100
-#define SCB_BASE_ADDRESS        0xE000ED00
+#include "NVIC_cfg.h"
+#include "STM32F401xx.h"
 
 /**************************************************************************/
 /*						INTERRUPT ACTIVE STATES     				 	  */
@@ -23,11 +21,13 @@
 /**************************************************************************/
 /*						NVIC SUBPRIORITY BIT OPTIONS				 	  */
 /**************************************************************************/
-#define SUBPRIORITY_BITS_NONE   0x00000300
-#define SUBPRIORITY_BITS_ONE    0x00000400
-#define SUBPRIRITY_BITS_TWO     0x00000500
-#define SUBPRIRITY_BITS_THREE   0x00000600
-#define SUBPRIRITY_BITS_FOUR    0x00000700
+#if (ENABLED_PRIORITY_BITS==4)
+    #define SUBPRIORITY_BITS_NONE    0x00000300
+    #define SUBPRIORITY_BITS_ONE     0x00000400
+    #define SUBPRIORITY_BITS_TWO     0x00000500
+    #define SUBPRIORITY_BITS_THREE   0x00000600
+    #define SUBPRIORITY_BITS_FOUR    0x00000700
+#endif
 
 /**************************************************************************/
 /*						NVIC ERROR STATUS ENUM	 					 	  */
@@ -149,4 +149,4 @@ NVIC_ErrorStatus_t NVIC_GenerateSoftwareInterrupt(u8 ID);
  */
 NVIC_ErrorStatus_t NVIC_SetPriority(u8 IRQn, u8 PreemptLevel, u8 SubGroupLevel, u32 SubGroupBitsMask);
 
-
+#endif

@@ -7,15 +7,20 @@
 */
 
 /**************************************************************************/
-/*						NVIC-SCB Implementation Masks 				 	  */
+/*						NVIC-SCB Implementation Macros 				 	  */
 /**************************************************************************/
 #define SCB_PRIGROUP_MASK       0x00000700
 #define EIGHT_BIT_MASK          0x000000FF
 #define SCB_VECTKEY_MASK        0xFFFF0000
 #define SCR_AIRCR_WRITE         0x05FA0000
 #define FOUR_BIT_SHIFT          0x00000004
-
 #define BYTE                    (8U)
+
+/**************************************************************************/
+/*						NVIC-SCB BASE ADDRESSES     				 	  */
+/**************************************************************************/
+#define NVIC_BASE_ADDRESS       0xE000E100
+#define SCB_BASE_ADDRESS        0xE000ED00
 
 /**************************************************************************/
 /*						NVIC Registers Struct	 					 	  */
