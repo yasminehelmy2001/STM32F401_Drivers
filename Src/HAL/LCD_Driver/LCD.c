@@ -97,10 +97,16 @@ extern LCD_Pins_t LcdCfgArray[LCD_BITS];
 u8 lcdstate=inactive_state;
 
 /*Global Struct to Share User Info with Task*/
-LCD_Request_t User_Req={.state=ready};
+LCD_Request_t static User_Req={.state=ready};
 
 /*Enable Tracker*/
 static u8 enable_state=enable_high;
+
+/*Global Pointer to Functions*/
+func LCD_ClearScreenCbf=NULL;
+func LCD_SetCursorCbf=NULL;
+func LCD_WriteStringCbf=NULL;
+func LCD_InitCbf=NULL;
 
 
 /************************************************************************/
@@ -123,8 +129,9 @@ void LCD_InitPins(void)
     }
 }
 
-void LCD_InitAsync(void)
+void LCD_InitAsync(func callback)
 {
+    LCD_InitCbf=callback;
     if(User_Req.state==ready)
     {
         lcdstate=init_state;
@@ -132,8 +139,9 @@ void LCD_InitAsync(void)
     }
 }
 
-void LCD_ClearScreenAsync(void)
+void LCD_ClearScreenAsync(func callback)
 {
+    LCD_ClearScreenCbf=callback;
     if((lcdstate==operational_state) && (User_Req.state==ready))
     {
         User_Req.type=clear;
@@ -141,8 +149,9 @@ void LCD_ClearScreenAsync(void)
     }
 }
 
-void LCD_WriteStringAsync(const char*string, u8 length)
+void LCD_WriteStringAsync(const char*string, u8 length, func callback)
 {
+    LCD_WriteStringCbf=callback;
     if((lcdstate==operational_state)&&(User_Req.state==ready))
     {
         User_Req.string=string;
@@ -153,8 +162,9 @@ void LCD_WriteStringAsync(const char*string, u8 length)
 
 }
 
-void LCD_SetCursorPosAsync(u8 posX, u8 posY)
+void LCD_SetCursorPosAsync(u8 posX, u8 posY, func callback)
 {
+    LCD_SetCursorCbf=callback;
     if((lcdstate==operational_state) && (User_Req.state==ready))
     {
         User_Req.posX=posX;
@@ -298,6 +308,10 @@ static void LcdInitProc(void)
         case EntryModeSet:
             lcdstate=operational_state;
             User_Req.state=ready;
+            if(LCD_InitCbf)
+            {
+                LCD_InitCbf();
+            }
         break;
     }
 }
@@ -311,6 +325,11 @@ static void LcdWriteProc(void)
         currpos=0;
         /*Set User State to Ready*/
         User_Req.state=ready;
+        if(LCD_WriteStringCbf)
+        {
+            LCD_WriteStringCbf();
+        }
+
     }
     else
     {
@@ -354,6 +373,10 @@ static void LcdClearProc(void)
             enable_state=enable_high;
             /*Set User State to Ready*/
             User_Req.state=ready;
+            if(LCD_ClearScreenCbf)
+            {
+                LCD_ClearScreenCbf();
+            }
         break;
     }
 }
@@ -388,6 +411,10 @@ static void LcdSetPosProc(void)
             enable_state=enable_high;
             /*Set User State to Ready*/
             User_Req.state=ready;
+            if(LCD_SetCursorCbf)
+            {
+                LCD_SetCursorCbf();
+            }
         break;
     }
 }

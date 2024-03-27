@@ -13,6 +13,8 @@
 #include "GPIO.h"
 #include "LCD_cfg.h"
 
+typedef void (*func)(void);
+
 /************************************************************************/
 /*					           LCD PINS			                        */
 /************************************************************************/
@@ -54,13 +56,15 @@ typedef struct
     u8 type;            /*Type of Request (Write/Clear/SetCursorPosition)*/
     u8 posX;            /*Stores Position of Row on LCD*/
     u8 posY;            /*Stores Position of Column on LCD*/
+    func callback;      /*Callback function to call after end of a single operation*/
+
 }LCD_Request_t;
 
 
-void LCD_InitAsync(void);
-void LCD_ClearScreenAsync(void);
-void LCD_WriteStringAsync(const char*string, u8 length);
-void LCD_SetCursorPosAsync(u8 posX, u8 posY);
+void LCD_InitAsync(func callback);
+void LCD_ClearScreenAsync(func callback);
+void LCD_WriteStringAsync(const char*string, u8 length,func callback);
+void LCD_SetCursorPosAsync(u8 posX, u8 posY, func callback);
 void LCD_InitPins(void);
 
 //void LCD_getState(void);
