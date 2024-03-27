@@ -96,7 +96,7 @@ extern LCD_Pins_t LcdCfgArray[LCD_BITS];
 u8 lcdstate=inactive_state;
 
 /*Global Struct to Share User Info with Task*/
-LCD_Request_t  User_Req={.state=ready};
+LCD_Request_t User_Req={.state=ready};
 
 /*Enable Tracker*/
 static u8 enable_state=enable_high;
