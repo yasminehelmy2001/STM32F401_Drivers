@@ -9,8 +9,6 @@
 #ifndef LCD_H_
 #define LCD_H_
 
-#include "std_types.h"
-#include "GPIO.h"
 #include "LCD_cfg.h"
 
 typedef void (*func)(void);

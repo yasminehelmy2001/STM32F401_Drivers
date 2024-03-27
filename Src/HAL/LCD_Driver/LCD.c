@@ -8,7 +8,6 @@
 
 #include "LCD_.h"
 #include "SCHED.h"
-#include "LED.h"
 
 /************************************************************************/
 /*					           LCD COMMANDS		                        */
@@ -97,7 +96,7 @@ extern LCD_Pins_t LcdCfgArray[LCD_BITS];
 u8 lcdstate=inactive_state;
 
 /*Global Struct to Share User Info with Task*/
-LCD_Request_t static User_Req={.state=ready};
+LCD_Request_t  User_Req={.state=ready};
 
 /*Enable Tracker*/
 static u8 enable_state=enable_high;
@@ -210,7 +209,7 @@ LCD_ErrorStatus_t LCD_WriteStringAsync(const char*string, u8 length, func callba
  * 
  * @return	Error Status 
  */
-void LCD_SetCursorPosAsync(u8 posX, u8 posY, func callback)
+LCD_ErrorStatus_t LCD_SetCursorPosAsync(u8 posX, u8 posY, func callback)
 {
     LCD_ErrorStatus_t RET_ErrorStatus=LCD_Ok;
     if(posX>1)
