@@ -72,7 +72,7 @@ typedef struct
 void LCD_InitPins(void);
 
 /**
- * @brief	Initializes an LCD Module
+ * @brief	Registers User Request for Initializing an LCD Module
  *
  * @param	- CallBack Function
  *
@@ -81,7 +81,7 @@ void LCD_InitPins(void);
 void LCD_InitAsync(func callback);
 
 /**
- * @brief	Clears an LCD Screen
+ * @brief	Registers User Request for Clear Screan
  *
  * @param	- (callback) CallBack Function
  * 
@@ -90,7 +90,7 @@ void LCD_InitAsync(func callback);
 void LCD_ClearScreenAsync(func callback);
 
 /**
- * @brief	Writes a String to the LCD Screen
+ * @brief	Registers User Request for Wriiting String + Saves "string" & "length" Information
  *
  * @param	- (string) Pointer to the String
  *          - (length) Length of the String
@@ -101,7 +101,7 @@ void LCD_ClearScreenAsync(func callback);
 LCD_ErrorStatus_t LCD_WriteStringAsync(const char*string, u8 length,func callback);
 
 /**
- * @brief	Sets the LCD Cursor to a Certain Location
+ * @brief	Registers User Request for Setting Cursor Position and Saves "posX" & "posY" Information.
  *
  * @param	- (posX) Row Number (0/1)
  *          - (posY) Column Number (0->16)
