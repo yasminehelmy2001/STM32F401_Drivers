@@ -112,6 +112,10 @@ func LCD_InitCbf=NULL;
 /************************************************************************/
 /*					 User Function Implementations		                */
 /************************************************************************/
+
+/**
+ * @brief	Initializes Pins used with the LCD Module
+ */
 void LCD_InitPins(void)
 {
     if(User_Req.state==ready)
@@ -129,6 +133,13 @@ void LCD_InitPins(void)
     }
 }
 
+/**
+ * @brief	Initializes an LCD Module
+ *
+ * @param	- CallBack Function
+ *
+ * @return  void
+ */
 void LCD_InitAsync(func callback)
 {
     LCD_InitCbf=callback;
@@ -139,6 +150,13 @@ void LCD_InitAsync(func callback)
     }
 }
 
+/**
+ * @brief	Clears an LCD Screen
+ *
+ * @param	- (callback) CallBack Function
+ * 
+ * @return  void
+ */
 void LCD_ClearScreenAsync(func callback)
 {
     LCD_ClearScreenCbf=callback;
@@ -149,29 +167,72 @@ void LCD_ClearScreenAsync(func callback)
     }
 }
 
-void LCD_WriteStringAsync(const char*string, u8 length, func callback)
+/**
+ * @brief	Writes a String to the LCD Screen
+ *
+ * @param	- (string) Pointer to the String
+ *          - (length) Length of the String
+ *          - (callback) CallBack Function 
+ * 
+ * @return	Error Status 
+ */
+LCD_ErrorStatus_t LCD_WriteStringAsync(const char*string, u8 length, func callback)
 {
-    LCD_WriteStringCbf=callback;
-    if((lcdstate==operational_state)&&(User_Req.state==ready))
+    LCD_ErrorStatus_t RET_ErrorStatus=LCD_Ok;
+    if(string==NULL)
     {
-        User_Req.string=string;
-        User_Req.length=length;
-        User_Req.type=write;
-        User_Req.state=busy;  
+        RET_ErrorStatus=LCD_Nok;
     }
-
+    else if(length>16)
+    {
+        RET_ErrorStatus=LCD_Nok;
+    }
+    else
+    {
+        LCD_WriteStringCbf=callback;
+        if((lcdstate==operational_state)&&(User_Req.state==ready))
+        {
+            User_Req.string=string;
+            User_Req.length=length;
+            User_Req.type=write;
+            User_Req.state=busy;  
+        }
+    }
+    return RET_ErrorStatus;
 }
 
+/**
+ * @brief	Sets the LCD Cursor to a Certain Location
+ *
+ * @param	- (posX) Row Number (0/1)
+ *          - (posY) Column Number (0->16)
+ *          - (callback) CallBack Function 
+ * 
+ * @return	Error Status 
+ */
 void LCD_SetCursorPosAsync(u8 posX, u8 posY, func callback)
 {
-    LCD_SetCursorCbf=callback;
-    if((lcdstate==operational_state) && (User_Req.state==ready))
+    LCD_ErrorStatus_t RET_ErrorStatus=LCD_Ok;
+    if(posX>1)
     {
-        User_Req.posX=posX;
-        User_Req.posY=posY;
-        User_Req.type=setpos;
-        User_Req.state=busy;
+        RET_ErrorStatus=LCD_Nok;
     }
+    else if(posY>16)
+    {
+        RET_ErrorStatus=LCD_Nok;
+    }
+    else
+    {
+        LCD_SetCursorCbf=callback;
+        if((lcdstate==operational_state) && (User_Req.state==ready))
+        {
+            User_Req.posX=posX;
+            User_Req.posY=posY;
+            User_Req.type=setpos;
+            User_Req.state=busy;
+        }
+    }
+    return RET_ErrorStatus;
 }
 
 /************************************************************************/
@@ -210,6 +271,7 @@ void LCD_Task(void)
 /*					         LCD Task Threads   		                */
 /************************************************************************/
 
+/*Thread for Initializing LCD*/
 static void LcdInitProc(void)
 {
     static u8 state=PowerOn;
@@ -316,6 +378,7 @@ static void LcdInitProc(void)
     }
 }
 
+/*Thread for Writing String to the LCD*/
 static void LcdWriteProc(void)
 {
     static u8 currpos=0;
@@ -355,6 +418,7 @@ static void LcdWriteProc(void)
     }
 }
 
+/*Thread for Clearing LCD*/
 static void LcdClearProc(void)
 {
     switch(enable_state)
@@ -381,6 +445,7 @@ static void LcdClearProc(void)
     }
 }
 
+/*Thread for Setting Curson Position on the LCD*/
 static void LcdSetPosProc(void)
 {
     u8 static Cursor_Position=0;
@@ -423,11 +488,13 @@ static void LcdSetPosProc(void)
 /*					         Helper Functions      		                */
 /************************************************************************/
 
+/*Gets Bit from an 8-bit Variable*/
 static u8 GET_BIT(u8 Register,u8 BitNum)
 {
     return (Register&(1<<BitNum));
 }
 
+/*Writes Command on LCD*/
 static void LCD_WriteCommand(u8 Command)
 {
     u8 bit_tracker=0;
@@ -450,7 +517,8 @@ static void LCD_WriteCommand(u8 Command)
         GPIO_SetPinValue(LcdCfgArray[i].Port,LcdCfgArray[i].Pin,GPIO_State);
     }
 }
-    
+
+/*Writes Data to LCD*/ 
 static void LCD_WriteData(u8 Data)
 {
     u8 bit_tracker=0;

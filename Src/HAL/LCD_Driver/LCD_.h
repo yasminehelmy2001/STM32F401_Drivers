@@ -36,6 +36,12 @@ typedef void (*func)(void);
 #define LCD_EIGHT_BIT_MODE      (11U)  
 #define LCD_FOUR_BIT_MODE       (7U)
 
+typedef enum
+{
+    LCD_Ok,
+    LCD_Nok
+}LCD_ErrorStatus_t;
+
 /**
  * Struct to Store Port and Pin States of Each LCD Pin
 */
@@ -60,12 +66,50 @@ typedef struct
 
 }LCD_Request_t;
 
-
-void LCD_InitAsync(func callback);
-void LCD_ClearScreenAsync(func callback);
-void LCD_WriteStringAsync(const char*string, u8 length,func callback);
-void LCD_SetCursorPosAsync(u8 posX, u8 posY, func callback);
+/**
+ * @brief	Initializes Pins used with the LCD Module
+ */
 void LCD_InitPins(void);
+
+/**
+ * @brief	Initializes an LCD Module
+ *
+ * @param	- CallBack Function
+ *
+ * @return  void
+ */
+void LCD_InitAsync(func callback);
+
+/**
+ * @brief	Clears an LCD Screen
+ *
+ * @param	- (callback) CallBack Function
+ * 
+ * @return  void
+ */
+void LCD_ClearScreenAsync(func callback);
+
+/**
+ * @brief	Writes a String to the LCD Screen
+ *
+ * @param	- (string) Pointer to the String
+ *          - (length) Length of the String
+ *          - (callback) CallBack Function 
+ * 
+ * @return	Error Status 
+ */
+LCD_ErrorStatus_t LCD_WriteStringAsync(const char*string, u8 length,func callback);
+
+/**
+ * @brief	Sets the LCD Cursor to a Certain Location
+ *
+ * @param	- (posX) Row Number (0/1)
+ *          - (posY) Column Number (0->16)
+ *          - (callback) CallBack Function 
+ * 
+ * @return	Error Status 
+ */
+LCD_ErrorStatus_t LCD_SetCursorPosAsync(u8 posX, u8 posY, func callback);
 
 //void LCD_getState(void);
 #endif
