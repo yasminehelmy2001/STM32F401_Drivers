@@ -369,6 +369,7 @@ static void LcdInitProc(void)
         case EntryModeSet:
             lcdstate=operational_state;
             User_Req.state=ready;
+            /*Call CallBack Function AFTER Seeting User State to Ready*/
             if(LCD_InitCbf)
             {
                 LCD_InitCbf();
@@ -387,6 +388,7 @@ static void LcdWriteProc(void)
         currpos=0;
         /*Set User State to Ready*/
         User_Req.state=ready;
+        /*Call CallBack Function AFTER Seeting User State to Ready*/
         if(LCD_WriteStringCbf)
         {
             LCD_WriteStringCbf();
@@ -436,6 +438,7 @@ static void LcdClearProc(void)
             enable_state=enable_high;
             /*Set User State to Ready*/
             User_Req.state=ready;
+            /*Call CallBack Function AFTER Seeting User State to Ready*/
             if(LCD_ClearScreenCbf)
             {
                 LCD_ClearScreenCbf();
@@ -475,6 +478,7 @@ static void LcdSetPosProc(void)
             enable_state=enable_high;
             /*Set User State to Ready*/
             User_Req.state=ready;
+            /*Call CallBack Function AFTER Seeting User State to Ready*/
             if(LCD_SetCursorCbf)
             {
                 LCD_SetCursorCbf();
