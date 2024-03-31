@@ -36,15 +36,15 @@ int main (void)
     //NVIC_SetPending(NVIC_USART1_INTERRUPT);
 
     /*Set GPIO Pins as AF .. See Datasheet*/
-    GPIO_Pin_t GpioTX={GPIO_PORTA,GPIO_PIN9,SPEED_HIGH,MODE_AF_PP_PD,AF7}; 
-    GPIO_Pin_t GpioRX={GPIO_PORTA,GPIO_PIN10,SPEED_HIGH,MODE_AF_PP_PD,AF7};
+    GPIO_Pin_t GpioTX={GPIO_PORTA,GPIO_PIN9,SPEED_HIGH,MODE_AF_PP,AF7}; 
+    GPIO_Pin_t GpioRX={GPIO_PORTA,GPIO_PIN10,SPEED_HIGH,MODE_AF_PP,AF7};
     GPIO_InitPin(&GpioTX);
     GPIO_InitPin(&GpioRX);  
 
     USART_PostCompileCfg_t USART1_cfg={USART_CH1,USART_OVERSAMPLING_16,USART_DATA_BITS_8,USART_PARITY_NONE,USART_STOP_BITS_ONE,9600};
     USART_Init(&USART1_cfg);
 
-    //USART_RxBufferAsyncZeroCopy(USART_CH1,buffer,3,CBF);
+    USART_RxBufferAsyncZeroCopy(USART_CH1,buffer,3,CBF);
 
     while(1)
     {
