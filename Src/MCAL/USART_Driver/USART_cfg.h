@@ -7,4 +7,9 @@
 */
 #include "std_types.h"
 
-#define F_USART  16000000
+/**
+ * Configure Frequency Input to UART Peripheral
+*/
+#define F_USART1  16000000
+#define F_USART2  16000000
+#define F_USART6  16000000

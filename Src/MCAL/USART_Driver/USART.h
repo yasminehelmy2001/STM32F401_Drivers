@@ -11,58 +11,89 @@
 
 #include "USART_cfg.h"
 
+/**************************************************************************/
+/*					UART Channel Options      		    	 			  */
+/**************************************************************************/
 #define USART_CH1         (0U)
 #define USART_CH2         (1U)
 #define USART_CH6         (2U)
 
-#define USART_ENABLE                         0x00002000
-#define USART_DISABLE                        0x00000000
-
+/**************************************************************************/
+/*					UART Channel Oversampling Options           	      */
+/**************************************************************************/
 #define USART_OVERSAMPLING_16                0x00000000
 #define USART_OVERSAMPLING_8                 0x00008000
 
+/**************************************************************************/
+/*					UART Channel Data Bits Options           	          */
+/**************************************************************************/
 #define USART_DATA_BITS_8                    0x00000000
 #define USART_DATA_BITS_9                    0x00001000
 
+/**************************************************************************/
+/*					UART Channel Parity Bits Options           	          */
+/**************************************************************************/
 #define USART_PARITY_NONE                    0x00000000  
 #define USART_PARITY_ODD                     0x00000200
 #define USART_PARITY_EVEN                    0x00000000
 
-#define USART_TXE_INTERRUPT_ENABLE           0x00000080
-#define USART_TXE_INTERRUPT_DISABLE          0x00000000
-
-#define USART_TX_COMPLETE_INT_ENABLE         0x00000040
-#define USART_TX_COMPLETE_INT_DISABLE        0x00000000
-
-#define USART_RXNE_INT_ENABLE                0x00000020   
-#define USART_RXNE_INT_DISABLE               0x00000000
-
+/**************************************************************************/
+/*					UART Stop Bits Options                  	          */
+/**************************************************************************/
 #define USART_STOP_BITS_HALF                 0x00001000
 #define USART_STOP_BITS_ONE                  0x00000000
 #define USART_STOP_BITS_ONE_AND_HALF         0x00003000
 #define USART_STOP_BITS_TWO                  0x00002000
 
+/**
+  * @brief:  "fnpointer" type: pointer to function that takes void and returns void
+  */
 typedef void (*fnpointer)(void);
 
+/**
+ * @brief   Struct for Storing UART Post Compile Initilization Info
+*/
 typedef struct
 {
-    volatile u8*data;                 /*Bytes to be Sent/Received Asynchronously*/
-    volatile u16 len;                 /*Number of Bytes to Be Sent/Received Asynchronously*/
-    volatile fnpointer cbf;           /*CallBack Function After End of Operation*/
-    volatile u16 pos;                  /*Tracker for Bytes*/
-    volatile u8 state;                /*State for User Request*/
-}USART_Buffer_t;
+    u8 Channel;             /**
+                             * 1) USART_CH1    
+                             * 2) USART_CH2   
+                             * 3) USART_CH6  
+                             */
 
-typedef struct
-{
-    u8 Channel;
-    u8 OverSampling;
-    u8 WordLength;
-    u8 ParitySelect;
-    u8 StopBits;
-    f32 BaudRate;
+    u8 OverSampling;        /**
+                             * 1) USART_OVERSAMPLING_16
+                             * 2) USART_OVERSAMPLING_8
+                             */
+    
+    u8 WordLength;          /**
+                             * 1) USART_DATA_BITS_8
+                             * 2) USART_DATA_BITS_9
+                             */
+    
+    u8 ParitySelect;        /**
+                             * 1) USART_PARITY_NONE
+                             * 2) USART_PARITY_ODD
+                             * 3) USART_PARITY_EVEN
+                             */
+
+    u8 StopBits;            /**
+                             * 1) USART_STOP_BITS_HALF
+                             * 2) USART_STOP_BITS_ONE
+                             * 3) USART_STOP_BITS_ONE_AND_HALF
+                             * 4) USART_STOP_BITS_TWO
+                             */
+
+    f32 BaudRate;           /**
+                             * @note Baud Rate Number Shouldn't Exceed:
+                             *      1) F_UART/8 for Oversampling=8
+                             *      2) F_UART/16 for Oversampling=16
+                            */
 }USART_PostCompileCfg_t;
 
+/**
+ * @brief:  UART Error Status Type
+*/
 typedef enum
 {
     USART_Ok,
@@ -71,12 +102,80 @@ typedef enum
 }USART_ErrorStatus_t;
 
 
+/**
+ * @brief   Initializes a single USART peripheral 
+ *
+ * @param   - Pointer to type of "USART_PostCompileCfg_t" 
+ *
+ * @return  Error Status 
+ */
 USART_ErrorStatus_t USART_Init(USART_PostCompileCfg_t* cfg);
+
+/**
+ * @brief   - Takes a Buffer of Bytes to Transmit Asynchronously via a USART Peripheral
+ *          - Jumps to USART ISR after every byte successfully sent
+ *
+ * @param   - 1) USART_Num:
+ *                     1) USART_CH1    
+ *                     2) USART_CH2   
+ *                     3) USART_CH6  
+ * 
+ *          - 2) u8*buffer: Pointer to a character/string to transmit asynchronously via USART
+ * 
+ *          - 3) len: Length of buffer
+ * 
+ *          - 4) cbf: Callback Function to call after transmission of buffer
+ *                            
+ * @return  Error Status 
+ */
 USART_ErrorStatus_t USART_TxBufferAsyncZeroCopy(u8 USART_Num,u8*buffer, u16 len, fnpointer cbf );
+
+/**
+ * @brief   - Takes a Buffer of Bytes to Store received Bytes (of size "len") Asynchronously via a USART Peripheral 
+ *          - Jumps to USART ISR after every byte successfully received
+ *
+ * @param   - 1) USART_Num:
+ *                     1) USART_CH1    
+ *                     2) USART_CH2   
+ *                     3) USART_CH6  
+ * 
+ *          - 2) u8*buffer: Pointer to a character/string to store received buffer 
+ * 
+ *          - 3) len: Length of buffer to receive
+ * 
+ *          - 4) cbf: Callback Function to call after receiving of buffer
+ *                            
+ * @return  Error Status 
+ */
 USART_ErrorStatus_t USART_RxBufferAsyncZeroCopy(u8 USART_Num,u8*buffer, u16 len, fnpointer cbf);
 
+/**
+ * @brief   Sends a Byte over a USART Channel 
+ *
+ * @param   - 1) USART_Num:
+ *                     1) USART_CH1    
+ *                     2) USART_CH2   
+ *                     3) USART_CH6  
+ * 
+ *          - 2) byte: Data to send
+ * 
+ * @return  Error Status: Returns if Data is successfully transmitted or not
+ */
 USART_ErrorStatus_t USART_SendByte(u8 USART_Num,u8 byte);
-USART_ErrorStatus_t USART_GetByte(u8 USART_Num,u8 byte);
+
+/**
+ * @brief   Received a byte over a USART Channel 
+ *
+ * @param   - 1) USART_Num:
+ *                     1) USART_CH1    
+ *                     2) USART_CH2   
+ *                     3) USART_CH6  
+ * 
+ *          - 2) *byte: Pointer to variable to store received data
+ * 
+ * @return  Error Status: Returns if Data is successfully received or not
+ */
+USART_ErrorStatus_t USART_GetByte(u8 USART_Num,u8*byte);
 
 //u8 USART_TxDone(void);
 //u8 USART_IsRx(void);

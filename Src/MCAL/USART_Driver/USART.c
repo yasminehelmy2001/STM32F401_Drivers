@@ -25,11 +25,20 @@
 
 #include "USART.h"
 
+/**************************************************************************/
+/*					USART Request States                      	          */
+/**************************************************************************/
 #define busy     (0U)
 #define ready    (1U)
 
+/**************************************************************************/
+/*					USART Counts in Microcontroller            	          */
+/**************************************************************************/
 #define USART_COUNT  (3U)
 
+/**************************************************************************/
+/*					USART Implementation Masks                 	          */
+/**************************************************************************/
 #define USART_TC_FLAG_MASK                  0x00000040
 #define USART_TXE_FLAG_MASK                 0x00000080
 #define USART_RXNE_FLAG_MASK                0x00000020
@@ -39,12 +48,14 @@
 #define USART_RXNE_INT_ENABLE_MASK          0X00000020 
 #define USART_TX_ENABLE_MASK                0X00000008
 #define USART_RX_ENABLE_MASK                0X00000004
+
 #define USART_WORD_LENGTH_MASK              0x00001000
 #define USART_OVERSAMPLING_MASK             0x00008000
+#define USART_STOP_BIT_MASK                 0x00003000
+
+#define USART_PARITY_ON                     0x00000400
 #define USART_PARITY_SELECT_MASK            0x00000200
 #define USART_PARITY_CONTROL_MASK           0x00000400
-#define USART_STOP_BIT_MASK                 0x00003000
-#define USART_PARITY_ON                     0x00000400
 
 #define USART_TX_ENABLE                     0x00000008
 #define USART_RX_ENABLE                     0x00000004
@@ -52,7 +63,26 @@
 #define USART_DIV_MANTISSA_MASK              0x0000FFF0
 #define USART_DIV_FRACTION_MASK              0x0000000F
 
+#define USART_ENABLE                         0x00002000
+#define USART_DISABLE                        0x00000000
+
+#define USART_TXE_INTERRUPT_ENABLE           0x00000080
+#define USART_TXE_INTERRUPT_DISABLE          0x00000000
+
+#define USART_TX_COMPLETE_INT_ENABLE         0x00000040
+#define USART_TX_COMPLETE_INT_DISABLE        0x00000000
+
+#define USART_RXNE_INT_ENABLE                0x00000020   
+#define USART_RXNE_INT_DISABLE               0x00000000
+
+/**************************************************************************/
+/*					USART Shifts                               	          */
+/**************************************************************************/
 #define SHIFT_FOUR                           (4U)
+
+/**************************************************************************/
+/*					USART Error Checking                    	          */
+/**************************************************************************/
 
 #define IS_USART_OVERSAMPLING(USART_OVERSAMPLING)       ((USART_OVERSAMPLING==USART_OVERSAMPLING_16)    ||\
                                                         (USART_OVERSAMPLING==USART_OVERSAMPLING_8))
@@ -68,10 +98,12 @@
 
 #define IS_USART_STOP_BITS(USART_STOP_BITS)             ((USART_STOP_BITS==USART_STOP_BITS_HALF)                ||\
                                                         (USART_STOP_BITS==USART_STOP_BITS_ONE)                  ||\
-                                                        (USART_STOP_BITS==USART_STOP_BITS_ONE_AND_HALF)     ||\
+                                                        (USART_STOP_BITS==USART_STOP_BITS_ONE_AND_HALF)         ||\
                                                         (USART_STOP_BITS==USART_STOP_BITS_TWO))
 
-
+/**
+ * @brief:  USART Registers 
+*/
 typedef struct
 {
    u32 SR;
@@ -83,15 +115,44 @@ typedef struct
    u32 GTPR;
 }USART_Reg_t;
 
+/**
+ * @brief:   Struct for Storing UART TX/RX Request Buffer Info 
+*/
+typedef struct
+{
+    volatile u8*data;                 /*Bytes to be Sent/Received Asynchronously*/
+    volatile u16 len;                 /*Number of Bytes to Be Sent/Received Asynchronously*/
+    volatile fnpointer cbf;           /*CallBack Function After End of Operation*/
+    volatile u16 pos;                  /*Tracker for Bytes*/
+    volatile u8 state;                 /*State for User Request*/
+}USART_Buffer_t;
+
+/**************************************************************************/
+/*					USART Peri Addresses                       	          */
+/**************************************************************************/
 #define USART1        ((volatile USART_Reg_t*const)0x40011000)
 #define USART2        ((volatile USART_Reg_t*const)0x40004400)
 #define USART6        ((volatile USART_Reg_t*const)0x40011400)
 
+/*Array to store USART TX User Request Buffer Info for each USART Peripheral*/
 USART_Buffer_t volatile USART_TxBuffer[3]={{.state=ready},{.state=ready},{.state=ready}};
+
+/*Array to store USART RX User Request Buffer Info for each USART Peripheral*/
 USART_Buffer_t volatile USART_RxBuffer[3]={{.state=ready},{.state=ready},{.state=ready}};
 
+/*Array of USART Peripheral Addresses*/
 u32 USART_Peri_Add[3]={0x40011000,0x40004400,0x40011400};
 
+/*Array of USART Peripheral Configured Frequencies*/
+u32 USART_Freq[3]={F_USART1,F_USART2,F_USART6};
+
+/**
+ * @brief   Initializes a single USART peripheral 
+ *
+ * @param   - Pointer to type of "USART_PostCompileCfg_t" 
+ *
+ * @return  Error Status 
+ */
 USART_ErrorStatus_t USART_Init(USART_PostCompileCfg_t *cfg)
 {
     USART_ErrorStatus_t RET_ErrorStatus=USART_Ok;
@@ -123,7 +184,7 @@ USART_ErrorStatus_t USART_Init(USART_PostCompileCfg_t *cfg)
     {
         /*Check for Max Baud Rate*/
         f32 OVER8= (cfg->OverSampling==USART_OVERSAMPLING_16)?0:1;
-        u32 MaxBaudRate= F_USART/(2-OVER8);
+        u32 MaxBaudRate= USART_Freq[cfg->Channel]/(2-OVER8);
         if(cfg->BaudRate>MaxBaudRate)
         {
             RET_ErrorStatus=USART_Nok; 
@@ -162,7 +223,7 @@ USART_ErrorStatus_t USART_Init(USART_PostCompileCfg_t *cfg)
             USART->CR1=Loc_Reg;
 
             /*Select Baud Rate*/
-            f32 USARTDIV=((f32)(F_USART)/((cfg->BaudRate)*8*(2-OVER8)));
+            f32 USARTDIV=((f32)(USART_Freq[cfg->Channel])/((cfg->BaudRate)*8*(2-OVER8)));
             f32 FracionBoundary=(cfg->OverSampling==USART_OVERSAMPLING_16)?16:8;
             u32 DIV_Fraction=(u32)(FracionBoundary*(f32)((f32)USARTDIV-(u32)USARTDIV));
             u32 MAXVALUE=(cfg->OverSampling==USART_OVERSAMPLING_16)?15:7;
@@ -174,6 +235,7 @@ USART_ErrorStatus_t USART_Init(USART_PostCompileCfg_t *cfg)
             }
             else
             {
+                DIV_Fraction+=1;
                 DIV_Mantissa= (u32)USARTDIV;
             }
 
@@ -198,6 +260,23 @@ USART_ErrorStatus_t USART_Init(USART_PostCompileCfg_t *cfg)
     return RET_ErrorStatus;
 }
 
+/**
+ * @brief   - Takes a Buffer of Bytes to Transmit Asynchronously via a USART Peripheral
+ *          - Jumps to USART ISR after every byte successfully sent
+ *
+ * @param   - 1) USART_Num:
+ *                     1) USART_CH1    
+ *                     2) USART_CH2   
+ *                     3) USART_CH6  
+ * 
+ *          - 2) u8*buffer: Pointer to a character/string to transmit asynchronously via USART
+ * 
+ *          - 3) len: Length of buffer
+ * 
+ *          - 4) cbf: Callback Function to call after transmission of buffer
+ *                            
+ * @return  Error Status 
+ */
 USART_ErrorStatus_t USART_TxBufferAsyncZeroCopy(u8 USART_Num,u8*buffer, u16 len, fnpointer cbf )
 {
     USART_ErrorStatus_t RetErrorStatus=USART_Ok;
@@ -213,6 +292,7 @@ USART_ErrorStatus_t USART_TxBufferAsyncZeroCopy(u8 USART_Num,u8*buffer, u16 len,
     {        
         if((USART_TxBuffer[USART_Num].state)==ready)
         {
+            USART_TxBuffer[USART_Num].state=busy;
             volatile USART_Reg_t *const USART=( volatile USART_Reg_t *)USART_Peri_Add[USART_Num];
             /*Enable Transmit Interrupt*/
             u32 Loc_Reg=USART->CR1;
@@ -225,9 +305,8 @@ USART_ErrorStatus_t USART_TxBufferAsyncZeroCopy(u8 USART_Num,u8*buffer, u16 len,
             USART_TxBuffer[USART_Num].cbf=cbf;
             /*Reset Byte Position Index*/
             USART_TxBuffer[USART_Num].pos=0;
-            USART_TxBuffer[USART_Num].state=busy;
             /*Send First Byte to Trigger Interrupt*/
-            USART->DR|=(USART_TxBuffer[USART_Num].data[USART_TxBuffer[USART_Num].pos++]);
+            USART->DR=(USART_TxBuffer[USART_Num].data[USART_TxBuffer[USART_Num].pos++]);
         }
         else
         {
@@ -238,6 +317,23 @@ USART_ErrorStatus_t USART_TxBufferAsyncZeroCopy(u8 USART_Num,u8*buffer, u16 len,
     return RetErrorStatus;
 }
 
+/**
+ * @brief   - Takes a Buffer of Bytes to Store received Bytes (of size "len") Asynchronously via a USART Peripheral 
+ *          - Jumps to USART ISR after every byte successfully received
+ *
+ * @param   - 1) USART_Num:
+ *                     1) USART_CH1    
+ *                     2) USART_CH2   
+ *                     3) USART_CH6  
+ * 
+ *          - 2) u8*buffer: Pointer to a character/string to store received buffer 
+ * 
+ *          - 3) len: Length of buffer to receive
+ * 
+ *          - 4) cbf: Callback Function to call after receiving of buffer
+ *                            
+ * @return  Error Status 
+ */
 USART_ErrorStatus_t USART_RxBufferAsyncZeroCopy(u8 USART_Num,u8*buffer, u16 len, fnpointer cbf)
 {
     USART_ErrorStatus_t RetErrorStatus=USART_Ok;
@@ -260,13 +356,13 @@ USART_ErrorStatus_t USART_RxBufferAsyncZeroCopy(u8 USART_Num,u8*buffer, u16 len,
 
         if((USART_RxBuffer[USART_Num].state==ready))
         {
+            USART_RxBuffer[USART_Num].state=busy;
             /*Copy User Request Data*/
             USART_RxBuffer[USART_Num].data=buffer;
             USART_RxBuffer[USART_Num].len=len;
             USART_RxBuffer[USART_Num].cbf=cbf;
             /*Reset Byte Position Index*/
             USART_RxBuffer[USART_Num].pos=0;
-            USART_RxBuffer[USART_Num].state=busy;
         }
         else
         {
@@ -283,6 +379,101 @@ USART_ErrorStatus_t USART_RxBufferAsyncZeroCopy(u8 USART_Num,u8*buffer, u16 len,
 
 }
 
+/**
+ * @brief   Sends a Byte over a USART Channel 
+ *
+ * @param   - 1) USART_Num:
+ *                     1) USART_CH1    
+ *                     2) USART_CH2   
+ *                     3) USART_CH6  
+ * 
+ *          - 2) byte: Data to send
+ * 
+ * @return  Error Status: Returns if Data is successfully transmitted or not
+ */
+USART_ErrorStatus_t USART_SendByte(u8 USART_Num,u8 byte)
+{
+    USART_ErrorStatus_t RetErrorStatus=USART_Ok;
+    if(!(USART_Num==USART_CH1)||(USART_Num==USART_CH2)||(USART_Num==USART_CH6))
+    {
+        RetErrorStatus=USART_Nok;
+    }
+    else
+    {
+        volatile USART_Reg_t *const USART=( volatile USART_Reg_t *)USART_Peri_Add[USART_Num];
+        u16 Timeout=3000;
+        if(USART_TxBuffer[USART_Num].state==ready)
+        {
+            USART_TxBuffer[USART_Num].state=busy;
+            USART->DR=byte;
+            while(Timeout&(!(USART->SR&USART_TXE_FLAG_MASK)));
+            if(USART->SR&USART_TXE_FLAG_MASK)
+            {
+                //Byte Transferred
+            }
+            else
+            {
+                //Timeout Reached
+                RetErrorStatus=USART_Nok;
+            }
+            USART_TxBuffer[USART_Num].state=ready;
+        }
+    }
+    return RetErrorStatus;
+}
+
+/**
+ * @brief   Received a byte over a USART Channel 
+ *
+ * @param   - 1) USART_Num:
+ *                     1) USART_CH1    
+ *                     2) USART_CH2   
+ *                     3) USART_CH6  
+ * 
+ *          - 2) *byte: Pointer to variable to store received data
+ * 
+ * @return  Error Status: Returns if Data is successfully received or not
+ */
+USART_ErrorStatus_t USART_GetByte(u8 USART_Num,u8*byte)
+{
+    USART_ErrorStatus_t RetErrorStatus=USART_Ok;
+    if(!byte)
+    {
+        RetErrorStatus=USART_Nok;
+    }
+    else if(!(USART_Num==USART_CH1)||(USART_Num==USART_CH2)||(USART_Num==USART_CH6))
+    {
+        RetErrorStatus=USART_Nok;
+    }
+    else
+    {
+        volatile USART_Reg_t *const USART=( volatile USART_Reg_t *)USART_Peri_Add[USART_Num];
+        u16 Timeout=3000;
+        if(USART_RxBuffer[USART_Num].state==ready)
+        {
+            USART_RxBuffer[USART_Num].state=busy;
+            while(Timeout&(!(USART->SR&USART_RXNE_FLAG_MASK)));
+            if(USART->SR&USART_RXNE_FLAG_MASK)
+            {
+                *byte=(u8)USART->DR;
+            }
+            else
+            {
+                //Timeout Reached
+                RetErrorStatus=USART_Nok;
+            }
+            USART_RxBuffer[USART_Num].state=ready;
+        }
+        
+    }
+    return RetErrorStatus;
+}
+
+/**
+ * @brief: USART1 Handler:
+ *             1) Transmittion Buffer Empty (Data Transmission of 1 byte)
+ *             2) Receiver Buffer Not Empty (1 byte of Data Received)
+*/
 void USART1_IRQHandler(void)
 {
     /*If Data is Transferred to the Shift Register*/
@@ -291,7 +482,7 @@ void USART1_IRQHandler(void)
         /*Check on Length( If More Bytes to Send)*/
         if(USART_TxBuffer[USART_CH1].pos<USART_TxBuffer[USART_CH1].len)
         {
-             USART1->DR= (u8)(USART_TxBuffer[USART_CH1].data[USART_TxBuffer->pos++]);
+             USART1->DR= (USART_TxBuffer[USART_CH1].data[USART_TxBuffer->pos++]);
         }
         /*All Bytes Sent*/
         else
@@ -313,9 +504,9 @@ void USART1_IRQHandler(void)
         if(USART_RxBuffer[USART_CH1].pos<USART_RxBuffer[USART_CH1].len)
         {
             /*Read data from Buffer ... Flag is automatically cleared*/
-            USART_RxBuffer[USART_CH1].data[USART_RxBuffer->pos++]=USART1->DR;
+            USART_RxBuffer[USART_CH1].data[USART_RxBuffer->pos++]=(u8)USART1->DR;
         }
-        else
+        if(USART_RxBuffer[USART_CH1].pos==USART_RxBuffer[USART_CH1].len)
         {
             USART_RxBuffer[USART_CH1].state=ready;
             USART_RxBuffer[USART_CH1].pos=0;
@@ -330,6 +521,11 @@ void USART1_IRQHandler(void)
 
 }
 
+/**
+ * @brief: USART2 Handler:
+ *             1) Transmittion Buffer Empty (Data Transmission of 1 byte)
+ *             2) Receiver Buffer Not Empty (1 byte of Data Received)
+*/
 void USART2_IRQHandler(void)
 {
     /*If Data is Transferred to the Shift Register*/
@@ -338,7 +534,7 @@ void USART2_IRQHandler(void)
         /*Check on Length( If More Bytes to Send)*/
         if(USART_TxBuffer[USART_CH2].pos < USART_TxBuffer[USART_CH2].len)
         {
-            USART2->DR = (u8)(USART_TxBuffer[USART_CH2].data[USART_TxBuffer[USART_CH2].pos++]);
+            USART2->DR = (USART_TxBuffer[USART_CH2].data[USART_TxBuffer[USART_CH2].pos++]);
         }
         /*All Bytes Sent*/
         else
@@ -360,9 +556,9 @@ void USART2_IRQHandler(void)
         if(USART_RxBuffer[USART_CH2].pos < USART_RxBuffer[USART_CH2].len)
         {
             /*Read data from Buffer ... Flag is automatically cleared*/
-            USART_RxBuffer[USART_CH2].data[USART_RxBuffer[USART_CH2].pos++] = USART2->DR;
+            USART_RxBuffer[USART_CH2].data[USART_RxBuffer[USART_CH2].pos++] = (u8)USART2->DR;
         }
-        else
+        if(USART_RxBuffer[USART_CH2].pos == USART_RxBuffer[USART_CH2].len)
         {
             USART_RxBuffer[USART_CH2].state = ready;
             USART_RxBuffer[USART_CH2].pos = 0;
@@ -376,6 +572,11 @@ void USART2_IRQHandler(void)
 
 }
 
+/**
+ * @brief: USART6 Handler:
+ *             1) Transmittion Buffer Empty (Data Transmission of 1 byte)
+ *             2) Receiver Buffer Not Empty (1 byte of Data Received)
+*/
 void USART6_IRQHandler(void)
 {
     /*If Data is Transferred to the Shift Register*/
@@ -384,7 +585,7 @@ void USART6_IRQHandler(void)
         /*Check on Length( If More Bytes to Send)*/
         if(USART_TxBuffer[USART_CH6].pos < USART_TxBuffer[USART_CH6].len)
         {
-            USART6->DR = (u8)(USART_TxBuffer[USART_CH6].data[USART_TxBuffer[USART_CH6].pos++]);
+            USART6->DR = (USART_TxBuffer[USART_CH6].data[USART_TxBuffer[USART_CH6].pos++]);
         }
         /*All Bytes Sent*/
         else
@@ -406,9 +607,9 @@ void USART6_IRQHandler(void)
         if(USART_RxBuffer[USART_CH6].pos < USART_RxBuffer[USART_CH6].len)
         {
             /*Read data from Buffer ... Flag is automatically cleared*/
-            USART_RxBuffer[USART_CH6].data[USART_RxBuffer[USART_CH6].pos++] = USART6->DR;
+            USART_RxBuffer[USART_CH6].data[USART_RxBuffer[USART_CH6].pos++] = (u8)USART6->DR;
         }
-        else
+        if(USART_RxBuffer[USART_CH6].pos == USART_RxBuffer[USART_CH6].len)
         {
             USART_RxBuffer[USART_CH6].state = ready;
             USART_RxBuffer[USART_CH6].pos = 0;
