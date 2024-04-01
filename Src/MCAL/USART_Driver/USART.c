@@ -14,7 +14,8 @@
  * 4) Each USART has only one handler, so you must check on all the flags inside this handler
  * 5) We clear RXNE Interrupt Enable at the beginning of the RxAsync Function in order not to receive any interrupts while configuring a new buffer
  * 6) In a driver, you must give the user all the configurable options in the datasheet, any mistake would be the users fault
- * 7) Enable TXE Interrupt after sending data and incrementing position to avoid interrupts happening between sending data and incrementing position
+ * 7) In TXAsynch function: Enable TXE Interrupt after sending data and incrementing position to avoid interrupts happening between sending data and incrementing position
+ * 7.1) TXE Interrupt Flag is initially set to 1 for some reason, so enable the interrupt at the end of the function for the same reason above
 */
 
 /**
