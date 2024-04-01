@@ -100,10 +100,16 @@ extern LCD_Pins_t LcdCfgArray[LCD_BITS];
 /*LCD State*/
 u8 lcdstate=inactive_state;
 
-/*Global Array Struct to Share User Info with Task*/
+/**
+ * Global User Request Struct to Share User Info with Task.
+ * Global Array of User Request Struct to Buffer User Requests 
+ */
 LCD_Request_t User_Req[10]={{.state=ready},{.state=ready},{.state=ready},{.state=ready},{.state=ready},{.state=ready},{.state=ready},{.state=ready},{.state=ready},{.state=ready}};
+/*Pointer that increments with each user request*/
 u8 UserReqPtr=0;
+/*Pointer that increments after request is done*/
 u8 RunnablePtr=0;
+/*Buffer size of user requests (Array of "BufferSize" User Requests*/
 u8 BufferSize=10;
 
 /*Enable Tracker*/
@@ -151,8 +157,10 @@ void LCD_InitAsync(func callback)
     {
         lcdstate=init_state;
         User_Req[UserReqPtr].state=busy;
+        /*If index reached maximum buffer size*/
         if(UserReqPtr==(BufferSize-1))
         {
+            /*Circulate Buffer*/
             UserReqPtr=0;
         }
         else
@@ -176,8 +184,10 @@ void LCD_ClearScreenAsync(func callback)
     {
         User_Req[UserReqPtr].type=clear;
         User_Req[UserReqPtr].state=busy;
+        /*If index reached maximum buffer size*/
         if(UserReqPtr==(BufferSize-1))
         {
+            /*Circulate Buffer*/
             UserReqPtr=0;
         }
         else
@@ -216,8 +226,10 @@ LCD_ErrorStatus_t LCD_WriteStringAsync(const char*string, u8 length, func callba
             User_Req[UserReqPtr].length=length;
             User_Req[UserReqPtr].type=write;
             User_Req[UserReqPtr].state=busy;  
+            /*If index reached maximum buffer size*/
             if(UserReqPtr==(BufferSize-1))
             {
+                /*Circulate Buffer*/
                 UserReqPtr=0;
             }
             else
@@ -258,8 +270,10 @@ LCD_ErrorStatus_t LCD_SetCursorPosAsync(u8 posX, u8 posY, func callback)
             User_Req[UserReqPtr].posY=posY;
             User_Req[UserReqPtr].type=setpos;
             User_Req[UserReqPtr].state=busy;
+            /*If index reached maximum buffer size*/
             if(UserReqPtr==(BufferSize-1))
             {
+                /*Circulate Buffer*/
                 UserReqPtr=0;
             }
             else
@@ -406,8 +420,10 @@ static void LcdInitProc(void)
         case EntryModeSet:
             lcdstate=operational_state;
             User_Req[RunnablePtr].state=ready;
+            /*If index reached maximum buffer size*/
             if(RunnablePtr==(BufferSize-1))
             {
+                /*Circulate Buffer*/
                 RunnablePtr=0;
             }
             else
@@ -433,8 +449,10 @@ static void LcdWriteProc(void)
         currpos=0;
         /*Set User State to Ready*/
         User_Req[RunnablePtr].state=ready;
+        /*If index reached maximum buffer size*/
         if(RunnablePtr==(BufferSize-1))
         {
+            /*Circulate Buffer*/
             RunnablePtr=0;
         }
         else
@@ -491,8 +509,10 @@ static void LcdClearProc(void)
             enable_state=enable_high;
             /*Set User State to Ready*/
             User_Req[RunnablePtr].state=ready;
+            /*If index reached maximum buffer size*/
             if(RunnablePtr==(BufferSize-1))
             {
+                /*Circulate Buffer*/
                 RunnablePtr=0;
             }
             else
@@ -539,8 +559,10 @@ static void LcdSetPosProc(void)
             enable_state=enable_high;
             /*Set User State to Ready*/
             User_Req[RunnablePtr].state=ready;
+            /*If index reached maximum buffer size*/
             if(RunnablePtr==(BufferSize-1))
             {
+                /*Circulate Buffer*/
                 RunnablePtr=0;
             }
             else
