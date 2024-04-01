@@ -19,7 +19,7 @@
 /**
  * Defs:
  * 1) RXNE: Receiver Buffer Not Empty (Ready to Read Data)
- * 2) TXE: Transmitter Buffer Empty: No Data in Buffer (Data Shifted to Shift Register), Ready to Transmit Data 
+ * 2) TXE: Transmitter Buffer Empty: No Data in Buffer (Data Shifted to Shift Register), Ready to Transmit Data  
  * 3) TC: Transmit Complete: When All Data in Buffer is Transmitted
 */
 
