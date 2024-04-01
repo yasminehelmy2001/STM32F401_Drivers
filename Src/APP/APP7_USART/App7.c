@@ -12,18 +12,13 @@
 #include "LED.h"
 
 u8 buffer[3]={0};
-
+u8 buffer2[3]={'y','e','s'};
 /*Test CBF*/
 void CBF(void)
 {
     if(buffer[0]=='y'&&buffer[1]=='e'&&buffer[2]=='s')
     {
-         LED_SetStatus(LED_RED,LED_ON);
-         USART_TxBufferAsyncZeroCopy(USART_CH1,buffer,3,CBF);
-    }
-    else
-    {
-         LED_SetStatus(LED_RED,LED_OFF);
+         USART_TxBufferAsyncZeroCopy(USART_CH1,buffer,3,NULL);
     }
 }
 
@@ -44,7 +39,8 @@ int main (void)
     USART_PostCompileCfg_t USART1_cfg={USART_CH1,USART_OVERSAMPLING_16,USART_DATA_BITS_8,USART_PARITY_NONE,USART_STOP_BITS_ONE,9600};
     USART_Init(&USART1_cfg);
 
-    USART_RxBufferAsyncZeroCopy(USART_CH1,buffer,3,CBF);
+    //USART_RxBufferAsyncZeroCopy(USART_CH1,buffer,3,CBF);
+    USART_TxBufferAsyncZeroCopy(USART_CH1,buffer2,3,NULL);
 
     while(1)
     {
