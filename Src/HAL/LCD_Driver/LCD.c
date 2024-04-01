@@ -104,12 +104,12 @@ u8 lcdstate=inactive_state;
  * Global User Request Struct to Share User Info with Task.
  * Global Array of User Request Struct to Buffer User Requests 
  */
-LCD_Request_t User_Req[10]={{.state=ready},{.state=ready},{.state=ready},{.state=ready},{.state=ready},{.state=ready},{.state=ready},{.state=ready},{.state=ready},{.state=ready}};
+LCD_Request_t User_Req[10];
 /*Pointer that increments with each user request*/
 u8 UserReqPtr=0;
 /*Pointer that increments after request is done*/
 u8 RunnablePtr=0;
-/*Buffer size of user requests (Array of "BufferSize" User Requests*/
+/*Buffer size of user requests*/
 u8 BufferSize=10;
 
 /*Enable Tracker*/
@@ -152,6 +152,11 @@ void LCD_InitPins(void)
  */
 void LCD_InitAsync(func callback)
 {
+    /*Initialize State to Be Ready*/
+    for(int i=0;i<BufferSize;i++)
+    {
+        User_Req[i].state=ready;
+    }
     LCD_InitCbf=callback;
     if(User_Req[UserReqPtr].state==ready)
     {
