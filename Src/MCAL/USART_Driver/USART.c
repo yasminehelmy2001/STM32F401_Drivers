@@ -60,6 +60,9 @@
 #define USART_TX_ENABLE                     0x00000008
 #define USART_RX_ENABLE                     0x00000004
 
+#define USART_TX_DISABLE                    0x00000000
+#define USART_RX_DISABLE                    0x00000000
+
 #define USART_DIV_MANTISSA_MASK              0x0000FFF0
 #define USART_DIV_FRACTION_MASK              0x0000000F
 
@@ -295,19 +298,23 @@ USART_ErrorStatus_t USART_TxBufferAsyncZeroCopy(u8 USART_Num,u8*buffer, u16 len,
         {
             USART_TxBuffer[USART_Num].state=busy;
             volatile USART_Reg_t *const USART=( volatile USART_Reg_t *)USART_Peri_Add[USART_Num];
+
+            /*Copy User Request Data*/
+            USART_TxBuffer[USART_Num].data=buffer;
+            USART_TxBuffer[USART_Num].len=len;
+            USART_TxBuffer[USART_Num].cbf=cbf;
+
+            /*Reset Byte Position Index*/
+            USART_TxBuffer[USART_Num].pos=0;
+            
+            /*Send First Byte to Trigger Interrupt*/
+            USART->DR=(USART_TxBuffer[USART_Num].data[USART_TxBuffer[USART_Num].pos++]);
+
             /*Enable Transmit Interrupt*/
             u32 Loc_Reg=USART->CR1;
             Loc_Reg&=~USART_TXE_INT_ENABLE_MASK;
             Loc_Reg|=USART_TXE_INTERRUPT_ENABLE;
             USART->CR1=Loc_Reg;
-            /*Copy User Request Data*/
-            USART_TxBuffer[USART_Num].data=buffer;
-            USART_TxBuffer[USART_Num].len=len;
-            USART_TxBuffer[USART_Num].cbf=cbf;
-            /*Reset Byte Position Index*/
-            USART_TxBuffer[USART_Num].pos=0;
-            /*Send First Byte to Trigger Interrupt*/
-            USART->DR=(USART_TxBuffer[USART_Num].data[USART_TxBuffer[USART_Num].pos++]);
         }
         else
         {
@@ -348,33 +355,35 @@ USART_ErrorStatus_t USART_RxBufferAsyncZeroCopy(u8 USART_Num,u8*buffer, u16 len,
     }
     else
     {
-        volatile USART_Reg_t *const USART=( volatile USART_Reg_t *)USART_Peri_Add[USART_Num];
-        /*Disable Receive Interrupt*/
-        u32 Loc_Reg=USART->CR1;
-        Loc_Reg&=~USART_RXNE_INT_ENABLE_MASK;
-        Loc_Reg|=USART_RXNE_INT_DISABLE;
-        USART->CR1=Loc_Reg;
-
         if((USART_RxBuffer[USART_Num].state==ready))
         {
+            volatile USART_Reg_t *const USART=( volatile USART_Reg_t *)USART_Peri_Add[USART_Num];
+
+            /*Disable Receive Interrupt*/
+            u32 Loc_Reg=USART->CR1;
+            Loc_Reg&=~USART_RXNE_INT_ENABLE_MASK;
+            Loc_Reg|=USART_RXNE_INT_DISABLE;
+            USART->CR1=Loc_Reg;
             USART_RxBuffer[USART_Num].state=busy;
+
             /*Copy User Request Data*/
             USART_RxBuffer[USART_Num].data=buffer;
             USART_RxBuffer[USART_Num].len=len;
             USART_RxBuffer[USART_Num].cbf=cbf;
+
             /*Reset Byte Position Index*/
             USART_RxBuffer[USART_Num].pos=0;
+        
+            /*Enable Receive Interrupt*/
+            Loc_Reg=USART->CR1;
+            Loc_Reg&=~USART_RXNE_INT_ENABLE_MASK;
+            Loc_Reg|=USART_RXNE_INT_ENABLE;
+            USART->CR1=Loc_Reg;
         }
         else
         {
             RetErrorStatus=USART_Nok;
         } 
-
-        /*Enable Receive Interrupt*/
-        Loc_Reg=USART->CR1;
-        Loc_Reg&=~USART_RXNE_INT_ENABLE_MASK;
-        Loc_Reg|=USART_RXNE_INT_ENABLE;
-        USART->CR1=Loc_Reg;
     }
     return RetErrorStatus;
 
@@ -477,50 +486,63 @@ USART_ErrorStatus_t USART_GetByte(u8 USART_Num,u8*byte)
 */
 void USART1_IRQHandler(void)
 {
-    /*If Data is Transferred to the Shift Register*/
-    if((USART1->SR&USART_TXE_FLAG_MASK))
-    {
-        /*Check on Length( If More Bytes to Send)*/
-        if(USART_TxBuffer[USART_CH1].pos<USART_TxBuffer[USART_CH1].len)
+        /*If Data is Transferred to the Shift Register*/
+        if((USART1->SR&USART_TXE_FLAG_MASK))
         {
-            /*Write Data to Data Register, Flag is Automatically Cleared*/
-             USART1->DR= (USART_TxBuffer[USART_CH1].data[USART_TxBuffer->pos++]);
-        }
-        /*All Bytes Sent*/
-        else
-        {
-            USART_TxBuffer[USART_CH1].state=ready;
-            USART_TxBuffer[USART_CH1].pos=0;
-            /*Check on NULL*/
-            if(USART_TxBuffer[USART_CH1].cbf)
-            {
-                USART_TxBuffer[USART_CH1].cbf();
-            }
-        }
-    }
+                /*Check on Length( If More Bytes to Send)*/
+                if(USART_TxBuffer[USART_CH1].pos<USART_TxBuffer[USART_CH1].len)
+                {
+                    /*Write Data to Data Register, Flag is Automatically Cleared*/
+                    USART1->DR= (USART_TxBuffer[USART_CH1].data[USART_TxBuffer[USART_CH1].pos++]);
 
-    /*Unread Data in Receive Buffer*/
-    if(USART1->SR&USART_RXNE_FLAG_MASK)
-    {
-        /*Check on Length*/
-        if(USART_RxBuffer[USART_CH1].pos<USART_RxBuffer[USART_CH1].len)
-        {
-            /*Read data from Buffer, Flag is automatically cleared*/
-            USART_RxBuffer[USART_CH1].data[USART_RxBuffer->pos++]=(u8)USART1->DR;
-        }
-        if(USART_RxBuffer[USART_CH1].pos==USART_RxBuffer[USART_CH1].len)
-        {
-            USART_RxBuffer[USART_CH1].state=ready;
-            USART_RxBuffer[USART_CH1].pos=0;
-            /*Check on NULL*/
-            if(USART_RxBuffer[USART_CH1].cbf)
-            {
-                USART_RxBuffer[USART_CH1].cbf();
-            }
+                }
+                
+                /*All Bytes Sent*/
+                else
+                {
+                    /*Disable Transmit Interrupt*/
+                    u32 Loc_Reg=USART1->CR1;
+                    Loc_Reg&=~USART_TXE_INT_ENABLE_MASK;
+                    Loc_Reg|=USART_TXE_INTERRUPT_DISABLE;
+                    USART1->CR1=Loc_Reg;
+
+                    USART_TxBuffer[USART_CH1].state=ready;
+                    USART_TxBuffer[USART_CH1].pos=0;
+                    /*Check on NULL*/
+                    if(USART_TxBuffer[USART_CH1].cbf)
+                    {
+                        USART_TxBuffer[USART_CH1].cbf();
+                    }
+                }
         }
 
-    }
+        /*Unread Data in Receive Buffer*/
+        if(USART1->SR&USART_RXNE_FLAG_MASK)
+        {
+                /*Check on Length*/
+                if(USART_RxBuffer[USART_CH1].pos<USART_RxBuffer[USART_CH1].len)
+                {
+                    /*Read data from Buffer, Flag is automatically cleared*/
+                    USART_RxBuffer[USART_CH1].data[USART_RxBuffer[USART_CH1].pos++]=(u8)USART1->DR;
+                }
+                if(USART_RxBuffer[USART_CH1].pos==USART_RxBuffer[USART_CH1].len)
+                {
+                    /*Disable Receive Interrupt*/
+                    u32 Loc_Reg=USART1->CR1;
+                    Loc_Reg&=~USART_RXNE_INT_ENABLE_MASK;
+                    Loc_Reg|=USART_RXNE_INT_DISABLE;
+                    USART1->CR1=Loc_Reg;
 
+                    USART_RxBuffer[USART_CH1].state=ready;
+                    USART_RxBuffer[USART_CH1].pos=0;
+                    /*Check on NULL*/
+                    if(USART_RxBuffer[USART_CH1].cbf)
+                    {
+                        USART_RxBuffer[USART_CH1].cbf();
+                    }
+                }
+        }
+   
 }
 
 /**
@@ -542,6 +564,12 @@ void USART2_IRQHandler(void)
         /*All Bytes Sent*/
         else
         {
+            /*Disable Transmit Interrupt*/
+            u32 Loc_Reg=USART1->CR1;
+            Loc_Reg&=~USART_TXE_INT_ENABLE_MASK;
+            Loc_Reg|=USART_TXE_INTERRUPT_DISABLE;
+            USART1->CR1=Loc_Reg;
+
             USART_TxBuffer[USART_CH2].state = ready;
             USART_TxBuffer[USART_CH2].pos = 0;
             /*Check on NULL*/
@@ -594,6 +622,12 @@ void USART6_IRQHandler(void)
         /*All Bytes Sent*/
         else
         {
+            /*Disable Transmit Interrupt*/
+            u32 Loc_Reg=USART1->CR1;
+            Loc_Reg&=~USART_TXE_INT_ENABLE_MASK;
+            Loc_Reg|=USART_TXE_INTERRUPT_DISABLE;
+            USART1->CR1=Loc_Reg;
+
             USART_TxBuffer[USART_CH6].state = ready;
             USART_TxBuffer[USART_CH6].pos = 0;
             /*Check on NULL*/
