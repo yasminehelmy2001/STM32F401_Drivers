@@ -105,7 +105,7 @@ typedef enum
 /**
  * @brief   Initializes a single USART peripheral 
  *
- * @param   - cfg: Pointer to type of "USART_PostCompileCfg_t" 
+ * @param   - cfg: Pointer to Struct that stores configuration for a UART channel
  *
  * @return  Error Status 
  */

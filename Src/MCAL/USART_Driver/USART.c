@@ -150,7 +150,7 @@ u32 USART_Freq[3]={F_USART1,F_USART2,F_USART6};
 /**
  * @brief   Initializes a single USART peripheral 
  *
- * @param   - cfg: Pointer to type of "USART_PostCompileCfg_t" 
+ * @param   - cfg: Pointer to Struct that stores configuration for a UART channel
  *
  * @return  Error Status 
  */
