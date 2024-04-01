@@ -9,6 +9,11 @@
 #include "LCD_.h"
 #include "SCHED.h"
 
+/**
+ * @brief:  LCD implemented using scheduler to decrease CPU load by not halting it during delays.
+ *          Circular double buffer data structure was used to buffer asynchronous user requests.
+*/
+
 /************************************************************************/
 /*					           LCD COMMANDS		                        */
 /************************************************************************/
@@ -95,8 +100,11 @@ extern LCD_Pins_t LcdCfgArray[LCD_BITS];
 /*LCD State*/
 u8 lcdstate=inactive_state;
 
-/*Global Struct to Share User Info with Task*/
-LCD_Request_t User_Req={.state=ready};
+/*Global Array Struct to Share User Info with Task*/
+LCD_Request_t User_Req[10]={{.state=ready},{.state=ready},{.state=ready},{.state=ready},{.state=ready},{.state=ready},{.state=ready},{.state=ready},{.state=ready},{.state=ready}};
+u8 UserReqPtr=0;
+u8 RunnablePtr=0;
+u8 BufferSize=10;
 
 /*Enable Tracker*/
 static u8 enable_state=enable_high;
@@ -117,8 +125,6 @@ func LCD_InitCbf=NULL;
  */
 void LCD_InitPins(void)
 {
-    if(User_Req.state==ready)
-    {
         GPIO_Pin_t GpioPinCfg;
         for(u8 i=0; i<LCD_BITS;i++)
         {
@@ -129,7 +135,6 @@ void LCD_InitPins(void)
             GpioPinCfg.AF_Choice=AF_DEACTIVATED;
             GPIO_InitPin(&GpioPinCfg);
         }
-    }
 }
 
 /**
@@ -142,10 +147,18 @@ void LCD_InitPins(void)
 void LCD_InitAsync(func callback)
 {
     LCD_InitCbf=callback;
-    if(User_Req.state==ready)
+    if(User_Req[UserReqPtr].state==ready)
     {
         lcdstate=init_state;
-        User_Req.state=busy;
+        User_Req[UserReqPtr].state=busy;
+        if(UserReqPtr==(BufferSize-1))
+        {
+            UserReqPtr=0;
+        }
+        else
+        {
+            UserReqPtr++;
+        }
     }
 }
 
@@ -159,10 +172,18 @@ void LCD_InitAsync(func callback)
 void LCD_ClearScreenAsync(func callback)
 {
     LCD_ClearScreenCbf=callback;
-    if((lcdstate==operational_state) && (User_Req.state==ready))
+    if(User_Req[UserReqPtr].state==ready)
     {
-        User_Req.type=clear;
-        User_Req.state=busy;
+        User_Req[UserReqPtr].type=clear;
+        User_Req[UserReqPtr].state=busy;
+        if(UserReqPtr==(BufferSize-1))
+        {
+            UserReqPtr=0;
+        }
+        else
+        {
+            UserReqPtr++;
+        }
     }
 }
 
@@ -189,12 +210,20 @@ LCD_ErrorStatus_t LCD_WriteStringAsync(const char*string, u8 length, func callba
     else
     {
         LCD_WriteStringCbf=callback;
-        if((lcdstate==operational_state)&&(User_Req.state==ready))
+        if(User_Req[UserReqPtr].state==ready)
         {
-            User_Req.string=string;
-            User_Req.length=length;
-            User_Req.type=write;
-            User_Req.state=busy;  
+            User_Req[UserReqPtr].string=string;
+            User_Req[UserReqPtr].length=length;
+            User_Req[UserReqPtr].type=write;
+            User_Req[UserReqPtr].state=busy;  
+            if(UserReqPtr==(BufferSize-1))
+            {
+                UserReqPtr=0;
+            }
+            else
+            {
+                UserReqPtr++;
+            }
         }
     }
     return RET_ErrorStatus;
@@ -223,12 +252,20 @@ LCD_ErrorStatus_t LCD_SetCursorPosAsync(u8 posX, u8 posY, func callback)
     else
     {
         LCD_SetCursorCbf=callback;
-        if((lcdstate==operational_state) && (User_Req.state==ready))
+        if(User_Req[UserReqPtr].state==ready)
         {
-            User_Req.posX=posX;
-            User_Req.posY=posY;
-            User_Req.type=setpos;
-            User_Req.state=busy;
+            User_Req[UserReqPtr].posX=posX;
+            User_Req[UserReqPtr].posY=posY;
+            User_Req[UserReqPtr].type=setpos;
+            User_Req[UserReqPtr].state=busy;
+            if(UserReqPtr==(BufferSize-1))
+            {
+                UserReqPtr=0;
+            }
+            else
+            {
+                UserReqPtr++;
+            }
         }
     }
     return RET_ErrorStatus;
@@ -248,9 +285,9 @@ void LCD_Task(void)
     else if(lcdstate==operational_state)
     {
         /*Check if User Needs Request*/
-        if(User_Req.state==busy)
+        if(User_Req[RunnablePtr].state==busy)
         {
-            switch(User_Req.type)
+            switch(User_Req[RunnablePtr].type)
             {
                 case write:
                     LcdWriteProc();
@@ -368,7 +405,15 @@ static void LcdInitProc(void)
         break;
         case EntryModeSet:
             lcdstate=operational_state;
-            User_Req.state=ready;
+            User_Req[RunnablePtr].state=ready;
+            if(RunnablePtr==(BufferSize-1))
+            {
+                RunnablePtr=0;
+            }
+            else
+            {
+                RunnablePtr++;
+            }
             /*Call CallBack Function AFTER Seeting User State to Ready*/
             if(LCD_InitCbf)
             {
@@ -382,12 +427,20 @@ static void LcdInitProc(void)
 static void LcdWriteProc(void)
 {
     static u8 currpos=0;
-    if(currpos==User_Req.length)
+    if(currpos==User_Req[RunnablePtr].length)
     {
         /*Clear cursor position*/
         currpos=0;
         /*Set User State to Ready*/
-        User_Req.state=ready;
+        User_Req[RunnablePtr].state=ready;
+        if(RunnablePtr==(BufferSize-1))
+        {
+            RunnablePtr=0;
+        }
+        else
+        {
+            RunnablePtr++;
+        }
         /*Call CallBack Function AFTER Seeting User State to Ready*/
         if(LCD_WriteStringCbf)
         {
@@ -401,7 +454,7 @@ static void LcdWriteProc(void)
         {
             case enable_high:
                 /*Send Data (1 byte)*/
-                LCD_WriteData(User_Req.string[currpos]);
+                LCD_WriteData(User_Req[RunnablePtr].string[currpos]);
                 /*Set Enable Pin->High*/
                 GPIO_SetPinValue(LcdCfgArray[E_PIN].Port,LcdCfgArray[E_PIN].Pin,GPIO_SET_PIN);
                 /*Set Enable State->Low*/
@@ -437,7 +490,15 @@ static void LcdClearProc(void)
             /*Reset Enable State to High*/
             enable_state=enable_high;
             /*Set User State to Ready*/
-            User_Req.state=ready;
+            User_Req[RunnablePtr].state=ready;
+            if(RunnablePtr==(BufferSize-1))
+            {
+                RunnablePtr=0;
+            }
+            else
+            {
+                RunnablePtr++;
+            }
             /*Call CallBack Function AFTER Seeting User State to Ready*/
             if(LCD_ClearScreenCbf)
             {
@@ -451,15 +512,15 @@ static void LcdClearProc(void)
 static void LcdSetPosProc(void)
 {
     u8 static Cursor_Position=0;
-    if(User_Req.posX==0)
+    if(User_Req[RunnablePtr].posX==0)
     {
-        //Cursor_Position=(LCD_DDRAM_ADDRESS+User_Req.posY);
-        Cursor_Position=User_Req.posY;
+        //Cursor_Position=(LCD_DDRAM_ADDRESS+User_Req[RunnablePtr].posY);
+        Cursor_Position=User_Req[RunnablePtr].posY;
     }
     else
     {
-        //Cursor_Position=(LCD_DDRAM_ADDRESS+0x40+User_Req.posY);
-        Cursor_Position=(0x40+User_Req.posY);
+        //Cursor_Position=(LCD_DDRAM_ADDRESS+0x40+User_Req[RunnablePtr].posY);
+        Cursor_Position=(0x40+User_Req[RunnablePtr].posY);
     }
     switch(enable_state)
     {
@@ -477,7 +538,15 @@ static void LcdSetPosProc(void)
             /*Reset Enable State to High*/
             enable_state=enable_high;
             /*Set User State to Ready*/
-            User_Req.state=ready;
+            User_Req[RunnablePtr].state=ready;
+            if(RunnablePtr==(BufferSize-1))
+            {
+                RunnablePtr=0;
+            }
+            else
+            {
+                RunnablePtr++;
+            }
             /*Call CallBack Function AFTER Seeting User State to Ready*/
             if(LCD_SetCursorCbf)
             {

@@ -61,7 +61,6 @@ typedef struct
     u8 posX;            /*Stores Position of Row on LCD*/
     u8 posY;            /*Stores Position of Column on LCD*/
     func callback;      /*Callback function to call after end of a single operation*/
-
 }LCD_Request_t;
 
 /**
