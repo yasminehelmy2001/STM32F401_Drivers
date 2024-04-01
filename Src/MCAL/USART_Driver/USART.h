@@ -105,7 +105,7 @@ typedef enum
 /**
  * @brief   Initializes a single USART peripheral 
  *
- * @param   - Pointer to type of "USART_PostCompileCfg_t" 
+ * @param   - cfg: Pointer to type of "USART_PostCompileCfg_t" 
  *
  * @return  Error Status 
  */
@@ -120,7 +120,7 @@ USART_ErrorStatus_t USART_Init(USART_PostCompileCfg_t* cfg);
  *                     2) USART_CH2   
  *                     3) USART_CH6  
  * 
- *          - 2) u8*buffer: Pointer to a character/string to transmit asynchronously via USART
+ *          - 2) buffer: Pointer to a character/string to transmit asynchronously via USART
  * 
  *          - 3) len: Length of buffer
  * 
@@ -139,7 +139,7 @@ USART_ErrorStatus_t USART_TxBufferAsyncZeroCopy(u8 USART_Num,u8*buffer, u16 len,
  *                     2) USART_CH2   
  *                     3) USART_CH6  
  * 
- *          - 2) u8*buffer: Pointer to a character/string to store received buffer 
+ *          - 2) buffer: Pointer to a character/string to store received buffer 
  * 
  *          - 3) len: Length of buffer to receive
  * 
@@ -171,7 +171,7 @@ USART_ErrorStatus_t USART_SendByte(u8 USART_Num,u8 byte);
  *                     2) USART_CH2   
  *                     3) USART_CH6  
  * 
- *          - 2) *byte: Pointer to variable to store received data
+ *          - 2) byte: Pointer to variable to store received data
  * 
  * @return  Error Status: Returns if Data is successfully received or not
  */
