@@ -19,7 +19,7 @@
 /**
  * Defs:
  * 1) RXNE: Receiver Buffer Not Empty (Ready to Read Data)
- * 2) TXE: Transmitter Buffer Empty: No Data in Buffer (Data Shifted to Shift Register), Ready to Transmit Data  
+ * 2) TXE: Transmitter Buffer Empty: No Data in Buffer (Data Shifted to Shift Register), Ready to Transmit Data 
  * 3) TC: Transmit Complete: When All Data in Buffer is Transmitted
 */
 
@@ -482,6 +482,7 @@ void USART1_IRQHandler(void)
         /*Check on Length( If More Bytes to Send)*/
         if(USART_TxBuffer[USART_CH1].pos<USART_TxBuffer[USART_CH1].len)
         {
+            /*Write Data to Data Register, Flag is Automatically Cleared*/
              USART1->DR= (USART_TxBuffer[USART_CH1].data[USART_TxBuffer->pos++]);
         }
         /*All Bytes Sent*/
@@ -503,7 +504,7 @@ void USART1_IRQHandler(void)
         /*Check on Length*/
         if(USART_RxBuffer[USART_CH1].pos<USART_RxBuffer[USART_CH1].len)
         {
-            /*Read data from Buffer ... Flag is automatically cleared*/
+            /*Read data from Buffer, Flag is automatically cleared*/
             USART_RxBuffer[USART_CH1].data[USART_RxBuffer->pos++]=(u8)USART1->DR;
         }
         if(USART_RxBuffer[USART_CH1].pos==USART_RxBuffer[USART_CH1].len)
@@ -534,6 +535,7 @@ void USART2_IRQHandler(void)
         /*Check on Length( If More Bytes to Send)*/
         if(USART_TxBuffer[USART_CH2].pos < USART_TxBuffer[USART_CH2].len)
         {
+            /*Write Data to Data Register, Flag is Automatically Cleared*/
             USART2->DR = (USART_TxBuffer[USART_CH2].data[USART_TxBuffer[USART_CH2].pos++]);
         }
         /*All Bytes Sent*/
@@ -555,7 +557,7 @@ void USART2_IRQHandler(void)
         /*Check on Length*/
         if(USART_RxBuffer[USART_CH2].pos < USART_RxBuffer[USART_CH2].len)
         {
-            /*Read data from Buffer ... Flag is automatically cleared*/
+            /*Read data from Buffer, Flag is automatically cleared*/
             USART_RxBuffer[USART_CH2].data[USART_RxBuffer[USART_CH2].pos++] = (u8)USART2->DR;
         }
         if(USART_RxBuffer[USART_CH2].pos == USART_RxBuffer[USART_CH2].len)
@@ -585,6 +587,7 @@ void USART6_IRQHandler(void)
         /*Check on Length( If More Bytes to Send)*/
         if(USART_TxBuffer[USART_CH6].pos < USART_TxBuffer[USART_CH6].len)
         {
+            /*Write Data to Data Register, Flag is Automatically Cleared*/
             USART6->DR = (USART_TxBuffer[USART_CH6].data[USART_TxBuffer[USART_CH6].pos++]);
         }
         /*All Bytes Sent*/
@@ -606,7 +609,7 @@ void USART6_IRQHandler(void)
         /*Check on Length*/
         if(USART_RxBuffer[USART_CH6].pos < USART_RxBuffer[USART_CH6].len)
         {
-            /*Read data from Buffer ... Flag is automatically cleared*/
+            /*Read data from Buffer, Flag is automatically cleared*/
             USART_RxBuffer[USART_CH6].data[USART_RxBuffer[USART_CH6].pos++] = (u8)USART6->DR;
         }
         if(USART_RxBuffer[USART_CH6].pos == USART_RxBuffer[USART_CH6].len)
