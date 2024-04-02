@@ -69,7 +69,7 @@ void LCD_APP_Runnable(void)
     }
     else if(counter==9)
     {
-       LCD_WriteStringAsync("DOUBLE",6,NULL);
+       LCD_WriteStringAsync("CIRCULAR",8,NULL);
     }
     else if(counter==10)
     {

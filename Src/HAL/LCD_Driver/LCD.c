@@ -11,7 +11,7 @@
 
 /**
  * @brief:  LCD implemented using scheduler to decrease CPU load by not halting it during delays.
- *          Circular double buffer data structure was used to buffer asynchronous user requests.
+ *          Circular buffer data structure was used to buffer asynchronous user requests.
 */
 
 /************************************************************************/
