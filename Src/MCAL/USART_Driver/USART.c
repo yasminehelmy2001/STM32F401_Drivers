@@ -190,7 +190,7 @@ USART_ErrorStatus_t USART_Init(USART_PostCompileCfg_t *cfg)
     {
         /*Check for Max Baud Rate*/
         f32 OVER8= (cfg->OverSampling==USART_OVERSAMPLING_16)?0:1;
-        u32 MaxBaudRate= USART_Freq[cfg->Channel]/(2-OVER8);
+        u32 MaxBaudRate= USART_Freq[cfg->Channel]/(8*(2-OVER8));
         if(cfg->BaudRate>MaxBaudRate)
         {
             RET_ErrorStatus=USART_Nok; 
