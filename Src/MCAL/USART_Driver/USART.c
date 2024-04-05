@@ -417,7 +417,7 @@ USART_ErrorStatus_t USART_SendByte(u8 USART_Num,u8 byte)
         {
             USART_TxBuffer[USART_Num].state=busy;
             USART->DR=byte;
-            while(Timeout&&(!(USART->SR&USART_TXE_FLAG_MASK)));
+            while(Timeout--&&(!(USART->SR&USART_TXE_FLAG_MASK)));
             if(USART->SR&USART_TXE_FLAG_MASK)
             {
                 //Byte Transferred
@@ -463,7 +463,7 @@ USART_ErrorStatus_t USART_GetByte(u8 USART_Num,u8*byte)
         if(USART_RxBuffer[USART_Num].state==ready)
         {
             USART_RxBuffer[USART_Num].state=busy;
-            while(Timeout&&(!(USART->SR&USART_RXNE_FLAG_MASK)));
+            while(Timeout--&&(!(USART->SR&USART_RXNE_FLAG_MASK)));
             if(USART->SR&USART_RXNE_FLAG_MASK)
             {
                 *byte=(u8)USART->DR;
