@@ -25,7 +25,7 @@ typedef struct
     char*name;                  /*Runnable Name*/
     u32 PeriodicityMs;          /*Runnable Periodicity*/
     runnablecb CallBackFn;      /*Runnable CallBack Function*/
-
+    u32 FirstDelay;             /*First Time Runnable Delay*/
 }Runnables_t;
 
 /**

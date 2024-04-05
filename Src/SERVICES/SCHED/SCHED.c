@@ -10,6 +10,12 @@
 #include "SCHED.h"
 
 /**************************************************************************/
+/*						Implementation Defs               	 			  */
+/**************************************************************************/
+#define ACTIVATED   1
+#define DEACTIVATED 0
+
+/**************************************************************************/
 /*						Static Function Prototypes      	 			  */
 /**************************************************************************/
 
@@ -46,8 +52,7 @@ void SCHED_Init(void)
 */
 void SCHED_Start(void)
 {
-    STK_Start(STK_PERIODICITY_INFINITE);
-     
+    STK_Start(STK_PERIODICITY_INFINITE); 
     while(1)
     { 
         if(PendingTicks)
@@ -64,15 +69,26 @@ void SCHED_Start(void)
 static void SCHED_App(void)
 {
     static u32 TickTimeCounter=0;
+    u8 static FirstDelay=ACTIVATED;
+    TickTimeCounter+=TICK_TIME_MS;
     for(u32 i=0;i<SYSTEM_RUNNABLES_COUNT;i++)
     {
-        /*Check if Periodicity Time is Reached, Check if CallBack Fn is not NULL*/
-        if(((TickTimeCounter%System_Runnables[i].PeriodicityMs)==0)&&(System_Runnables[i].CallBackFn))
+        /*Check if Periodicity Time is Reached, Check if CallBack Fn is not NULL, Check if this is not the First Tick*/
+        if(((TickTimeCounter%System_Runnables[i].PeriodicityMs)==0)&&(System_Runnables[i].CallBackFn)&&(FirstDelay==DEACTIVATED))
         {
             System_Runnables[i].CallBackFn();
         }
+        /*First Tick->Use First Delay*/
+        else if(((TickTimeCounter%System_Runnables[i].FirstDelay)==0)&&(System_Runnables[i].CallBackFn)&&(FirstDelay==ACTIVATED))
+        {
+            FirstDelay=DEACTIVATED;
+            System_Runnables[i].CallBackFn();
+        }
+        else
+        {
+            //Empty for MISRA
+        }
     }
-    TickTimeCounter+=TICK_TIME_MS;
 }
 
 /**
