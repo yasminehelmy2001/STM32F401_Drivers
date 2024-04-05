@@ -24,7 +24,8 @@ extern void LCD_APP_Runnable(void);
  *             [0]={
  *             .name="FirstRunnable",
  *             .PeriodicityMs=100,
- *             .CallBackFn=Toggle_LED
+ *             .CallBackFn=Toggle_LED,
+ *             .FirstDelay=5000
  *            }
  *          };
  * 
