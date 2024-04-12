@@ -12,8 +12,8 @@
 /**************************************************************************/
 /*						Implementation Defs               	 			  */
 /**************************************************************************/
-#define ACTIVATED   1
-#define DEACTIVATED 0
+#define ACTIVATED   0
+#define DEACTIVATED 1
 
 /**************************************************************************/
 /*						Static Function Prototypes      	 			  */
@@ -37,6 +37,7 @@ extern Runnables_t System_Runnables[SYSTEM_RUNNABLES_COUNT];
  * Note: Variable must be declared as volatile, to prevent compiler optimization as variable is modified in ISR
  */
 static volatile u32 PendingTicks=0;
+static u32 RemainTimeMs[SYSTEM_RUNNABLES_COUNT]={0};
 
 /**
  * Function to Initialize Scheduler (Initializes SysTick Timer)
@@ -45,6 +46,10 @@ void SCHED_Init(void)
 {
     STK_SetTimeMS(TICK_TIME_MS);
     STK_SetCallBack(SCHED_TickCallBack);
+    for(u32 Runnable_Index=0;i<SYSTEM_RUNNABLES_COUNT;Runnable_Index++)
+    {
+        RemainTimeMs[Runnable_Index]=System_Runnables[Runnable_Index].FirstDelay;
+    }
 }
 
 /**
@@ -68,26 +73,19 @@ void SCHED_Start(void)
 */
 static void SCHED_App(void)
 {
-    static u32 TickTimeCounter=0;
-    u8 static FirstDelay=ACTIVATED;
-    TickTimeCounter+=TICK_TIME_MS;
-    for(u32 i=0;i<SYSTEM_RUNNABLES_COUNT;i++)
+    for(u32 Runnable_Index=0;i<SYSTEM_RUNNABLES_COUNT;Runnable_Index++)
     {
-        /*Check if Periodicity Time is Reached, Check if CallBack Fn is not NULL, Check if this is not the First Tick*/
-        if(((TickTimeCounter%System_Runnables[i].PeriodicityMs)==0)&&(System_Runnables[i].CallBackFn)&&(FirstDelay==DEACTIVATED))
+        /*Check if Periodicity Time is Reached*/
+        if(((RemainTimeMs[Runnable_Index])==0)&&(System_Runnables[Runnable_Index].CallBackFn))
         {
-            System_Runnables[i].CallBackFn();
-        }
-        /*First Tick->Use First Delay*/
-        else if(((TickTimeCounter%System_Runnables[i].FirstDelay)==0)&&(System_Runnables[i].CallBackFn)&&(FirstDelay==ACTIVATED))
-        {
-            FirstDelay=DEACTIVATED;
-            System_Runnables[i].CallBackFn();
+            System_Runnables[Runnable_Index].CallBackFn();
+            RemainTimeMs[Runnable_Index]=System_Runnables[i].PeriodicityMs;
         }
         else
         {
             //Empty for MISRA
         }
+        RemainTimeMs[i]-=TICK_TIME_MS;
     }
 }
 

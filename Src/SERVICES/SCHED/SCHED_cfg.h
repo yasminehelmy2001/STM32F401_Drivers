@@ -14,7 +14,7 @@
 /*Modify Tick Time of Scheduler - Done by ARCHITECT */
 #define TICK_TIME_MS                1
 /*Modify your Runnables Count*/
-#define SYSTEM_RUNNABLES_COUNT      1
+#define SYSTEM_RUNNABLES_COUNT      2
 /*Define Your Runnable Name According to Array Index*/
 #define LCD_Runnable                         0
 //#define APP_LCD_Runnable                     1

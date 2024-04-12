@@ -36,9 +36,15 @@ extern void LCD_APP_Runnable(void);
 Runnables_t System_Runnables[]=
 {
     [0]={
-        .name="Toggle_LED",
-        .PeriodicityMs=1000,
-        .CallBackFn=Toggle_LED,
-        .FirstDelay=5000
+        .name="LCD_Task",
+        .PeriodicityMs=2,
+        .CallBackFn=LCD_Task,
+        .FirstDelay=0
+    },
+    [1]={
+    .name="LCD_APP_Runnable",
+    .PeriodicityMs=20,
+    .CallBackFn=LCD_APP_Runnable,
+    .FirstDelay=0
     }
 };
