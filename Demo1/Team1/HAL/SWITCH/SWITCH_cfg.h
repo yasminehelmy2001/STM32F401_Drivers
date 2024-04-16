@@ -1,0 +1,45 @@
+#ifndef HAL_SWITCH_SWITCH_CFG_H_
+#define HAL_SWITCH_SWITCH_CFG_H_
+
+/*** SWITCHS Names ***/
+typedef enum {
+	SWITCH_MODE,//1
+	SWITCH_UP,//2
+	SWITCH_Ok,//3
+	SWITCH_EDIT,//4
+	SWITCH_STARTSTOP_STOPWATCH,//5
+	SWITCH_LEFT_RESET_STOPWATCH,//6
+	SWITCH_DOWN_PAUSECONT_STOPWATCH,//7
+	SWITCH_RIGHT,//8
+	_SWITCH_NUM
+	}SWITCHS_t;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#endif // HAL_SWITCH_SWITCH_CFG_H_
