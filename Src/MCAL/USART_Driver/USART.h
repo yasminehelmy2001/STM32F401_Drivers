@@ -55,36 +55,36 @@ typedef void (*fnpointer)(void);
 */
 typedef struct
 {
-    u8 Channel;             /**
+    uint8_t Channel;             /**
                              * 1) USART_CH1    
                              * 2) USART_CH2   
                              * 3) USART_CH6  
                              */
 
-    u8 OverSampling;        /**
+    uint8_t OverSampling;        /**
                              * 1) USART_OVERSAMPLING_16
                              * 2) USART_OVERSAMPLING_8
                              */
     
-    u8 WordLength;          /**
+    uint8_t WordLength;          /**
                              * 1) USART_DATA_BITS_8
                              * 2) USART_DATA_BITS_9
                              */
     
-    u8 ParitySelect;        /**
+    uint8_t ParitySelect;        /**
                              * 1) USART_PARITY_NONE
                              * 2) USART_PARITY_ODD
                              * 3) USART_PARITY_EVEN
                              */
 
-    u8 StopBits;            /**
+    uint8_t StopBits;            /**
                              * 1) USART_STOP_BITS_HALF
                              * 2) USART_STOP_BITS_ONE
                              * 3) USART_STOP_BITS_ONE_AND_HALF
                              * 4) USART_STOP_BITS_TWO
                              */
 
-    f32 BaudRate;           /**
+    float32_t BaudRate;           /**
                              * @note Baud Rate Number Shouldn't Exceed:
                              *      1) F_UART/8 for Oversampling=8
                              *      2) F_UART/16 for Oversampling=16
@@ -128,7 +128,7 @@ USART_ErrorStatus_t USART_Init(USART_PostCompileCfg_t* cfg);
  *                            
  * @return  Error Status 
  */
-USART_ErrorStatus_t USART_TxBufferAsyncZeroCopy(u8 USART_Num,u8*buffer, u16 len, fnpointer cbf );
+USART_ErrorStatus_t USART_TxBufferAsyncZeroCopy(uint8_t USART_Num,uint8_t*buffer, uint16_t len, fnpointer cbf );
 
 /**
  * @brief   - Takes a Buffer of Bytes to Store received Bytes (of size "len") Asynchronously via a USART Peripheral 
@@ -147,7 +147,7 @@ USART_ErrorStatus_t USART_TxBufferAsyncZeroCopy(u8 USART_Num,u8*buffer, u16 len,
  *                            
  * @return  Error Status 
  */
-USART_ErrorStatus_t USART_RxBufferAsyncZeroCopy(u8 USART_Num,u8*buffer, u16 len, fnpointer cbf);
+USART_ErrorStatus_t USART_RxBufferAsyncZeroCopy(uint8_t USART_Num,uint8_t*buffer, uint16_t len, fnpointer cbf);
 
 /**
  * @brief   Sends a Byte over a USART Channel 
@@ -161,7 +161,7 @@ USART_ErrorStatus_t USART_RxBufferAsyncZeroCopy(u8 USART_Num,u8*buffer, u16 len,
  * 
  * @return  Error Status: Returns if Data is successfully transmitted or not
  */
-USART_ErrorStatus_t USART_SendByte(u8 USART_Num,u8 byte);
+USART_ErrorStatus_t USART_SendByte(uint8_t USART_Num,uint8_t byte);
 
 /**
  * @brief   Received a byte over a USART Channel 
@@ -175,10 +175,10 @@ USART_ErrorStatus_t USART_SendByte(u8 USART_Num,u8 byte);
  * 
  * @return  Error Status: Returns if Data is successfully received or not
  */
-USART_ErrorStatus_t USART_GetByte(u8 USART_Num,u8*byte);
+USART_ErrorStatus_t USART_GetByte(uint8_t USART_Num,uint8_t*byte);
 
-//u8 USART_TxDone(void);
-//u8 USART_IsRx(void);
+//uint8_t USART_TxDone(void);
+//uint8_t USART_IsRx(void);
 
 
 #endif

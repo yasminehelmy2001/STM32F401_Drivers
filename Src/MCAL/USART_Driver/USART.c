@@ -111,13 +111,13 @@
 */
 typedef struct
 {
-   u32 SR;
-   u32 DR;
-   u32 BRR;
-   u32 CR1;
-   u32 CR2;
-   u32 CR3;
-   u32 GTPR;
+   uint32_t SR;
+   uint32_t DR;
+   uint32_t BRR;
+   uint32_t CR1;
+   uint32_t CR2;
+   uint32_t CR3;
+   uint32_t GTPR;
 }USART_Reg_t;
 
 /**
@@ -125,11 +125,11 @@ typedef struct
 */
 typedef struct
 {
-    volatile u8*data;                 /*Bytes to be Sent/Received Asynchronously*/
-    volatile u16 len;                 /*Number of Bytes to Be Sent/Received Asynchronously*/
+    volatile uint8_t*data;                 /*Bytes to be Sent/Received Asynchronously*/
+    volatile uint16_t len;                 /*Number of Bytes to Be Sent/Received Asynchronously*/
     volatile fnpointer cbf;           /*CallBack Function After End of Operation*/
-    volatile u16 pos;                  /*Tracker for Bytes*/
-    volatile u8 state;                 /*State for User Request*/
+    volatile uint16_t pos;                  /*Tracker for Bytes*/
+    volatile uint8_t state;                 /*State for User Request*/
 }USART_Buffer_t;
 
 /**************************************************************************/
@@ -146,10 +146,10 @@ USART_Buffer_t volatile USART_TxBuffer[3]={{.state=ready},{.state=ready},{.state
 USART_Buffer_t volatile USART_RxBuffer[3]={{.state=ready},{.state=ready},{.state=ready}};
 
 /*Array of USART Peripheral Addresses*/
-u32 USART_Peri_Add[3]={0x40011000,0x40004400,0x40011400};
+uint32_t USART_Peri_Add[3]={0x40011000,0x40004400,0x40011400};
 
 /*Array of USART Peripheral Configured Frequencies*/
-u32 USART_Freq[3]={F_USART1,F_USART2,F_USART6};
+uint32_t USART_Freq[3]={F_USART1,F_USART2,F_USART6};
 
 
 /**
@@ -189,8 +189,8 @@ USART_ErrorStatus_t USART_Init(USART_PostCompileCfg_t *cfg)
     else
     {
         /*Check for Max Baud Rate*/
-        f32 OVER8= (cfg->OverSampling==USART_OVERSAMPLING_16)?0:1;
-        u32 MaxBaudRate= USART_Freq[cfg->Channel]/(8*(2-OVER8));
+        float32_t OVER8= (cfg->OverSampling==USART_OVERSAMPLING_16)?0:1;
+        uint32_t MaxBaudRate= USART_Freq[cfg->Channel]/(8*(2-OVER8));
         if(cfg->BaudRate>MaxBaudRate)
         {
             RET_ErrorStatus=USART_Nok; 
@@ -199,7 +199,7 @@ USART_ErrorStatus_t USART_Init(USART_PostCompileCfg_t *cfg)
         {
             volatile USART_Reg_t *const USART=( volatile USART_Reg_t *)USART_Peri_Add[cfg->Channel];
             /*Enable USART*/
-            u32 Loc_Reg=USART->CR1;
+            uint32_t Loc_Reg=USART->CR1;
             Loc_Reg|=(USART_ENABLE);
             
             /*Program Word Length*/
@@ -229,19 +229,19 @@ USART_ErrorStatus_t USART_Init(USART_PostCompileCfg_t *cfg)
             USART->CR1=Loc_Reg;
 
             /*Select Baud Rate*/
-            f32 USARTDIV=((f32)(USART_Freq[cfg->Channel])/((cfg->BaudRate)*8*(2-OVER8)));
-            f32 FracionBoundary=(cfg->OverSampling==USART_OVERSAMPLING_16)?16:8;
-            u32 DIV_Fraction=(u32)(FracionBoundary*(f32)((f32)USARTDIV-(u32)USARTDIV))+1;
-            u32 MAXVALUE=(cfg->OverSampling==USART_OVERSAMPLING_16)?15:7;
-            u32 DIV_Mantissa=0;
+            float32_t USARTDIV=((float32_t)(USART_Freq[cfg->Channel])/((cfg->BaudRate)*8*(2-OVER8)));
+            float32_t FracionBoundary=(cfg->OverSampling==USART_OVERSAMPLING_16)?16:8;
+            uint32_t DIV_Fraction=(uint32_t)(FracionBoundary*(float32_t)((float32_t)USARTDIV-(uint32_t)USARTDIV))+1;
+            uint32_t MAXVALUE=(cfg->OverSampling==USART_OVERSAMPLING_16)?15:7;
+            uint32_t DIV_Mantissa=0;
             if(DIV_Fraction>MAXVALUE)
             {
                 DIV_Fraction=0;
-                DIV_Mantissa=(u32)USARTDIV+1;
+                DIV_Mantissa=(uint32_t)USARTDIV+1;
             }
             else
             {
-                DIV_Mantissa= (u32)USARTDIV;
+                DIV_Mantissa= (uint32_t)USARTDIV;
             }
 
             Loc_Reg=USART->BRR;
@@ -282,14 +282,14 @@ USART_ErrorStatus_t USART_Init(USART_PostCompileCfg_t *cfg)
  *                            
  * @return  Error Status 
  */
-USART_ErrorStatus_t USART_TxBufferAsyncZeroCopy(u8 USART_Num,u8*buffer, u16 len, fnpointer cbf )
+USART_ErrorStatus_t USART_TxBufferAsyncZeroCopy(uint8_t USART_Num,uint8_t*buffer, uint16_t len, fnpointer cbf )
 {
     USART_ErrorStatus_t RetErrorStatus=USART_Ok;
     if(!buffer)
     {
         RetErrorStatus=USART_NullPtr;
     }
-    else if(!(USART_Num==USART_CH1)||(USART_Num==USART_CH2)||(USART_Num==USART_CH6))
+    else if(!((USART_Num==USART_CH1)||(USART_Num==USART_CH2)||(USART_Num==USART_CH6)))
     {
         RetErrorStatus=USART_Nok;
     }
@@ -312,7 +312,7 @@ USART_ErrorStatus_t USART_TxBufferAsyncZeroCopy(u8 USART_Num,u8*buffer, u16 len,
             USART->DR=(USART_TxBuffer[USART_Num].data[USART_TxBuffer[USART_Num].pos++]);
 
             /*Enable Transmit Interrupt*/
-            u32 Loc_Reg=USART->CR1;
+            uint32_t Loc_Reg=USART->CR1;
             Loc_Reg&=~USART_TXE_INT_ENABLE_MASK;
             Loc_Reg|=USART_TXE_INTERRUPT_ENABLE;
             USART->CR1=Loc_Reg;
@@ -343,14 +343,14 @@ USART_ErrorStatus_t USART_TxBufferAsyncZeroCopy(u8 USART_Num,u8*buffer, u16 len,
  *                            
  * @return  Error Status 
  */
-USART_ErrorStatus_t USART_RxBufferAsyncZeroCopy(u8 USART_Num,u8*buffer, u16 len, fnpointer cbf)
+USART_ErrorStatus_t USART_RxBufferAsyncZeroCopy(uint8_t USART_Num,uint8_t*buffer, uint16_t len, fnpointer cbf)
 {
     USART_ErrorStatus_t RetErrorStatus=USART_Ok;
     if(!buffer)
     {
         RetErrorStatus=USART_NullPtr;
     }
-    else if(!(USART_Num==USART_CH1)||(USART_Num==USART_CH2)||(USART_Num==USART_CH6))
+    else if(!((USART_Num==USART_CH1)||(USART_Num==USART_CH2)||(USART_Num==USART_CH6)))
     {
         RetErrorStatus=USART_Nok;
     }
@@ -361,7 +361,7 @@ USART_ErrorStatus_t USART_RxBufferAsyncZeroCopy(u8 USART_Num,u8*buffer, u16 len,
             volatile USART_Reg_t *const USART=( volatile USART_Reg_t *)USART_Peri_Add[USART_Num];
 
             /*Disable Receive Interrupt*/
-            u32 Loc_Reg=USART->CR1;
+            uint32_t Loc_Reg=USART->CR1;
             Loc_Reg&=~USART_RXNE_INT_ENABLE_MASK;
             Loc_Reg|=USART_RXNE_INT_DISABLE;
             USART->CR1=Loc_Reg;
@@ -402,22 +402,22 @@ USART_ErrorStatus_t USART_RxBufferAsyncZeroCopy(u8 USART_Num,u8*buffer, u16 len,
  * 
  * @return  Error Status: Returns if Data is successfully transmitted or not
  */
-USART_ErrorStatus_t USART_SendByte(u8 USART_Num,u8 byte)
+USART_ErrorStatus_t USART_SendByte(uint8_t USART_Num,uint8_t byte)
 {
     USART_ErrorStatus_t RetErrorStatus=USART_Ok;
-    if(!(USART_Num==USART_CH1)||(USART_Num==USART_CH2)||(USART_Num==USART_CH6))
+    if(!((USART_Num==USART_CH1)||(USART_Num==USART_CH2)||(USART_Num==USART_CH6)))
     {
         RetErrorStatus=USART_Nok;
     }
     else
     {
         volatile USART_Reg_t *const USART=( volatile USART_Reg_t *)USART_Peri_Add[USART_Num];
-        u16 Timeout=3000;
+        uint16_t Timeout=3000;
         if(USART_TxBuffer[USART_Num].state==ready)
         {
             USART_TxBuffer[USART_Num].state=busy;
             USART->DR=byte;
-            while(Timeout--&&(!(USART->SR&USART_TXE_FLAG_MASK)));
+            while((Timeout--)&&(!(USART->SR&USART_TXE_FLAG_MASK)));
             if(USART->SR&USART_TXE_FLAG_MASK)
             {
                 //Byte Transferred
@@ -445,7 +445,7 @@ USART_ErrorStatus_t USART_SendByte(u8 USART_Num,u8 byte)
  * 
  * @return  Error Status: Returns if Data is successfully received or not
  */
-USART_ErrorStatus_t USART_GetByte(u8 USART_Num,u8*byte)
+USART_ErrorStatus_t USART_GetByte(uint8_t USART_Num,uint8_t*byte)
 {
     USART_ErrorStatus_t RetErrorStatus=USART_Ok;
     if(!byte)
@@ -459,14 +459,14 @@ USART_ErrorStatus_t USART_GetByte(u8 USART_Num,u8*byte)
     else
     {
         volatile USART_Reg_t *const USART=( volatile USART_Reg_t *)USART_Peri_Add[USART_Num];
-        u16 Timeout=3000;
+        uint16_t Timeout=3000;
         if(USART_RxBuffer[USART_Num].state==ready)
         {
             USART_RxBuffer[USART_Num].state=busy;
             while(Timeout--&&(!(USART->SR&USART_RXNE_FLAG_MASK)));
             if(USART->SR&USART_RXNE_FLAG_MASK)
             {
-                *byte=(u8)USART->DR;
+                *byte=(uint8_t)USART->DR;
             }
             else
             {
@@ -499,10 +499,10 @@ void USART1_IRQHandler(void)
                 }
                 
                 /*All Bytes Sent*/
-                else
+                else if(USART_TxBuffer[USART_CH1].len!=0)
                 {
                     /*Disable Transmit Interrupt*/
-                    u32 Loc_Reg=USART1->CR1;
+                    uint32_t Loc_Reg=USART1->CR1;
                     Loc_Reg&=~USART_TXE_INT_ENABLE_MASK;
                     Loc_Reg|=USART_TXE_INTERRUPT_DISABLE;
                     USART1->CR1=Loc_Reg;
@@ -524,12 +524,12 @@ void USART1_IRQHandler(void)
                 if(USART_RxBuffer[USART_CH1].pos<USART_RxBuffer[USART_CH1].len)
                 {
                     /*Read data from Buffer, Flag is automatically cleared*/
-                    USART_RxBuffer[USART_CH1].data[USART_RxBuffer[USART_CH1].pos++]=(u8)USART1->DR;
+                    USART_RxBuffer[USART_CH1].data[USART_RxBuffer[USART_CH1].pos++]=(uint8_t)USART1->DR;
                 }
                 if(USART_RxBuffer[USART_CH1].pos==USART_RxBuffer[USART_CH1].len)
                 {
                     /*Disable Receive Interrupt*/
-                    u32 Loc_Reg=USART1->CR1;
+                    uint32_t Loc_Reg=USART1->CR1;
                     Loc_Reg&=~USART_RXNE_INT_ENABLE_MASK;
                     Loc_Reg|=USART_RXNE_INT_DISABLE;
                     USART1->CR1=Loc_Reg;
@@ -563,13 +563,13 @@ void USART2_IRQHandler(void)
             USART2->DR = (USART_TxBuffer[USART_CH2].data[USART_TxBuffer[USART_CH2].pos++]);
         }
         /*All Bytes Sent*/
-        else
+        else if(USART_TxBuffer[USART_CH2].len!=0)
         {
             /*Disable Transmit Interrupt*/
-            u32 Loc_Reg=USART1->CR1;
+            uint32_t Loc_Reg=USART2->CR1;
             Loc_Reg&=~USART_TXE_INT_ENABLE_MASK;
             Loc_Reg|=USART_TXE_INTERRUPT_DISABLE;
-            USART1->CR1=Loc_Reg;
+            USART2->CR1=Loc_Reg;
 
             USART_TxBuffer[USART_CH2].state = ready;
             USART_TxBuffer[USART_CH2].pos = 0;
@@ -588,10 +588,16 @@ void USART2_IRQHandler(void)
         if(USART_RxBuffer[USART_CH2].pos < USART_RxBuffer[USART_CH2].len)
         {
             /*Read data from Buffer, Flag is automatically cleared*/
-            USART_RxBuffer[USART_CH2].data[USART_RxBuffer[USART_CH2].pos++] = (u8)USART2->DR;
+            USART_RxBuffer[USART_CH2].data[USART_RxBuffer[USART_CH2].pos++] = (uint8_t)USART2->DR;
         }
         if(USART_RxBuffer[USART_CH2].pos == USART_RxBuffer[USART_CH2].len)
         {
+            /*Disable Receive Interrupt*/
+            uint32_t Loc_Reg=USART2->CR1;
+            Loc_Reg&=~USART_RXNE_INT_ENABLE_MASK;
+            Loc_Reg|=USART_RXNE_INT_DISABLE;
+            USART2->CR1=Loc_Reg;
+
             USART_RxBuffer[USART_CH2].state = ready;
             USART_RxBuffer[USART_CH2].pos = 0;
             /*Check on NULL*/
@@ -621,13 +627,13 @@ void USART6_IRQHandler(void)
             USART6->DR = (USART_TxBuffer[USART_CH6].data[USART_TxBuffer[USART_CH6].pos++]);
         }
         /*All Bytes Sent*/
-        else
+        else if(USART_TxBuffer[USART_CH6].len!=0)
         {
             /*Disable Transmit Interrupt*/
-            u32 Loc_Reg=USART1->CR1;
+            uint32_t Loc_Reg=USART6->CR1;
             Loc_Reg&=~USART_TXE_INT_ENABLE_MASK;
             Loc_Reg|=USART_TXE_INTERRUPT_DISABLE;
-            USART1->CR1=Loc_Reg;
+            USART6->CR1=Loc_Reg;
 
             USART_TxBuffer[USART_CH6].state = ready;
             USART_TxBuffer[USART_CH6].pos = 0;
@@ -646,10 +652,16 @@ void USART6_IRQHandler(void)
         if(USART_RxBuffer[USART_CH6].pos < USART_RxBuffer[USART_CH6].len)
         {
             /*Read data from Buffer, Flag is automatically cleared*/
-            USART_RxBuffer[USART_CH6].data[USART_RxBuffer[USART_CH6].pos++] = (u8)USART6->DR;
+            USART_RxBuffer[USART_CH6].data[USART_RxBuffer[USART_CH6].pos++] = (uint8_t)USART6->DR;
         }
         if(USART_RxBuffer[USART_CH6].pos == USART_RxBuffer[USART_CH6].len)
         {
+            /*Disable Receive Interrupt*/
+            uint32_t Loc_Reg=USART6->CR1;
+            Loc_Reg&=~USART_RXNE_INT_ENABLE_MASK;
+            Loc_Reg|=USART_RXNE_INT_DISABLE;
+            USART6->CR1=Loc_Reg;
+
             USART_RxBuffer[USART_CH6].state = ready;
             USART_RxBuffer[USART_CH6].pos = 0;
             /*Check on NULL*/
@@ -659,5 +671,4 @@ void USART6_IRQHandler(void)
             }
         }
     }
-
 }
