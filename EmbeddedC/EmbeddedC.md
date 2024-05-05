@@ -2,7 +2,7 @@
 
 ## Data Types
 
-![](/media/yasmin/Yasmin/assets/DatatypesInC.jpg)
+![](./assets/DatatypesInC.jpg)
 
 Void is used in
 
@@ -18,7 +18,7 @@ Void is used in
 
 ## Qualifiers
 
-![](/media/yasmin/Yasmin/assets/Qualifiers-in-C-Programming.jpg)
+![](./assets/Qualifiers-in-C-Programming.jpg)
 
 
 
@@ -125,7 +125,7 @@ But this introduced some problems:
 
 ​	-1 -> 1000 0001
 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+​    =
 
 ​	  1000 0010  -> (-2)
 
@@ -169,7 +169,7 @@ Lets see if this solved the problems I was facing:
 
 ​	-1 -> 1111 1110
 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+​    =
 
 ​	 1111 1111 -> (-0)
 
@@ -211,7 +211,7 @@ Lets see if this solved the problems I was facing:
 
 ​	-1 -> 1111 1111
 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+​    =
 
 ​	 0000 0000 -> (0)
 
@@ -235,11 +235,11 @@ Note 5: don't use 2 modifiers of the same type
 
 
 
-![](/media/yasmin/Yasmin/assets/signed.png)
+![](./assets/signed.png)
 
 ### 3) Type Qualifiers
 
-![](/media/yasmin/Yasmin/assets/typequal.jpg)
+![](./assets/typequal.jpg)
 
 When a variable is declared as `volatile`, it informs the  compiler that the variable can be changed unexpectedly by sources  outside the current code flow, such as ISRs or hardware registers. 
 
@@ -247,7 +247,7 @@ When a variable is declared as `volatile`, it informs the  compiler that the var
 
 ## Escape Sequences 
 
-![](/home/yasmin/Desktop/EmbeddedC/assets/Escape-Sequence-is-C.png)
+![](./assets/Escape-Sequence-is-C-1714867021538-8.png)
 
 
 
@@ -259,13 +259,13 @@ When a variable is declared as `volatile`, it informs the  compiler that the var
 
 `Static Storage Duration`: Permanent Storage Duration.
 
-![](/home/yasmin/Desktop/EmbeddedC/assets/Storage-Classes-in-C-with-Examples.png)
+![](./assets/Storage-Classes-in-C-with-Examples-1714867132581-14.png)
 
 `Internal Linkage`: Static global variables: can't be externed. Trying to extern it will give <span style="color:red">Linker Error: Undefined reference to ...</span>
 
 `External Linkage`: Global variables: can be externed.
 
-![](/home/yasmin/Desktop/EmbeddedC/assets/C++2.jpg)
+![](./assets/C++2-1714867143881-16.jpg)
 
 Static + Local variables change storage duration from `automatic` to `static`.
 
@@ -273,7 +273,7 @@ Static + Local variables change storage duration from `automatic` to `static`.
 
 ## Memory Layout
 
-![](/home/yasmin/Desktop/EmbeddedC/assets/section_map.drawio.svg)
+![](./assets/section_map.drawio-1714867152030-18.svg)
 
 #### *1) Local variables*
 
@@ -397,7 +397,7 @@ gcc -c file.c
 
 ## Endianess
 
-![](/home/yasmin/Desktop/EmbeddedC/assets/1704128198851.gif)
+![](./assets/1704128198851-1714867162559-20.gif)
 
 ```c
 uint32_t var=0x12345678;
@@ -423,11 +423,11 @@ Compiler organizes according to endianness
 
 ### 1) Operators in C
 
-![](/home/yasmin/Desktop/EmbeddedC/assets/Operators-In-C.png)
+![](./assets/Operators-In-C-1714867170169-22.png)
 
 ### 2) Operator Precedence and Associativity
 
-![](/home/yasmin/Desktop/EmbeddedC/assets/prec.png)
+![](./assets/prec-1714867194524-24.png)
 
 ## Build Process
 
